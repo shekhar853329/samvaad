@@ -23,9 +23,24 @@ module.exports = {
           '0%, 100%': { opacity: '0.3' },
           '50%': { opacity: '1' },
         },
+        slideDown: {
+          from: { transform: 'translateY(-100%)', opacity: '0' },
+          to: { transform: 'translateY(0)', opacity: '1' },
+        },
+        pop: {
+          from: { transform: 'scale(0)' },
+          to: { transform: 'scale(1)' },
+        },
+        dropIn: {
+          from: { opacity: '0', transform: 'translateY(-6px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
       },
       animation: {
         blink: 'blink 1s ease-in-out infinite',
+        slideDown: 'slideDown .38s cubic-bezier(.22,1,.36,1) both',
+        pop: 'pop .25s .7s cubic-bezier(.34,1.56,.64,1) both',
+        dropIn: 'dropIn .17s ease both',
       },
     },
   },
