@@ -1,0 +1,51 @@
+<div class="text-[16px] font-medium text-text-primary mb-1">Notifications</div>
+<div class="text-[13px] text-text-secondary mb-5">Choose what you hear about and how.</div>
+
+<div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
+  <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Push notifications</div>
+  @for (item of [
+    {label:'New follower', checked: true},
+    {label:'Likes on your posts', checked: true},
+    {label:'Replies & comments', checked: true},
+    {label:'Mentions', checked: true},
+    {label:'Reposts', checked: false},
+    {label:'Direct messages', checked: true}
+  ]; track item.label; let last = $last) {
+    <div [ngClass]="last ? '' : 'border-b-[0.5px] border-border-tertiary'" class="flex items-center justify-between px-[14px] py-[13px] gap-4">
+      <div class="text-[13px] font-medium text-text-primary">{{item.label}}</div>
+      <label class="toggle"><input type="checkbox" [checked]="item.checked"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+    </div>
+  }
+</div>
+
+<div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
+  <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Email notifications</div>
+  <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
+    <div><div class="text-[13px] font-medium text-text-primary">Weekly digest</div><div class="text-[12px] text-text-secondary mt-0.5">Summary of your top posts</div></div>
+    <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+  </div>
+  <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
+    <div><div class="text-[13px] font-medium text-text-primary">Security alerts</div><div class="text-[12px] text-text-secondary mt-0.5">New logins and account changes</div></div>
+    <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+  </div>
+  <div class="flex items-center justify-between px-[14px] py-[13px] gap-4">
+    <div><div class="text-[13px] font-medium text-text-primary">Product updates</div><div class="text-[12px] text-text-secondary mt-0.5">New features and announcements</div></div>
+    <label class="toggle"><input type="checkbox"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+  </div>
+</div>
+
+<div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
+  <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Quiet hours</div>
+  <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
+    <div><div class="text-[13px] font-medium text-text-primary">Enable quiet hours</div><div class="text-[12px] text-text-secondary mt-0.5">Pause all notifications during set times</div></div>
+    <label class="toggle"><input type="checkbox"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+  </div>
+  <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
+    <div class="text-[13px] font-medium text-text-primary">From</div>
+    <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary font-[inherit] focus:outline-none"><option>10:00 PM</option><option>11:00 PM</option><option>12:00 AM</option></select>
+  </div>
+  <div class="flex items-center justify-between px-[14px] py-[13px] gap-4">
+    <div class="text-[13px] font-medium text-text-primary">Until</div>
+    <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary font-[inherit] focus:outline-none"><option>7:00 AM</option><option>8:00 AM</option><option>9:00 AM</option></select>
+  </div>
+</div>

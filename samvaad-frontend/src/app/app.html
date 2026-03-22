@@ -36,11 +36,11 @@
           <span class="absolute top-[2px] right-[20%] md:relative md:top-auto md:right-auto md:ml-auto bg-[#993C1D] text-white text-[9px] md:text-[10px] px-1 md:px-1.5 py-[1px] md:rounded-[10px] rounded-full">4</span>
         </a>
         <!-- Messages -->
-        <div class="flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 lg:gap-2.5 p-2 md:px-2.5 md:py-2 md:rounded-md cursor-pointer text-text-secondary md:text-[14px] transition-colors hover:bg-background-secondary w-full">
+        <a routerLink="/messages" routerLinkActive="text-[#534AB7] md:bg-background-secondary md:text-text-primary font-medium" class="flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 lg:gap-2.5 p-2 md:px-2.5 md:py-2 md:rounded-md cursor-pointer text-text-secondary md:text-[14px] transition-colors hover:bg-background-secondary w-full">
           <div class="w-[20px] h-[20px] md:w-[18px] md:h-[18px] md:rounded-full flex items-center justify-center text-[20px] md:text-[11px] shrink-0 md:bg-[#185FA5] md:text-white">✉</div>
           <span class="text-[10px] md:hidden">Messages</span>
           <span class="hidden lg:block">Messages</span>
-        </div>
+        </a>
         <!-- Profile -->
         <a routerLink="/profile" routerLinkActive="text-[#534AB7] md:bg-background-secondary md:text-text-primary font-medium" class="flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 lg:gap-2.5 p-2 md:px-2.5 md:py-2 md:rounded-md cursor-pointer text-text-secondary md:text-[14px] transition-colors hover:bg-background-secondary w-full">
           <div class="w-[20px] h-[20px] md:w-[18px] md:h-[18px] md:rounded-full flex items-center justify-center text-[20px] md:text-[11px] shrink-0 md:bg-background-secondary">👤</div>
@@ -48,10 +48,10 @@
           <span class="hidden lg:block">Profile</span>
         </a>
         <!-- Settings (Desktop only) -->
-        <div class="hidden md:flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 lg:gap-2.5 p-2 md:px-2.5 md:py-2 md:rounded-md cursor-pointer text-text-secondary md:text-[14px] transition-colors hover:bg-background-secondary w-full">
+        <a routerLink="/settings" routerLinkActive="text-[#534AB7] md:bg-background-secondary md:text-text-primary font-medium" class="hidden md:flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 lg:gap-2.5 p-2 md:px-2.5 md:py-2 md:rounded-md cursor-pointer text-text-secondary md:text-[14px] transition-colors hover:bg-background-secondary w-full">
           <div class="w-[18px] h-[18px] rounded-full flex items-center justify-center text-[11px] shrink-0 bg-background-secondary">⚙</div>
           <span class="hidden lg:block">Settings</span>
-        </div>
+        </a>
       </div>
     </div>
 

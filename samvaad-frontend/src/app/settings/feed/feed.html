@@ -1,0 +1,43 @@
+<div class="text-[16px] font-medium text-text-primary mb-1">Feed &amp; content</div>
+<div class="text-[13px] text-text-secondary mb-5">Customise what appears in your feed.</div>
+
+<div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
+  <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Feed algorithm</div>
+  <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
+    <div class="text-[13px] font-medium text-text-primary">Feed order</div>
+    <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary font-[inherit] focus:outline-none"><option>Ranked (recommended)</option><option>Chronological</option></select>
+  </div>
+  <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
+    <div><div class="text-[13px] font-medium text-text-primary">Show suggested posts</div><div class="text-[12px] text-text-secondary mt-0.5">Posts from people you don't follow</div></div>
+    <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+  </div>
+  <div class="flex items-center justify-between px-[14px] py-[13px] gap-4">
+    <div class="text-[13px] font-medium text-text-primary">Show trending topics</div>
+    <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+  </div>
+</div>
+
+<div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
+  <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Content filters</div>
+  <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
+    <div class="text-[13px] font-medium text-text-primary">Sensitive content</div>
+    <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary font-[inherit] focus:outline-none"><option>Hide</option><option>Blur with warning</option><option>Show</option></select>
+  </div>
+  <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
+    <div class="text-[13px] font-medium text-text-primary">Autoplay videos</div>
+    <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary font-[inherit] focus:outline-none"><option>On Wi-Fi only</option><option>Always</option><option>Never</option></select>
+  </div>
+  <div class="flex items-center justify-between px-[14px] py-[13px] gap-4">
+    <div class="text-[13px] font-medium text-text-primary">Show liked posts in others' feeds</div>
+    <label class="toggle"><input type="checkbox"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+  </div>
+</div>
+
+<div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
+  <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Muted words</div>
+  <div class="flex flex-wrap gap-1.5 p-[14px]">
+    <span class="bg-[#FCEBEB] text-[#791F1F] text-[12px] px-2.5 py-[3px] rounded-[20px] flex items-center gap-1.5">spam <span class="cursor-pointer text-[#A32D2D] text-[14px] leading-none">×</span></span>
+    <span class="bg-[#FCEBEB] text-[#791F1F] text-[12px] px-2.5 py-[3px] rounded-[20px] flex items-center gap-1.5">ads <span class="cursor-pointer text-[#A32D2D] text-[14px] leading-none">×</span></span>
+    <button class="border-dashed border-[0.5px] border-border-secondary rounded-[20px] px-2.5 py-[3px] text-[12px] text-text-secondary cursor-pointer bg-transparent hover:bg-background-secondary transition-colors">+ Mute a word</button>
+  </div>
+</div>

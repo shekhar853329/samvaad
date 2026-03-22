@@ -1,0 +1,73 @@
+<div class="text-[16px] font-medium text-text-primary mb-1">Profile</div>
+<div class="text-[13px] text-text-secondary mb-5">Manage your public profile and how others see you.</div>
+
+<!-- Photo -->
+<div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
+  <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Photo</div>
+  <div class="flex items-center gap-[14px] p-[14px]">
+    <div class="w-[56px] h-[56px] rounded-full bg-[#534AB7] flex items-center justify-center text-[20px] font-medium text-white shrink-0">AS</div>
+    <div>
+      <button class="border-[0.5px] border-border-secondary rounded-md px-[14px] py-1.5 text-[12px] cursor-pointer text-text-primary bg-transparent hover:bg-background-secondary transition-colors">Upload photo</button>
+      <div class="text-[11px] text-text-secondary mt-1">JPG, PNG or GIF · max 5 MB</div>
+    </div>
+    <button class="ml-auto border-[0.5px] border-[#f5c6cb] text-[#842029] rounded-md px-[14px] py-1.5 text-[12px] cursor-pointer bg-transparent hover:bg-[#fff5f5] transition-colors">Remove</button>
+  </div>
+</div>
+
+<!-- Basic info -->
+<div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
+  <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Basic info</div>
+  <div class="flex flex-col gap-1.5 px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
+    <label class="text-[12px] font-medium text-text-secondary">Display name</label>
+    <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-[#534AB7]" type="text" value="Aryan Sharma">
+  </div>
+  <div class="flex flex-col gap-1.5 px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
+    <label class="text-[12px] font-medium text-text-secondary">Username</label>
+    <div class="flex items-center gap-1.5">
+      <span class="text-[13px] text-text-secondary">&#64;</span>
+      <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-[#534AB7]" type="text" value="aryan.dev">
+    </div>
+  </div>
+  <div class="flex flex-col gap-1.5 px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
+    <label class="text-[12px] font-medium text-text-secondary">Bio</label>
+    <textarea class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] resize-y min-h-[60px] focus:outline-none focus:border-[#534AB7]">Full-stack dev · Building things with ASP.NET &amp; Angular · Open source contributor</textarea>
+  </div>
+  <div class="flex flex-col gap-1.5 px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
+    <label class="text-[12px] font-medium text-text-secondary">Website</label>
+    <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-[#534AB7]" type="url" placeholder="https://yoursite.com">
+  </div>
+  <div class="flex flex-col gap-1.5 px-[14px] py-3">
+    <label class="text-[12px] font-medium text-text-secondary">Location</label>
+    <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-[#534AB7]" type="text" value="Patna, Bihar, India">
+  </div>
+</div>
+
+<!-- Interests & tags -->
+<div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
+  <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Interests &amp; tags</div>
+  <div class="flex flex-wrap gap-1.5 p-[14px]">
+    <span class="bg-[#EEEDFE] text-[#3C3489] text-[12px] px-2.5 py-[3px] rounded-[20px] flex items-center gap-1.5">#dotnet <span class="cursor-pointer text-[#534AB7] text-[14px] leading-none">×</span></span>
+    <span class="bg-[#EEEDFE] text-[#3C3489] text-[12px] px-2.5 py-[3px] rounded-[20px] flex items-center gap-1.5">#angular <span class="cursor-pointer text-[#534AB7] text-[14px] leading-none">×</span></span>
+    <span class="bg-[#EEEDFE] text-[#3C3489] text-[12px] px-2.5 py-[3px] rounded-[20px] flex items-center gap-1.5">#opensource <span class="cursor-pointer text-[#534AB7] text-[14px] leading-none">×</span></span>
+    <button class="border-dashed border-[0.5px] border-border-secondary rounded-[20px] px-2.5 py-[3px] text-[12px] text-text-secondary cursor-pointer bg-transparent hover:bg-background-secondary transition-colors">+ Add tag</button>
+  </div>
+</div>
+
+<!-- Accent color -->
+<div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
+  <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Accent color</div>
+  <div class="flex gap-2 p-[14px]">
+    <div class="w-[26px] h-[26px] rounded-full cursor-pointer border-2 border-text-primary shrink-0" style="background:#534AB7" title="Purple"></div>
+    <div class="w-[26px] h-[26px] rounded-full cursor-pointer border-2 border-transparent shrink-0" style="background:#0F6E56" title="Teal"></div>
+    <div class="w-[26px] h-[26px] rounded-full cursor-pointer border-2 border-transparent shrink-0" style="background:#185FA5" title="Blue"></div>
+    <div class="w-[26px] h-[26px] rounded-full cursor-pointer border-2 border-transparent shrink-0" style="background:#993C1D" title="Coral"></div>
+    <div class="w-[26px] h-[26px] rounded-full cursor-pointer border-2 border-transparent shrink-0" style="background:#BA7517" title="Amber"></div>
+    <div class="w-[26px] h-[26px] rounded-full cursor-pointer border-2 border-transparent shrink-0" style="background:#3B6D11" title="Green"></div>
+    <div class="w-[26px] h-[26px] rounded-full cursor-pointer border-2 border-transparent shrink-0" style="background:#993556" title="Pink"></div>
+  </div>
+</div>
+
+<div class="flex justify-end gap-2 mt-5">
+  <button class="bg-transparent border-[0.5px] border-border-secondary text-text-secondary rounded-md px-4 py-2 text-[13px] cursor-pointer hover:bg-background-secondary transition-colors">Cancel</button>
+  <button class="bg-[#534AB7] text-white border-none rounded-md px-5 py-2 text-[13px] font-medium cursor-pointer hover:bg-[#3C3489] transition-colors">Save changes</button>
+</div>

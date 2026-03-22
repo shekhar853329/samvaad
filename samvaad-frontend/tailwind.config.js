@@ -17,7 +17,16 @@ module.exports = {
       borderRadius: {
         'md': 'var(--border-radius-md, 6px)',
         'lg': 'var(--border-radius-lg, 12px)',
-      }
+      },
+      keyframes: {
+        blink: {
+          '0%, 100%': { opacity: '0.3' },
+          '50%': { opacity: '1' },
+        },
+      },
+      animation: {
+        blink: 'blink 1s ease-in-out infinite',
+      },
     },
   },
   plugins: [],
