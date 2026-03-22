@@ -4,6 +4,7 @@ import { Profile } from './profile/profile';
 import { Notifications } from './notifications/notifications';
 import { Settings } from './settings/settings';
 import { Messages } from './messages/messages';
+import { Explore } from './explore/explore';
 
 export const routes: Routes = [
   { path: '', component: Feed },
@@ -11,5 +12,6 @@ export const routes: Routes = [
   { path: 'notifications', component: Notifications },
   { path: 'settings', component: Settings },
   { path: 'messages', component: Messages },
+  { path: 'explore', component: Explore },
   { path: '**', redirectTo: '' }
 ];
