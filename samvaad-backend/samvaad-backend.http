@@ -1,0 +1,6 @@
+@samvaad_backend_HostAddress = http://localhost:5095
+
+GET {{samvaad_backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
