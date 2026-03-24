@@ -3,12 +3,13 @@ using samvaad_backend.Common;
 using samvaad_backend.Data;
 using samvaad_backend.Models.DTOs.Posts;
 using samvaad_backend.Models.Entities;
+using samvaad_backend.Models.Enums;
 using samvaad_backend.Services.Interfaces;
 using System.Text.RegularExpressions;
 
 namespace samvaad_backend.Services;
 
-public partial class PostService(AppDbContext db) : IPostService
+public partial class PostService(AppDbContext db, INotificationService notifications) : IPostService
 {
     [GeneratedRegex(@"#(\w+)", RegexOptions.Compiled)]
     private static partial Regex HashtagRegex();
@@ -54,6 +55,14 @@ public partial class PostService(AppDbContext db) : IPostService
             await db.Posts
                 .Where(p => p.Id == request.ParentPostId.Value)
                 .ExecuteUpdateAsync(s => s.SetProperty(p => p.CommentsCount, p => p.CommentsCount + 1));
+
+            // Notify parent post author
+            var parentAuthorId = await db.Posts.AsNoTracking()
+                .Where(p => p.Id == request.ParentPostId.Value)
+                .Select(p => p.AuthorId)
+                .FirstOrDefaultAsync();
+            if (parentAuthorId != default)
+                await notifications.CreateAsync(parentAuthorId, authorId, NotificationType.Comment, request.ParentPostId.Value);
         }
 
         // Increment repost count on original
@@ -62,6 +71,14 @@ public partial class PostService(AppDbContext db) : IPostService
             await db.Posts
                 .Where(p => p.Id == request.RepostOfId.Value)
                 .ExecuteUpdateAsync(s => s.SetProperty(p => p.RepostsCount, p => p.RepostsCount + 1));
+
+            // Notify original post author
+            var originalAuthorId = await db.Posts.AsNoTracking()
+                .Where(p => p.Id == request.RepostOfId.Value)
+                .Select(p => p.AuthorId)
+                .FirstOrDefaultAsync();
+            if (originalAuthorId != default)
+                await notifications.CreateAsync(originalAuthorId, authorId, NotificationType.Repost, request.RepostOfId.Value);
         }
 
         // Increment author post count
@@ -126,6 +143,10 @@ public partial class PostService(AppDbContext db) : IPostService
             .ExecuteUpdateAsync(s => s.SetProperty(p => p.LikesCount, p => p.LikesCount + 1));
 
         await db.SaveChangesAsync();
+
+        // Notify author
+        await notifications.CreateAsync(post.AuthorId, userId, NotificationType.Like, postId);
+
         return await GetByIdAsync(postId, userId);
     }
 

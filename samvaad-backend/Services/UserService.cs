@@ -3,11 +3,12 @@ using samvaad_backend.Common;
 using samvaad_backend.Data;
 using samvaad_backend.Models.DTOs.Users;
 using samvaad_backend.Models.Entities;
+using samvaad_backend.Models.Enums;
 using samvaad_backend.Services.Interfaces;
 
 namespace samvaad_backend.Services;
 
-public class UserService(AppDbContext db) : IUserService
+public class UserService(AppDbContext db, INotificationService notifications) : IUserService
 {
     public async Task<UserProfileDto> GetProfileAsync(string username, Guid? requestingUserId)
     {
@@ -77,6 +78,9 @@ public class UserService(AppDbContext db) : IUserService
             .ExecuteUpdateAsync(s => s.SetProperty(u => u.FollowersCount, u => u.FollowersCount + 1));
 
         await db.SaveChangesAsync();
+
+        // Notify followed user
+        await notifications.CreateAsync(target.Id, followerId, NotificationType.Follow);
     }
 
     public async Task UnfollowAsync(Guid followerId, string targetUsername)

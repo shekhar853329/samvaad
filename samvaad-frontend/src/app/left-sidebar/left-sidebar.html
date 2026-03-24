@@ -21,7 +21,11 @@
       <path d="M13.73 21a2 2 0 01-3.46 0"/>
     </svg>
     Notifications
-    <span class="ml-auto min-w-[20px] h-[20px] bg-[#e74c3c] text-white text-[10px] font-medium rounded-full flex items-center justify-center px-[4px]">4</span>
+    @if (notifService.unreadCount() > 0) {
+      <span class="ml-auto min-w-[20px] h-[20px] bg-[#e74c3c] text-white text-[10px] font-medium rounded-full flex items-center justify-center px-[4px]">
+        {{ notifService.unreadCount() > 99 ? '99+' : notifService.unreadCount() }}
+      </span>
+    }
   </a>
   <a routerLink="/messages" routerLinkActive="bg-[#EEEDFE] !text-[#534AB7]"
      class="relative flex items-center gap-3 px-4 py-[10px] rounded-[12px] text-[14px] font-medium text-[#6b6880] transition-all hover:bg-[#EEEDFE] hover:text-[#534AB7] no-underline">

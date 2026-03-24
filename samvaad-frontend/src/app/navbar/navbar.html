@@ -50,6 +50,11 @@
           <a routerLink="/notifications" (click)="dropdownOpen.set(false)" class="flex items-center gap-[10px] px-[15px] py-[10px] text-[13px] text-[#6b6880] hover:bg-[#F7F7FB] hover:text-[#534AB7] transition-all no-underline cursor-pointer">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
             Notifications
+            @if (notifService.unreadCount() > 0) {
+              <span class="ml-auto min-w-[18px] h-[18px] bg-[#534AB7] text-white text-[10px] font-medium rounded-full flex items-center justify-center px-[4px]">
+                {{ notifService.unreadCount() > 99 ? '99+' : notifService.unreadCount() }}
+              </span>
+            }
           </a>
           <a routerLink="/messages" (click)="dropdownOpen.set(false)" class="flex items-center gap-[10px] px-[15px] py-[10px] text-[13px] text-[#6b6880] hover:bg-[#F7F7FB] hover:text-[#534AB7] transition-all no-underline cursor-pointer">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>

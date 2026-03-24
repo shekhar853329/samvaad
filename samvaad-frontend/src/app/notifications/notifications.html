@@ -1,104 +1,78 @@
 <div class="max-w-[520px] mx-auto font-sans bg-background-primary md:border-[0.5px] md:border-border-tertiary md:rounded-lg overflow-hidden min-h-screen md:min-h-0">
+
+  <!-- Header -->
   <div class="px-4 py-3.5 border-b-[0.5px] border-border-tertiary flex items-center justify-between">
     <span class="text-[16px] font-medium text-text-primary">Notifications</span>
-    <span class="text-[12px] text-[#534AB7] cursor-pointer hover:underline">Mark all as read</span>
+    <span class="text-[12px] text-[#534AB7] cursor-pointer hover:underline" (click)="markAllRead()">Mark all as read</span>
   </div>
+
+  <!-- Tabs -->
   <div class="flex border-b-[0.5px] border-border-tertiary overflow-x-auto hide-scrollbar whitespace-nowrap">
-    <div class="px-5 py-2 text-[12px] cursor-pointer border-b-2 text-[#534AB7] border-[#534AB7] font-medium md:flex-1 text-center shrink-0">All</div>
-    <div class="px-5 py-2 text-[12px] text-text-secondary cursor-pointer border-b-2 border-transparent hover:bg-background-secondary transition-colors md:flex-1 text-center shrink-0">Mentions</div>
-    <div class="px-5 py-2 text-[12px] text-text-secondary cursor-pointer border-b-2 border-transparent hover:bg-background-secondary transition-colors md:flex-1 text-center shrink-0">Follows</div>
-    <div class="px-5 py-2 text-[12px] text-text-secondary cursor-pointer border-b-2 border-transparent hover:bg-background-secondary transition-colors md:flex-1 text-center shrink-0">Likes</div>
-    <div class="px-5 py-2 text-[12px] text-text-secondary cursor-pointer border-b-2 border-transparent hover:bg-background-secondary transition-colors md:flex-1 text-center shrink-0">System</div>
-  </div>
-
-  <div class="px-4 pt-2 pb-1 text-[11px] font-medium text-text-secondary uppercase tracking-wider bg-background-secondary">New</div>
-
-  <div class="flex items-start gap-2.5 px-4 py-[11px] border-b-[0.5px] border-border-tertiary cursor-pointer transition-colors bg-[#F4F3FE] hover:bg-[#EEEDFE]">
-    <div class="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[14px] shrink-0 bg-[#EEEDFE]">👤</div>
-    <div class="flex-1 min-w-0">
-      <div class="text-[13px] text-text-primary leading-relaxed"><strong class="font-medium">Priya Kapoor</strong> and <strong class="font-medium">2 others</strong> followed you</div>
-      <div class="flex gap-1 mt-1">
-        <div class="w-[24px] h-[24px] rounded-full flex items-center justify-center text-[10px] font-medium text-white bg-[#0F6E56]">PK</div>
-        <div class="w-[24px] h-[24px] rounded-full flex items-center justify-center text-[10px] font-medium text-white bg-[#BA7517]">VR</div>
-        <div class="w-[24px] h-[24px] rounded-full flex items-center justify-center text-[10px] font-medium text-white bg-[#993556]">AS</div>
+    @for (tab of tabs; track tab) {
+      <div class="px-5 py-2 text-[12px] cursor-pointer border-b-2 transition-colors md:flex-1 text-center shrink-0"
+           [class.text-\[#534AB7\]]="activeTab() === tab"
+           [class.border-\[#534AB7\]]="activeTab() === tab"
+           [class.font-medium]="activeTab() === tab"
+           [class.text-text-secondary]="activeTab() !== tab"
+           [class.border-transparent]="activeTab() !== tab"
+           (click)="setTab(tab)">
+        {{ tabLabels[tab] }}
       </div>
-    </div>
-    <div class="flex flex-col items-end gap-1">
-      <div class="text-[11px] text-text-tertiary shrink-0">2m</div>
-      <div class="w-[7px] h-[7px] bg-[#534AB7] rounded-full mt-1 shrink-0"></div>
-    </div>
+    }
   </div>
 
-  <div class="flex items-start gap-2.5 px-4 py-[11px] border-b-[0.5px] border-border-tertiary cursor-pointer transition-colors bg-[#F4F3FE] hover:bg-[#EEEDFE]">
-    <div class="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[14px] shrink-0 bg-[#FAECE7]">❤</div>
-    <div class="flex-1 min-w-0">
-      <div class="text-[13px] text-text-primary leading-relaxed"><strong class="font-medium">Nikhil Mehta</strong> liked your post</div>
-      <div class="text-[12px] text-text-secondary mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">"How I built a real-time social feed with SignalR..."</div>
-    </div>
-    <div class="flex flex-col items-end gap-1">
-      <div class="text-[11px] text-text-tertiary shrink-0">8m</div>
-      <div class="w-[7px] h-[7px] bg-[#534AB7] rounded-full mt-1 shrink-0"></div>
-    </div>
-  </div>
+  <!-- Body -->
+  @if (loading() && items().length === 0) {
+    <div class="py-16 text-center text-text-secondary text-[13px]">Loading…</div>
+  } @else if (items().length === 0) {
+    <div class="py-16 text-center text-text-secondary text-[13px]">No notifications yet</div>
+  } @else {
+    @for (n of items(); track n.id) {
+      <div class="flex items-start gap-2.5 px-4 py-[11px] border-b-[0.5px] border-border-tertiary cursor-pointer transition-colors w-full"
+           [class.bg-\[#F4F3FE\]]="!n.isRead"
+           [class.hover\:bg-\[#EEEDFE\]]="!n.isRead"
+           [class.hover\:bg-background-secondary]="n.isRead"
+           (click)="markRead(n)">
 
-  <div class="flex items-start gap-2.5 px-4 py-[11px] border-b-[0.5px] border-border-tertiary cursor-pointer transition-colors bg-[#F4F3FE] hover:bg-[#EEEDFE]">
-    <div class="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[14px] shrink-0 bg-[#E6F1FB]">💬</div>
-    <div class="flex-1 min-w-0">
-      <div class="text-[13px] text-text-primary leading-relaxed"><strong class="font-medium">Rohan Gupta</strong> replied to your post</div>
-      <div class="text-[12px] text-text-secondary mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">"Great thread! What Redis client are you using?"</div>
-    </div>
-    <div class="flex flex-col items-end gap-1">
-      <div class="text-[11px] text-text-tertiary shrink-0">15m</div>
-      <div class="w-[7px] h-[7px] bg-[#534AB7] rounded-full mt-1 shrink-0"></div>
-    </div>
-  </div>
+        <!-- Type icon -->
+        <div class="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[14px] shrink-0"
+             [style.background-color]="bgFor(n.type)">
+          {{ iconFor(n.type) }}
+        </div>
 
-  <div class="flex items-start gap-2.5 px-4 py-[11px] border-b-[0.5px] border-border-tertiary cursor-pointer transition-colors bg-[#F4F3FE] hover:bg-[#EEEDFE]">
-    <div class="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[14px] shrink-0 bg-[#EAF3DE]">@</div>
-    <div class="flex-1 min-w-0">
-      <div class="text-[13px] text-text-primary leading-relaxed"><strong class="font-medium">Ananya Singh</strong> mentioned you in a post</div>
-      <div class="text-[12px] text-text-secondary mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">"Check out @aryan.dev's post on SignalR — super useful!"</div>
-    </div>
-    <div class="flex flex-col items-end gap-1">
-      <div class="text-[11px] text-text-tertiary shrink-0">32m</div>
-      <div class="w-[7px] h-[7px] bg-[#534AB7] rounded-full mt-1 shrink-0"></div>
-    </div>
-  </div>
+        <!-- Content -->
+        <div class="flex-1 min-w-0">
+          <div class="text-[13px] text-text-primary leading-relaxed">{{ textFor(n) }}</div>
+          @if (n.postSnippet) {
+            <div class="text-[12px] text-text-secondary mt-0.5 overflow-hidden text-ellipsis whitespace-nowrap">
+              "{{ n.postSnippet }}"
+            </div>
+          }
+          @if (n.actor?.avatarUrl) {
+            <img [src]="n.actor!.avatarUrl" [alt]="n.actor!.displayName"
+                 class="w-[24px] h-[24px] rounded-full mt-1 object-cover">
+          }
+        </div>
 
-  <div class="px-4 pt-2 pb-1 text-[11px] font-medium text-text-secondary uppercase tracking-wider bg-background-secondary">Earlier today</div>
+        <!-- Time + unread dot -->
+        <div class="flex flex-col items-end gap-1 shrink-0">
+          <div class="text-[11px] text-text-tertiary">{{ timeAgo(n.createdAt) }}</div>
+          @if (!n.isRead) {
+            <div class="w-[7px] h-[7px] bg-[#534AB7] rounded-full mt-1"></div>
+          }
+        </div>
+      </div>
+    }
 
-  <div class="flex items-start gap-2.5 px-4 py-[11px] border-b-[0.5px] border-border-tertiary cursor-pointer transition-colors hover:bg-background-secondary w-full">
-    <div class="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[14px] shrink-0 bg-[#E1F5EE]">↗</div>
-    <div class="flex-1 min-w-0">
-      <div class="text-[13px] text-text-primary leading-relaxed"><strong class="font-medium">Vikram Rao</strong> reposted your post</div>
-      <div class="text-[12px] text-text-secondary mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">"Hot take: SignalR is still the most underrated..."</div>
-    </div>
-    <div class="text-[11px] text-text-tertiary shrink-0">2h</div>
-  </div>
-
-  <div class="flex items-start gap-2.5 px-4 py-[11px] border-b-[0.5px] border-border-tertiary cursor-pointer transition-colors hover:bg-background-secondary w-full">
-    <div class="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[14px] shrink-0 bg-[#FAECE7]">❤</div>
-    <div class="flex-1 min-w-0">
-      <div class="text-[13px] text-text-primary leading-relaxed"><strong class="font-medium">Priya Kapoor</strong> and <strong class="font-medium">17 others</strong> liked your post</div>
-      <div class="text-[12px] text-text-secondary mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">"Just shipped the Angular 18 feature — standalone components..."</div>
-    </div>
-    <div class="text-[11px] text-text-tertiary shrink-0">4h</div>
-  </div>
-
-  <div class="flex items-start gap-2.5 px-4 py-[11px] border-b-[0.5px] border-border-tertiary cursor-pointer transition-colors hover:bg-background-secondary w-full">
-    <div class="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[14px] shrink-0 bg-background-secondary">🔔</div>
-    <div class="flex-1 min-w-0">
-      <div class="text-[13px] text-text-primary leading-relaxed">Your post reached <strong class="font-medium">5,000 views</strong></div>
-      <div class="text-[12px] text-text-secondary mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">"How I built a real-time social feed with SignalR..."</div>
-    </div>
-    <div class="text-[11px] text-text-tertiary shrink-0">6h</div>
-  </div>
-
-  <div class="flex items-start gap-2.5 px-4 py-[11px] cursor-pointer transition-colors hover:bg-background-secondary w-full pb-[20px] md:pb-[11px]">
-    <div class="w-[32px] h-[32px] rounded-full flex items-center justify-center text-[14px] shrink-0 bg-[#EEEDFE]">👤</div>
-    <div class="flex-1 min-w-0">
-      <div class="text-[13px] text-text-primary leading-relaxed"><strong class="font-medium">Karan Patel</strong> followed you</div>
-    </div>
-    <div class="text-[11px] text-text-tertiary shrink-0">9h</div>
-  </div>
+    @if (hasMore()) {
+      <div class="py-4 text-center">
+        <button class="text-[12px] text-[#534AB7] hover:underline cursor-pointer bg-transparent border-none"
+                [disabled]="loading()"
+                (click)="loadMore()">
+          {{ loading() ? 'Loading…' : 'Load more' }}
+        </button>
+      </div>
+    }
+  }
 </div>
+
