@@ -4,15 +4,18 @@
   <div class="pb-4">
     <div class="flex items-center gap-3 bg-background-primary border-[0.5px] border-border-secondary rounded-[24px] px-4 h-[42px]">
       <span class="text-text-tertiary text-[14px]">⌕</span>
-      <input type="text" placeholder="Search posts, people, topics…"
+      <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearchInput($event)"
+             placeholder="Search posts, people, topics…"
              class="flex-1 border-none bg-transparent text-[14px] text-text-primary placeholder:text-text-tertiary outline-none">
-      <span class="text-[12px] text-text-tertiary cursor-pointer">✕</span>
+      @if (searchQuery) {
+        <span class="text-[12px] text-text-tertiary cursor-pointer" (click)="clearSearch()">✕</span>
+      }
     </div>
     <div class="flex gap-2 mt-3 flex-wrap">
-      @for (chip of ['all','posts','people','topics','media','live']; track chip) {
-        <button (click)="setFilter(chip)"
+      @for (chip of filters; track chip) {
+        <button (click)="setFilter($any(chip))"
                 class="px-[14px] py-[5px] rounded-[20px] text-[12px] border-[0.5px] cursor-pointer transition-all whitespace-nowrap capitalize"
-                [ngClass]="activeFilter() === chip
+                [class]="activeFilter() === chip
                   ? 'bg-[#534AB7] text-white border-[#534AB7]'
                   : 'bg-background-primary text-text-secondary border-border-secondary hover:bg-background-secondary'">
           {{ chip }}
@@ -27,191 +30,116 @@
     <!-- Main Column -->
     <div class="flex flex-col gap-4">
 
-      <!-- Trending Posts Card -->
-      <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-lg overflow-hidden">
-        <div class="flex items-center justify-between px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
-          <span class="text-[13px] font-medium text-text-primary">Trending posts</span>
-          <select class="text-[12px] border-[0.5px] border-border-secondary rounded-md px-2 py-[3px] bg-background-secondary text-text-primary outline-none cursor-pointer">
-            <option>Today</option>
-            <option>This week</option>
-            <option>This month</option>
-          </select>
+      @if (isSearching()) {
+        <!-- Search Results -->
+        @if (searchLoading()) {
+          <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-lg p-8 text-center text-text-secondary text-[13px]">
+            Searching...
+          </div>
+        } @else {
+          <!-- Post results -->
+          @if (searchResultPosts().length > 0) {
+            <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-lg overflow-hidden">
+              <div class="px-[14px] py-3 border-b-[0.5px] border-border-tertiary text-[13px] font-medium text-text-primary">
+                Posts ({{ searchResultPosts().length }})
+              </div>
+              @for (post of searchResultPosts(); track post.id) {
+                <app-post-card [post]="post" (postUpdated)="onPostUpdated($event)" (postDeleted)="onPostDeleted($event)" />
+              }
+            </div>
+          }
+
+          <!-- People results -->
+          @if (searchResultUsers().length > 0) {
+            <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-lg overflow-hidden">
+              <div class="px-[14px] py-3 border-b-[0.5px] border-border-tertiary text-[13px] font-medium text-text-primary">
+                People ({{ searchResultUsers().length }})
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2">
+                @for (user of searchResultUsers(); track user.id) {
+                  <div class="flex items-center gap-[10px] px-[14px] py-[10px] border-b-[0.5px] border-border-tertiary">
+                    @if (user.avatarUrl) {
+                      <img [src]="user.avatarUrl" [alt]="user.displayName"
+                           class="w-[32px] h-[32px] rounded-full object-cover shrink-0" />
+                    } @else {
+                      <div class="w-[32px] h-[32px] rounded-full bg-[#534AB7] flex items-center justify-center text-white text-[12px] font-medium shrink-0">
+                        {{ getInitials(user.displayName) }}
+                      </div>
+                    }
+                    <div class="flex-1 min-w-0">
+                      <div class="text-[13px] font-medium text-text-primary truncate">{{ user.displayName }}</div>
+                      <div class="text-[11px] text-text-secondary">@{{ user.username }}</div>
+                    </div>
+                    <button (click)="toggleFollow(user)" [disabled]="followInProgress.has(user.id)"
+                            class="border-[0.5px] rounded-[20px] px-[14px] py-[5px] text-[12px] cursor-pointer shrink-0 transition-colors disabled:opacity-50"
+                            [class]="user.isFollowing
+                              ? 'bg-[#534AB7] text-white border-[#534AB7]'
+                              : 'bg-transparent border-border-secondary text-text-primary hover:bg-background-secondary'">
+                      {{ user.isFollowing ? 'Following' : 'Follow' }}
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          @if (searchResultPosts().length === 0 && searchResultUsers().length === 0) {
+            <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-lg p-8 text-center text-text-secondary text-[13px]">
+              No results found for "{{ searchQuery }}"
+            </div>
+          }
+        }
+
+      } @else {
+        <!-- Trending Posts Card -->
+        <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-lg overflow-hidden">
+          <div class="flex items-center justify-between px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
+            <span class="text-[13px] font-medium text-text-primary">Trending posts</span>
+          </div>
+          @if (trendingLoading()) {
+            <div class="p-8 text-center text-text-secondary text-[13px]">Loading...</div>
+          } @else if (trendingPosts().length === 0) {
+            <div class="p-8 text-center text-text-secondary text-[13px]">No trending posts yet.</div>
+          } @else {
+            @for (post of trendingPosts(); track post.id) {
+              <app-post-card [post]="post" (postUpdated)="onPostUpdated($event)" (postDeleted)="onPostDeleted($event)" />
+            }
+          }
         </div>
 
-        <!-- Post: Priya Kapoor -->
-        <div class="px-[14px] py-[14px] border-b-[0.5px] border-border-tertiary cursor-pointer hover:bg-background-secondary transition-colors">
-          <div class="flex items-start gap-[10px] mb-2">
-            <div class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[14px] font-medium bg-[#0F6E56] shrink-0">PK</div>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="text-[13px] font-medium text-text-primary">Priya Kapoor</span>
-                <span class="text-[12px] text-text-secondary">@priya.k · 2h</span>
-              </div>
-              <div class="mt-1 flex flex-wrap gap-1">
-                <span class="bg-[#EEEDFE] text-[#3C3489] text-[11px] px-2 py-[2px] rounded-[20px]">#Angular18</span>
-                <span class="bg-[#EEEDFE] text-[#3C3489] text-[11px] px-2 py-[2px] rounded-[20px]">#WebDev</span>
-              </div>
-            </div>
-            <span class="bg-[#FAECE7] text-[#712B13] text-[10px] px-[7px] py-[2px] rounded-[10px] shrink-0">🔥 Hot</span>
+        <!-- Suggested People Card -->
+        <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-lg overflow-hidden">
+          <div class="flex items-center justify-between px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
+            <span class="text-[13px] font-medium text-text-primary">Suggested people</span>
           </div>
-          <div class="text-[13px] text-text-primary leading-relaxed pl-[48px]">Just shipped the Angular 18 upgrade — standalone components + zoneless change detection is a massive DX win. Thread below!</div>
-          <div class="h-[100px] rounded-md overflow-hidden mx-[48px] my-2 bg-[#AFA9EC] flex items-center justify-center text-[12px] text-white opacity-85">angular 18 code preview</div>
-          <div class="flex gap-[18px] pt-2 pl-[48px]">
-            <span class="text-[12px] text-text-secondary cursor-pointer flex items-center gap-1 hover:text-[#534AB7]">♥ 312</span>
-            <span class="text-[12px] text-text-secondary cursor-pointer flex items-center gap-1 hover:text-[#534AB7]">💬 47</span>
-            <span class="text-[12px] text-text-secondary cursor-pointer flex items-center gap-1 hover:text-[#534AB7]">↗ 88</span>
-            <span class="text-[12px] text-text-secondary cursor-pointer ml-auto hover:text-[#534AB7]">🔖</span>
+          <div class="grid grid-cols-1 sm:grid-cols-2">
+            @for (user of suggestedPeople(); track user.id; let i = $index) {
+              <div class="flex items-center gap-[10px] px-[14px] py-[10px] border-b-[0.5px] border-border-tertiary"
+                   [class]="i % 2 === 0 ? 'sm:border-r-[0.5px] sm:border-border-tertiary' : ''">
+                @if (user.avatarUrl) {
+                  <img [src]="user.avatarUrl" [alt]="user.displayName"
+                       class="w-[32px] h-[32px] rounded-full object-cover shrink-0" />
+                } @else {
+                  <div class="w-[32px] h-[32px] rounded-full bg-[#534AB7] flex items-center justify-center text-white text-[12px] font-medium shrink-0">
+                    {{ getInitials(user.displayName) }}
+                  </div>
+                }
+                <div class="flex-1 min-w-0">
+                  <div class="text-[13px] font-medium text-text-primary truncate">{{ user.displayName }}</div>
+                  <div class="text-[11px] text-text-secondary">@{{ user.username }}</div>
+                </div>
+                <button (click)="toggleFollow(user)" [disabled]="followInProgress.has(user.id)"
+                        class="border-[0.5px] rounded-[20px] px-[14px] py-[5px] text-[12px] cursor-pointer shrink-0 transition-colors disabled:opacity-50"
+                        [class]="user.isFollowing
+                          ? 'bg-[#534AB7] text-white border-[#534AB7]'
+                          : 'bg-transparent border-border-secondary text-text-primary hover:bg-background-secondary'">
+                  {{ user.isFollowing ? 'Following' : 'Follow' }}
+                </button>
+              </div>
+            }
           </div>
         </div>
-
-        <!-- Post: Nikhil Mehta -->
-        <div class="px-[14px] py-[14px] border-b-[0.5px] border-border-tertiary cursor-pointer hover:bg-background-secondary transition-colors">
-          <div class="flex items-start gap-[10px] mb-2">
-            <div class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[14px] font-medium bg-[#185FA5] shrink-0">NM</div>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="text-[13px] font-medium text-text-primary">Nikhil Mehta</span>
-                <span class="text-[12px] text-text-secondary">@nikhil.dev · 5h</span>
-              </div>
-              <div class="mt-1 flex flex-wrap gap-1">
-                <span class="bg-[#EEEDFE] text-[#3C3489] text-[11px] px-2 py-[2px] rounded-[20px]">#dotnet</span>
-                <span class="bg-[#EEEDFE] text-[#3C3489] text-[11px] px-2 py-[2px] rounded-[20px]">#SignalR</span>
-              </div>
-            </div>
-          </div>
-          <div class="text-[13px] text-text-primary leading-relaxed pl-[48px]">SignalR + Redis backplane vs raw WebSockets — I ran benchmarks across 10k concurrent connections. The results surprised me.</div>
-          <div class="grid grid-cols-2 gap-1 mx-[48px] my-2 rounded-md overflow-hidden">
-            <div class="h-[80px] bg-[#5DCAA5] flex items-center justify-center text-[11px] text-white opacity-85">benchmark chart A</div>
-            <div class="h-[80px] bg-[#1D9E75] flex items-center justify-center text-[11px] text-white opacity-85">benchmark chart B</div>
-          </div>
-          <div class="flex gap-[18px] pt-2 pl-[48px]">
-            <span class="text-[12px] text-text-secondary cursor-pointer flex items-center gap-1 hover:text-[#534AB7]">♥ 218</span>
-            <span class="text-[12px] text-text-secondary cursor-pointer flex items-center gap-1 hover:text-[#534AB7]">💬 62</span>
-            <span class="text-[12px] text-text-secondary cursor-pointer flex items-center gap-1 hover:text-[#534AB7]">↗ 41</span>
-            <span class="text-[12px] text-text-secondary cursor-pointer ml-auto hover:text-[#534AB7]">🔖</span>
-          </div>
-        </div>
-
-        <!-- Post: Vikram Rao -->
-        <div class="px-[14px] py-[14px] border-b-[0.5px] border-border-tertiary cursor-pointer hover:bg-background-secondary transition-colors">
-          <div class="flex items-start gap-[10px] mb-2">
-            <div class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[14px] font-medium bg-[#BA7517] shrink-0">VR</div>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="text-[13px] font-medium text-text-primary">Vikram Rao</span>
-                <span class="text-[12px] text-text-secondary">@vikram.r · 8h</span>
-              </div>
-              <div class="mt-1 flex flex-wrap gap-1">
-                <span class="bg-[#EEEDFE] text-[#3C3489] text-[11px] px-2 py-[2px] rounded-[20px]">#BuildInPublic</span>
-                <span class="bg-[#EEEDFE] text-[#3C3489] text-[11px] px-2 py-[2px] rounded-[20px]">#SaaS</span>
-              </div>
-            </div>
-            <span class="bg-[#EAF3DE] text-[#27500A] text-[10px] px-[7px] py-[2px] rounded-[10px] shrink-0">✨ New</span>
-          </div>
-          <div class="text-[13px] text-text-primary leading-relaxed pl-[48px]">Month 3 update: crossed 500 paying users, zero marketing spend. Here's everything I did differently this time vs my last 2 failed startups.</div>
-          <div class="flex gap-[18px] pt-2 pl-[48px]">
-            <span class="text-[12px] text-text-secondary cursor-pointer flex items-center gap-1 hover:text-[#534AB7]">♥ 890</span>
-            <span class="text-[12px] text-text-secondary cursor-pointer flex items-center gap-1 hover:text-[#534AB7]">💬 134</span>
-            <span class="text-[12px] text-text-secondary cursor-pointer flex items-center gap-1 hover:text-[#534AB7]">↗ 215</span>
-            <span class="text-[12px] text-text-secondary cursor-pointer ml-auto hover:text-[#534AB7]">🔖</span>
-          </div>
-        </div>
-
-        <!-- Post: Ananya Singh -->
-        <div class="px-[14px] py-[14px] cursor-pointer hover:bg-background-secondary transition-colors">
-          <div class="flex items-start gap-[10px] mb-2">
-            <div class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[14px] font-medium bg-[#993556] shrink-0">AS</div>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="text-[13px] font-medium text-text-primary">Ananya Singh</span>
-                <span class="text-[12px] text-text-secondary">@ananya.s · 12h</span>
-              </div>
-              <div class="mt-1 flex flex-wrap gap-1">
-                <span class="bg-[#EEEDFE] text-[#3C3489] text-[11px] px-2 py-[2px] rounded-[20px]">#OpenSource</span>
-                <span class="bg-[#EEEDFE] text-[#3C3489] text-[11px] px-2 py-[2px] rounded-[20px]">#DotNet</span>
-              </div>
-            </div>
-          </div>
-          <div class="text-[13px] text-text-primary leading-relaxed pl-[48px]">My open source .NET library just hit 1,000 GitHub stars. Here's the story of how a weekend project turned into something real.</div>
-          <div class="flex gap-[18px] pt-2 pl-[48px]">
-            <span class="text-[12px] text-text-secondary cursor-pointer flex items-center gap-1 hover:text-[#534AB7]">♥ 467</span>
-            <span class="text-[12px] text-text-secondary cursor-pointer flex items-center gap-1 hover:text-[#534AB7]">💬 58</span>
-            <span class="text-[12px] text-text-secondary cursor-pointer flex items-center gap-1 hover:text-[#534AB7]">↗ 92</span>
-            <span class="text-[12px] text-text-secondary cursor-pointer ml-auto hover:text-[#534AB7]">🔖</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Suggested People Card -->
-      <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-lg overflow-hidden">
-        <div class="flex items-center justify-between px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
-          <span class="text-[13px] font-medium text-text-primary">Suggested people</span>
-          <span class="text-[12px] text-[#534AB7] cursor-pointer">See all</span>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2">
-
-          <!-- Rohan Gupta -->
-          <div class="flex items-center gap-[10px] px-[14px] py-[10px] border-b-[0.5px] border-border-tertiary sm:border-r-[0.5px]">
-            <div class="w-[32px] h-[32px] rounded-full flex items-center justify-center text-white text-[12px] font-medium bg-[#854F0B] shrink-0">RG</div>
-            <div class="flex-1 min-w-0">
-              <div class="text-[13px] font-medium text-text-primary truncate">Rohan Gupta</div>
-              <div class="text-[11px] text-text-secondary">@rohan.g</div>
-              <div class="text-[12px] text-text-secondary truncate">React · Node.js · Indie dev</div>
-            </div>
-            <button (click)="toggleFollow('rohan.g')"
-                    class="border-[0.5px] rounded-[20px] px-[14px] py-[5px] text-[12px] cursor-pointer shrink-0 transition-colors"
-                    [ngClass]="isFollowing('rohan.g') ? 'bg-[#534AB7] text-white border-[#534AB7]' : 'bg-transparent border-border-secondary text-text-primary hover:bg-background-secondary'">
-              {{ isFollowing('rohan.g') ? 'Following' : 'Follow' }}
-            </button>
-          </div>
-
-          <!-- Karan Patel -->
-          <div class="flex items-center gap-[10px] px-[14px] py-[10px] border-b-[0.5px] border-border-tertiary">
-            <div class="w-[32px] h-[32px] rounded-full flex items-center justify-center text-white text-[12px] font-medium bg-[#3B6D11] shrink-0">KP</div>
-            <div class="flex-1 min-w-0">
-              <div class="text-[13px] font-medium text-text-primary truncate">Karan Patel</div>
-              <div class="text-[11px] text-text-secondary">@karan.p</div>
-              <div class="text-[12px] text-text-secondary truncate">Cloud architect · Azure</div>
-            </div>
-            <button (click)="toggleFollow('karan.p')"
-                    class="border-[0.5px] rounded-[20px] px-[14px] py-[5px] text-[12px] cursor-pointer shrink-0 transition-colors"
-                    [ngClass]="isFollowing('karan.p') ? 'bg-[#534AB7] text-white border-[#534AB7]' : 'bg-transparent border-border-secondary text-text-primary hover:bg-background-secondary'">
-              {{ isFollowing('karan.p') ? 'Following' : 'Follow' }}
-            </button>
-          </div>
-
-          <!-- Dev Malhotra -->
-          <div class="flex items-center gap-[10px] px-[14px] py-[10px] border-b-[0.5px] border-border-tertiary sm:border-b-0 sm:border-r-[0.5px]">
-            <div class="w-[32px] h-[32px] rounded-full flex items-center justify-center text-white text-[12px] font-medium bg-[#993C1D] shrink-0">DM</div>
-            <div class="flex-1 min-w-0">
-              <div class="text-[13px] font-medium text-text-primary truncate">Dev Malhotra</div>
-              <div class="text-[11px] text-text-secondary">@dev.m</div>
-              <div class="text-[12px] text-text-secondary truncate">ML engineer · Python</div>
-            </div>
-            <button (click)="toggleFollow('dev.m')"
-                    class="border-[0.5px] rounded-[20px] px-[14px] py-[5px] text-[12px] cursor-pointer shrink-0 transition-colors"
-                    [ngClass]="isFollowing('dev.m') ? 'bg-[#534AB7] text-white border-[#534AB7]' : 'bg-transparent border-border-secondary text-text-primary hover:bg-background-secondary'">
-              {{ isFollowing('dev.m') ? 'Following' : 'Follow' }}
-            </button>
-          </div>
-
-          <!-- Shreya Verma -->
-          <div class="flex items-center gap-[10px] px-[14px] py-[10px]">
-            <div class="w-[32px] h-[32px] rounded-full flex items-center justify-center text-white text-[12px] font-medium bg-[#534AB7] shrink-0">SV</div>
-            <div class="flex-1 min-w-0">
-              <div class="text-[13px] font-medium text-text-primary truncate">Shreya Verma</div>
-              <div class="text-[11px] text-text-secondary">@shreya.v</div>
-              <div class="text-[12px] text-text-secondary truncate">UI designer · Figma</div>
-            </div>
-            <button (click)="toggleFollow('shreya.v')"
-                    class="border-[0.5px] rounded-[20px] px-[14px] py-[5px] text-[12px] cursor-pointer shrink-0 transition-colors"
-                    [ngClass]="isFollowing('shreya.v') ? 'bg-[#534AB7] text-white border-[#534AB7]' : 'bg-transparent border-border-secondary text-text-primary hover:bg-background-secondary'">
-              {{ isFollowing('shreya.v') ? 'Following' : 'Follow' }}
-            </button>
-          </div>
-
-        </div>
-      </div>
+      }
 
     </div>
 
@@ -222,68 +150,23 @@
       <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-lg overflow-hidden">
         <div class="flex items-center justify-between px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
           <span class="text-[13px] font-medium text-text-primary">Trending topics</span>
-          <span class="text-[12px] text-[#534AB7] cursor-pointer">More</span>
         </div>
-        <!-- #DotNet9 -->
-        <div class="flex items-center gap-[10px] px-[14px] py-[10px] border-b-[0.5px] border-border-tertiary cursor-pointer hover:bg-background-secondary transition-colors">
-          <span class="text-[13px] font-medium text-text-tertiary w-[18px] text-center shrink-0">1</span>
-          <div class="flex-1 min-w-0">
-            <div class="text-[13px] font-medium text-text-primary">#DotNet9</div>
-            <div class="text-[11px] text-text-secondary">Technology</div>
+        @for (tag of trendingHashtags(); track tag.id; let i = $index) {
+          <div class="flex items-center gap-[10px] px-[14px] py-[10px] border-b-[0.5px] border-border-tertiary cursor-pointer hover:bg-background-secondary transition-colors"
+               (click)="searchByHashtag(tag.name)">
+            <span class="text-[13px] font-medium text-text-tertiary w-[18px] text-center shrink-0">{{ i + 1 }}</span>
+            <div class="flex-1 min-w-0">
+              <div class="text-[13px] font-medium text-text-primary">#{{ tag.name }}</div>
+              @if (tag.category) { <div class="text-[11px] text-text-secondary">{{ tag.category }}</div> }
+            </div>
+            <div class="text-right shrink-0">
+              <div class="text-[11px] text-text-secondary">{{ formatCount(tag.postCount) }} posts</div>
+            </div>
           </div>
-          <div class="text-right shrink-0">
-            <div class="text-[11px] text-text-secondary">4.2k posts</div>
-            <svg class="w-[44px] h-[20px]" viewBox="0 0 44 20"><polyline points="0,18 8,14 16,10 24,12 32,6 44,4" fill="none" stroke="#534AB7" stroke-width="1.5" stroke-linecap="round"/></svg>
-          </div>
-        </div>
-        <!-- #Angular18 -->
-        <div class="flex items-center gap-[10px] px-[14px] py-[10px] border-b-[0.5px] border-border-tertiary cursor-pointer hover:bg-background-secondary transition-colors">
-          <span class="text-[13px] font-medium text-text-tertiary w-[18px] text-center shrink-0">2</span>
-          <div class="flex-1 min-w-0">
-            <div class="text-[13px] font-medium text-text-primary">#Angular18</div>
-            <div class="text-[11px] text-text-secondary">Developer</div>
-          </div>
-          <div class="text-right shrink-0">
-            <div class="text-[11px] text-text-secondary">2.9k posts</div>
-            <svg class="w-[44px] h-[20px]" viewBox="0 0 44 20"><polyline points="0,16 8,12 16,14 24,8 32,5 44,3" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round"/></svg>
-          </div>
-        </div>
-        <!-- #BuildInPublic -->
-        <div class="flex items-center gap-[10px] px-[14px] py-[10px] border-b-[0.5px] border-border-tertiary cursor-pointer hover:bg-background-secondary transition-colors">
-          <span class="text-[13px] font-medium text-text-tertiary w-[18px] text-center shrink-0">3</span>
-          <div class="flex-1 min-w-0">
-            <div class="text-[13px] font-medium text-text-primary">#BuildInPublic</div>
-            <div class="text-[11px] text-text-secondary">Startup</div>
-          </div>
-          <div class="text-right shrink-0">
-            <div class="text-[11px] text-text-secondary">1.5k posts</div>
-            <svg class="w-[44px] h-[20px]" viewBox="0 0 44 20"><polyline points="0,14 8,10 16,12 24,8 32,9 44,5" fill="none" stroke="#BA7517" stroke-width="1.5" stroke-linecap="round"/></svg>
-          </div>
-        </div>
-        <!-- #OpenSource -->
-        <div class="flex items-center gap-[10px] px-[14px] py-[10px] border-b-[0.5px] border-border-tertiary cursor-pointer hover:bg-background-secondary transition-colors">
-          <span class="text-[13px] font-medium text-text-tertiary w-[18px] text-center shrink-0">4</span>
-          <div class="flex-1 min-w-0">
-            <div class="text-[13px] font-medium text-text-primary">#OpenSource</div>
-            <div class="text-[11px] text-text-secondary">Tech</div>
-          </div>
-          <div class="text-right shrink-0">
-            <div class="text-[11px] text-text-secondary">1.1k posts</div>
-            <svg class="w-[44px] h-[20px]" viewBox="0 0 44 20"><polyline points="0,18 8,15 16,11 24,13 32,7 44,6" fill="none" stroke="#185FA5" stroke-width="1.5" stroke-linecap="round"/></svg>
-          </div>
-        </div>
-        <!-- #IndieHacker -->
-        <div class="flex items-center gap-[10px] px-[14px] py-[10px] cursor-pointer hover:bg-background-secondary transition-colors">
-          <span class="text-[13px] font-medium text-text-tertiary w-[18px] text-center shrink-0">5</span>
-          <div class="flex-1 min-w-0">
-            <div class="text-[13px] font-medium text-text-primary">#IndieHacker</div>
-            <div class="text-[11px] text-text-secondary">Community</div>
-          </div>
-          <div class="text-right shrink-0">
-            <div class="text-[11px] text-text-secondary">890 posts</div>
-            <svg class="w-[44px] h-[20px]" viewBox="0 0 44 20"><polyline points="0,16 8,17 16,13 24,10 32,8 44,4" fill="none" stroke="#993556" stroke-width="1.5" stroke-linecap="round"/></svg>
-          </div>
-        </div>
+        }
+        @if (trendingHashtags().length === 0) {
+          <div class="p-4 text-center text-text-secondary text-[12px]">No trending topics yet.</div>
+        }
       </div>
 
       <!-- Browse by Topic Card -->
@@ -292,63 +175,52 @@
           <span class="text-[13px] font-medium text-text-primary">Browse by topic</span>
         </div>
         <div class="grid grid-cols-2 gap-2 p-[12px]">
-          <div class="bg-[#EEEDFE] p-3 rounded-md cursor-pointer hover:opacity-90 transition-opacity">
+          <div class="bg-[#EEEDFE] p-3 rounded-md cursor-pointer hover:opacity-90 transition-opacity"
+               (click)="onSearchInput('Technology'); searchQuery = 'Technology'">
             <div class="text-[13px] font-medium text-[#26215C]">Technology</div>
-            <div class="text-[11px] text-[#534AB7] opacity-80">12.4k posts</div>
           </div>
-          <div class="bg-[#E1F5EE] p-3 rounded-md cursor-pointer hover:opacity-90 transition-opacity">
+          <div class="bg-[#E1F5EE] p-3 rounded-md cursor-pointer hover:opacity-90 transition-opacity"
+               (click)="onSearchInput('OpenSource'); searchQuery = 'OpenSource'">
             <div class="text-[13px] font-medium text-[#04342C]">Open source</div>
-            <div class="text-[11px] text-[#0F6E56] opacity-80">8.2k posts</div>
           </div>
-          <div class="bg-[#E6F1FB] p-3 rounded-md cursor-pointer hover:opacity-90 transition-opacity">
+          <div class="bg-[#E6F1FB] p-3 rounded-md cursor-pointer hover:opacity-90 transition-opacity"
+               (click)="onSearchInput('Startups'); searchQuery = 'Startups'">
             <div class="text-[13px] font-medium text-[#042C53]">Startups</div>
-            <div class="text-[11px] text-[#185FA5] opacity-80">6.7k posts</div>
           </div>
-          <div class="bg-[#FAEEDA] p-3 rounded-md cursor-pointer hover:opacity-90 transition-opacity">
+          <div class="bg-[#FAEEDA] p-3 rounded-md cursor-pointer hover:opacity-90 transition-opacity"
+               (click)="onSearchInput('Design'); searchQuery = 'Design'">
             <div class="text-[13px] font-medium text-[#412402]">Design</div>
-            <div class="text-[11px] text-[#BA7517] opacity-80">5.1k posts</div>
           </div>
-          <div class="bg-[#FBEAF0] p-3 rounded-md cursor-pointer hover:opacity-90 transition-opacity">
+          <div class="bg-[#FBEAF0] p-3 rounded-md cursor-pointer hover:opacity-90 transition-opacity"
+               (click)="onSearchInput('Career'); searchQuery = 'Career'">
             <div class="text-[13px] font-medium text-[#4B1528]">Career</div>
-            <div class="text-[11px] text-[#993556] opacity-80">4.3k posts</div>
           </div>
-          <div class="bg-[#EAF3DE] p-3 rounded-md cursor-pointer hover:opacity-90 transition-opacity">
+          <div class="bg-[#EAF3DE] p-3 rounded-md cursor-pointer hover:opacity-90 transition-opacity"
+               (click)="onSearchInput('DevOps'); searchQuery = 'DevOps'">
             <div class="text-[13px] font-medium text-[#173404]">DevOps</div>
-            <div class="text-[11px] text-[#3B6D11] opacity-80">3.8k posts</div>
           </div>
         </div>
       </div>
 
-      <!-- Upcoming Events Card -->
+      <!-- Upcoming Events (static placeholder) -->
       <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-lg overflow-hidden">
         <div class="flex items-center justify-between px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
           <span class="text-[13px] font-medium text-text-primary">Upcoming events</span>
-          <span class="text-[12px] text-[#534AB7] cursor-pointer">All events</span>
         </div>
-        <!-- Event 1 -->
         <div class="px-[14px] py-[10px] border-b-[0.5px] border-border-tertiary">
           <div class="text-[13px] font-medium text-text-primary">Patna Dev Meetup</div>
           <div class="text-[12px] text-text-secondary mt-[2px]">Mar 28 · Patna, Bihar</div>
           <div class="flex items-center justify-between mt-[6px]">
             <span class="text-[11px] text-text-secondary">42 attending</span>
-            <button (click)="toggleRsvp('patna-dev')"
-                    class="border-[0.5px] rounded-[20px] px-[10px] py-[3px] text-[11px] cursor-pointer transition-colors"
-                    [ngClass]="isRsvped('patna-dev') ? 'bg-[#534AB7] text-white border-[#534AB7]' : 'bg-transparent border-border-secondary text-text-primary hover:bg-background-secondary'">
-              {{ isRsvped('patna-dev') ? 'Registered' : 'RSVP' }}
-            </button>
+            <button class="border-[0.5px] rounded-[20px] px-[10px] py-[3px] text-[11px] cursor-pointer border-border-secondary text-text-primary hover:bg-background-secondary transition-colors">RSVP</button>
           </div>
         </div>
-        <!-- Event 2 -->
         <div class="px-[14px] py-[10px]">
           <div class="text-[13px] font-medium text-text-primary">Angular India Virtual</div>
           <div class="text-[12px] text-text-secondary mt-[2px]">Apr 5 · Online</div>
           <div class="flex items-center justify-between mt-[6px]">
             <span class="text-[11px] text-text-secondary">318 attending</span>
-            <button (click)="toggleRsvp('angular-india')"
-                    class="border-[0.5px] rounded-[20px] px-[10px] py-[3px] text-[11px] cursor-pointer transition-colors"
-                    [ngClass]="isRsvped('angular-india') ? 'bg-[#534AB7] text-white border-[#534AB7]' : 'bg-transparent border-border-secondary text-text-primary hover:bg-background-secondary'">
-              {{ isRsvped('angular-india') ? 'Registered' : 'RSVP' }}
-            </button>
+            <button class="border-[0.5px] rounded-[20px] px-[10px] py-[3px] text-[11px] cursor-pointer bg-[#534AB7] text-white border-[#534AB7] transition-colors">Registered</button>
           </div>
         </div>
       </div>
