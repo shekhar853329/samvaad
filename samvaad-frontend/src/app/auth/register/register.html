@@ -1,0 +1,116 @@
+<div class="min-h-screen bg-[#F7F7FB] flex items-center justify-center px-4 py-10">
+  <div class="w-full max-w-[420px]">
+
+    <!-- Logo / Brand -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#534AB7] mb-3">
+        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/>
+        </svg>
+      </div>
+      <h1 class="text-2xl font-bold text-[#050505] tracking-tight">Samvaad</h1>
+      <p class="text-sm text-[#65676b] mt-1">Create your account</p>
+    </div>
+
+    <!-- Card -->
+    <div class="bg-white rounded-2xl border border-[#e4e6eb] p-6 shadow-sm">
+
+      @if (error()) {
+        <div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+          {{ error() }}
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="flex flex-col gap-4">
+
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-[#050505]">Username</label>
+          <input
+            formControlName="username"
+            type="text"
+            autocomplete="username"
+            placeholder="your_handle"
+            class="w-full px-3 py-2.5 rounded-lg border border-[#ccced2] bg-[#f0f2f5] text-sm text-[#050505] placeholder-[#8c939d] outline-none focus:border-[#534AB7] focus:ring-2 focus:ring-[#534AB7]/20 transition"
+          />
+          @if (form.controls.username.errors?.['required'] && form.controls.username.touched) {
+            <span class="text-xs text-red-600">Username is required.</span>
+          }
+          @if (form.controls.username.errors?.['pattern'] && form.controls.username.touched) {
+            <span class="text-xs text-red-600">Only lowercase letters, numbers, dots and underscores.</span>
+          }
+          @if (form.controls.username.errors?.['minlength'] && form.controls.username.touched) {
+            <span class="text-xs text-red-600">At least 3 characters.</span>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-[#050505]">Display name</label>
+          <input
+            formControlName="displayName"
+            type="text"
+            autocomplete="name"
+            placeholder="Your Name"
+            class="w-full px-3 py-2.5 rounded-lg border border-[#ccced2] bg-[#f0f2f5] text-sm text-[#050505] placeholder-[#8c939d] outline-none focus:border-[#534AB7] focus:ring-2 focus:ring-[#534AB7]/20 transition"
+          />
+          @if (form.controls.displayName.invalid && form.controls.displayName.touched) {
+            <span class="text-xs text-red-600">Display name is required.</span>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-[#050505]">Email</label>
+          <input
+            formControlName="email"
+            type="email"
+            autocomplete="email"
+            placeholder="you@example.com"
+            class="w-full px-3 py-2.5 rounded-lg border border-[#ccced2] bg-[#f0f2f5] text-sm text-[#050505] placeholder-[#8c939d] outline-none focus:border-[#534AB7] focus:ring-2 focus:ring-[#534AB7]/20 transition"
+          />
+          @if (form.controls.email.errors?.['required'] && form.controls.email.touched) {
+            <span class="text-xs text-red-600">Email is required.</span>
+          }
+          @if (form.controls.email.errors?.['email'] && form.controls.email.touched) {
+            <span class="text-xs text-red-600">Enter a valid email address.</span>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-[#050505]">Password</label>
+          <input
+            formControlName="password"
+            type="password"
+            autocomplete="new-password"
+            placeholder="Min. 8 characters"
+            class="w-full px-3 py-2.5 rounded-lg border border-[#ccced2] bg-[#f0f2f5] text-sm text-[#050505] placeholder-[#8c939d] outline-none focus:border-[#534AB7] focus:ring-2 focus:ring-[#534AB7]/20 transition"
+          />
+          @if (form.controls.password.errors?.['required'] && form.controls.password.touched) {
+            <span class="text-xs text-red-600">Password is required.</span>
+          }
+          @if (form.controls.password.errors?.['minlength'] && form.controls.password.touched) {
+            <span class="text-xs text-red-600">At least 8 characters.</span>
+          }
+        </div>
+
+        <button
+          type="submit"
+          [disabled]="loading()"
+          class="w-full py-2.5 rounded-lg bg-[#534AB7] text-white text-sm font-semibold hover:bg-[#463D99] active:bg-[#3A3380] transition disabled:opacity-60 disabled:cursor-not-allowed mt-1"
+        >
+          @if (loading()) {
+            <span>Creating account…</span>
+          } @else {
+            <span>Create account</span>
+          }
+        </button>
+
+      </form>
+    </div>
+
+    <!-- Footer link -->
+    <p class="text-center text-sm text-[#65676b] mt-5">
+      Already have an account?
+      <a routerLink="/login" class="text-[#534AB7] font-medium hover:underline">Sign in</a>
+    </p>
+
+  </div>
+</div>

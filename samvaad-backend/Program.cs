@@ -2,7 +2,8 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;using samvaad_backend.Data;
+using Microsoft.OpenApi;
+using samvaad_backend.Data;
 using samvaad_backend.Middleware;
 using samvaad_backend.Services;
 using samvaad_backend.Services.Interfaces;
@@ -39,7 +40,7 @@ builder.Services.AddAuthorization();
 // ── CORS (allow Angular dev server) ─────────────────────────────────────────
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy =>
-        policy.WithOrigins("http://localhost:4200")
+        policy.WithOrigins("http://localhost:4200", "https://localhost:4200")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials()));

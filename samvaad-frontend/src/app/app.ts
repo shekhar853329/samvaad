@@ -1,8 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Navbar } from './navbar/navbar';
 import { LeftSidebar } from './left-sidebar/left-sidebar';
 import { RightSidebar } from './right-sidebar/right-sidebar';
+import { AuthService } from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -11,5 +12,5 @@ import { RightSidebar } from './right-sidebar/right-sidebar';
   styleUrl: './app.css'
 })
 export class App {
-  protected readonly title = signal('samvaad-frontend');
+  protected auth = inject(AuthService);
 }
