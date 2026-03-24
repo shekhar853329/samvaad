@@ -1,523 +1,205 @@
 <div class="flex flex-col h-[calc(100dvh-62px)] md:h-auto md:grid md:grid-cols-[280px_1fr] md:border-[0.5px] md:border-border-tertiary md:rounded-lg md:overflow-hidden md:min-h-[580px]">
 
-  <!-- Thread Panel -->
+  <!-- ── Thread Panel ──────────────────────────────────────────────── -->
   <div class="flex flex-col h-full bg-background-secondary border-r-[0.5px] border-border-tertiary md:flex"
-       [ngClass]="{'hidden': activeThread() !== null}">
+       [ngClass]="{'hidden': activeConversation() !== null}">
 
-    <!-- Header -->
     <div class="flex items-center justify-between px-4 pt-4 pb-2 shrink-0">
       <span class="text-[15px] font-semibold text-text-primary">Messages</span>
       <button class="w-[28px] h-[28px] border-[0.5px] border-border-secondary rounded-md flex items-center justify-center text-text-secondary text-[16px] hover:bg-background-primary transition-colors">✏</button>
     </div>
 
-    <!-- Search -->
     <div class="px-4 pb-3 shrink-0">
       <input type="text" placeholder="Search messages…"
              class="w-full bg-background-primary border-[0.5px] border-border-secondary rounded-[20px] px-4 py-[7px] text-[13px] text-text-primary placeholder:text-text-tertiary outline-none focus:border-[#534AB7]">
     </div>
 
-    <!-- Tabs -->
     <div class="flex border-b-[0.5px] border-border-tertiary px-2 shrink-0">
       <button (click)="activeTab.set('all')" class="flex-1 py-2 text-[13px] font-medium transition-colors"
               [ngClass]="activeTab() === 'all' ? 'text-[#534AB7] border-b-2 border-[#534AB7]' : 'text-text-secondary'">All</button>
-      <button (click)="activeTab.set('requests')" class="flex-1 py-2 text-[13px] font-medium transition-colors flex items-center justify-center gap-1.5"
-              [ngClass]="activeTab() === 'requests' ? 'text-[#534AB7] border-b-2 border-[#534AB7]' : 'text-text-secondary'">
-        Requests
-        <span class="bg-[#FAEEDA] text-[#633806] text-[10px] px-[6px] py-[1px] rounded-full font-medium">3</span>
-      </button>
       <button (click)="activeTab.set('groups')" class="flex-1 py-2 text-[13px] font-medium transition-colors"
               [ngClass]="activeTab() === 'groups' ? 'text-[#534AB7] border-b-2 border-[#534AB7]' : 'text-text-secondary'">Groups</button>
     </div>
 
-    <!-- Thread List -->
     <div class="flex-1 overflow-y-auto hide-scrollbar">
+      @if (filteredConversations().length === 0) {
+        <div class="py-12 text-center text-text-tertiary text-[13px]">No conversations yet</div>
+      }
+      @for (conv of filteredConversations(); track conv.id) {
+        <div (click)="selectConversation(conv)"
+             class="flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors border-l-2"
+             [ngClass]="activeConversation()?.id === conv.id
+               ? 'bg-background-primary border-[#534AB7]'
+               : 'border-transparent hover:bg-background-primary/70'">
 
-      <!-- Priya Kapoor - active -->
-      <div (click)="showChat('priya')" class="flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors border-l-2"
-           [ngClass]="activeThread() === 'priya' ? 'bg-background-primary border-[#534AB7]' : 'border-transparent hover:bg-background-primary/70'">
-        <div class="relative shrink-0">
-          <div class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-[#0F6E56]">PK</div>
-          <div class="absolute bottom-0 right-0 w-[10px] h-[10px] rounded-full bg-[#3B6D11] border-2 border-background-secondary"></div>
-        </div>
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center justify-between">
-            <span class="text-[13px] font-medium text-text-primary truncate">Priya Kapoor</span>
-            <span class="text-[11px] text-text-secondary shrink-0 ml-1">2m</span>
+          <!-- Avatar -->
+          <div class="relative shrink-0">
+            @if (conv.isGroup) {
+              <div class="relative w-[38px] h-[38px]">
+                <div class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#534AB7] absolute top-0 left-0">
+                  {{ initials(conv.otherParticipants[0]?.displayName ?? '?') }}
+                </div>
+                @if (conv.otherParticipants[1]) {
+                  <div class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#3B6D11] absolute bottom-0 right-0 border-[2px] border-background-secondary">
+                    {{ initials(conv.otherParticipants[1].displayName) }}
+                  </div>
+                }
+              </div>
+            } @else {
+              @if (conv.otherParticipants[0]?.avatarUrl) {
+                <img [src]="conv.otherParticipants[0].avatarUrl"
+                     class="w-[38px] h-[38px] rounded-full object-cover"
+                     [alt]="conv.otherParticipants[0].displayName">
+              } @else {
+                <div class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-[#534AB7]">
+                  {{ initials(conv.otherParticipants[0]?.displayName ?? '?') }}
+                </div>
+              }
+            }
           </div>
-          <div class="text-[12px] text-text-secondary truncate">Great thread! What Redis client…</div>
-        </div>
-      </div>
 
-      <!-- Nikhil Mehta - unread -->
-      <div (click)="showChat('nikhil')" class="flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors border-l-2"
-           [ngClass]="activeThread() === 'nikhil' ? 'bg-background-primary border-[#534AB7]' : 'border-transparent hover:bg-background-primary/70'">
-        <div class="relative shrink-0">
-          <div class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-[#185FA5]">NM</div>
-        </div>
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center justify-between">
-            <span class="text-[13px] font-semibold text-text-primary truncate">Nikhil Mehta</span>
-            <span class="text-[11px] text-text-secondary shrink-0 ml-1">18m</span>
+          <!-- Info -->
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+              <span class="text-[13px] font-medium text-text-primary truncate"
+                    [class.font-semibold]="conv.unreadCount > 0">{{ convName(conv) }}</span>
+              <span class="text-[11px] text-text-secondary shrink-0 ml-1">{{ timeAgo(conv.lastMessageAt) }}</span>
+            </div>
+            <div class="text-[12px] truncate"
+                 [class.text-text-primary]="conv.unreadCount > 0"
+                 [class.font-medium]="conv.unreadCount > 0"
+                 [class.text-text-secondary]="conv.unreadCount === 0">
+              {{ convLastLine(conv) }}
+            </div>
           </div>
-          <div class="text-[12px] text-text-primary font-medium truncate">Sent you the repo link</div>
-        </div>
-        <div class="shrink-0">
-          <span class="min-w-[18px] h-[18px] bg-[#534AB7] text-white text-[10px] rounded-full flex items-center justify-center px-1">2</span>
-        </div>
-      </div>
 
-      <!-- Dev Squad -->
-      <div (click)="showChat('devs')" class="flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors border-l-2"
-           [ngClass]="activeThread() === 'devs' ? 'bg-background-primary border-[#534AB7]' : 'border-transparent hover:bg-background-primary/70'">
-        <div class="relative w-[38px] h-[38px] shrink-0">
-          <div class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#BA7517] absolute top-0 left-0">VR</div>
-          <div class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#993556] absolute bottom-0 right-0 border-[2px] border-background-secondary">AS</div>
+          @if (conv.unreadCount > 0) {
+            <span class="min-w-[18px] h-[18px] bg-[#534AB7] text-white text-[10px] rounded-full flex items-center justify-center px-1 shrink-0">
+              {{ conv.unreadCount > 99 ? '99+' : conv.unreadCount }}
+            </span>
+          }
         </div>
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center justify-between">
-            <span class="text-[13px] font-medium text-text-primary truncate">Dev Squad</span>
-            <span class="text-[11px] text-text-secondary shrink-0 ml-1">1h</span>
-          </div>
-          <div class="text-[12px] text-text-secondary truncate">Ananya: We ship Monday!</div>
-        </div>
-      </div>
-
-      <!-- Rohan Gupta - unread -->
-      <div (click)="showChat('rohan')" class="flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors border-l-2"
-           [ngClass]="activeThread() === 'rohan' ? 'bg-background-primary border-[#534AB7]' : 'border-transparent hover:bg-background-primary/70'">
-        <div class="relative shrink-0">
-          <div class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-[#854F0B] ring-2 ring-[#BA7517] ring-offset-1 ring-offset-background-secondary">RG</div>
-          <div class="absolute bottom-0 right-0 w-[10px] h-[10px] rounded-full bg-[#BA7517] border-2 border-background-secondary"></div>
-        </div>
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center justify-between">
-            <span class="text-[13px] font-semibold text-text-primary truncate">Rohan Gupta</span>
-            <span class="text-[11px] text-text-secondary shrink-0 ml-1">3h</span>
-          </div>
-          <div class="text-[12px] text-text-primary font-medium truncate">Are you free for a call at 4?</div>
-        </div>
-        <div class="shrink-0">
-          <span class="w-[8px] h-[8px] bg-[#854F0B] rounded-full block"></span>
-        </div>
-      </div>
-
-      <!-- Karan Patel -->
-      <div (click)="showChat('karan')" class="flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors border-l-2"
-           [ngClass]="activeThread() === 'karan' ? 'bg-background-primary border-[#534AB7]' : 'border-transparent hover:bg-background-primary/70'">
-        <div class="relative shrink-0">
-          <div class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-[#3B6D11]">KP</div>
-        </div>
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center justify-between">
-            <span class="text-[13px] font-medium text-text-primary truncate">Karan Patel</span>
-            <span class="text-[11px] text-text-secondary shrink-0 ml-1">Yesterday</span>
-          </div>
-          <div class="text-[12px] text-text-secondary truncate">Thanks for the review!</div>
-        </div>
-      </div>
-
-      <!-- Ananya Singh -->
-      <div (click)="showChat('ananya')" class="flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors border-l-2"
-           [ngClass]="activeThread() === 'ananya' ? 'bg-background-primary border-[#534AB7]' : 'border-transparent hover:bg-background-primary/70'">
-        <div class="relative shrink-0">
-          <div class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-[#993556]">AS</div>
-        </div>
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center justify-between">
-            <span class="text-[13px] font-medium text-text-primary truncate">Ananya Singh</span>
-            <span class="text-[11px] text-text-secondary shrink-0 ml-1">Monday</span>
-          </div>
-          <div class="text-[12px] text-text-secondary truncate">Loved the SignalR demo</div>
-        </div>
-      </div>
-
-      <!-- Vikram Rao -->
-      <div (click)="showChat('vikram')" class="flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors border-l-2"
-           [ngClass]="activeThread() === 'vikram' ? 'bg-background-primary border-[#534AB7]' : 'border-transparent hover:bg-background-primary/70'">
-        <div class="relative shrink-0">
-          <div class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-[#BA7517]">VR</div>
-        </div>
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center justify-between">
-            <span class="text-[13px] font-medium text-text-primary truncate">Vikram Rao</span>
-            <span class="text-[11px] text-text-secondary shrink-0 ml-1">Sunday</span>
-          </div>
-          <div class="text-[12px] text-text-secondary truncate">See you at the meetup!</div>
-        </div>
-      </div>
-
+      }
     </div>
   </div>
 
-  <!-- Empty state: no thread selected (desktop only) -->
-  @if (activeThread() === null) {
+  <!-- ── Empty state: no thread selected (desktop) ───────────────── -->
+  @if (activeConversation() === null) {
     <div class="hidden md:flex flex-1 items-center justify-center text-text-tertiary text-[13px]">
       Select a conversation to start messaging
     </div>
   }
 
-  <!-- Chat: Priya Kapoor -->
-  @if (activeThread() === 'priya') {
+  <!-- ── Active Chat ──────────────────────────────────────────────── -->
+  @if (activeConversation(); as conv) {
     <div class="flex flex-col h-full">
+
+      <!-- Chat header -->
       <div class="flex items-center gap-3 px-4 py-3 border-b-[0.5px] border-border-tertiary bg-background-primary shrink-0">
         <button (click)="backToList()" class="md:hidden mr-1 text-text-secondary text-[20px] leading-none">←</button>
-        <div class="relative shrink-0">
-          <div class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-[#0F6E56]">PK</div>
-          <div class="absolute bottom-0 right-0 w-[10px] h-[10px] rounded-full bg-[#3B6D11] border-2 border-background-primary"></div>
-        </div>
-        <div class="flex-1">
-          <div class="text-[14px] font-semibold text-text-primary">Priya Kapoor</div>
-          <div class="text-[12px] text-[#3B6D11] font-medium">Active now</div>
-        </div>
-        <div class="flex gap-1">
-          <button class="w-[32px] h-[32px] rounded-full hover:bg-background-secondary flex items-center justify-center text-text-secondary text-[16px]">📞</button>
-          <button class="w-[32px] h-[32px] rounded-full hover:bg-background-secondary flex items-center justify-center text-text-secondary text-[16px]">📹</button>
-          <button class="w-[32px] h-[32px] rounded-full hover:bg-background-secondary flex items-center justify-center text-text-secondary text-[16px]">⋯</button>
-        </div>
-      </div>
-      <div class="flex-1 overflow-y-auto bg-background-secondary p-4 flex flex-col gap-3 hide-scrollbar">
-        <div class="text-center text-[11px] text-text-tertiary bg-background-secondary px-3 py-1 mx-auto rounded-full border-[0.5px] border-border-tertiary">Today</div>
-        <!-- Theirs -->
-        <div class="flex gap-2 items-end max-w-[75%]">
-          <div class="w-[24px] h-[24px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#0F6E56] shrink-0">PK</div>
-          <div>
-            <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-[16px] rounded-bl-[4px] px-[12px] py-[8px] text-[13px] text-text-primary">Hey! Just saw your SignalR post — brilliant stuff. How long did the Redis backplane setup take?</div>
-            <div class="text-[11px] text-text-tertiary mt-1">10:22 AM</div>
-          </div>
-        </div>
-        <!-- Mine -->
-        <div class="flex gap-2 items-end max-w-[75%] self-end flex-row-reverse">
-          <div>
-            <div class="bg-[#534AB7] text-white rounded-[16px] rounded-br-[4px] px-[12px] py-[8px] text-[13px]">Thanks! The backplane took about half a day. Mostly config for connection string failover.</div>
-            <div class="text-[11px] text-text-tertiary mt-1 text-right">10:25 AM</div>
-            <div class="text-[11px] text-right text-[#9FE1CB]">✓✓ Seen</div>
-          </div>
-        </div>
-        <!-- Theirs with reactions -->
-        <div class="flex gap-2 items-end max-w-[75%]">
-          <div class="w-[24px] h-[24px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#0F6E56] shrink-0">PK</div>
-          <div>
-            <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-[16px] rounded-bl-[4px] px-[12px] py-[8px] text-[13px] text-text-primary">That's faster than I expected! Did you use StackExchange.Redis or something else?</div>
-            <div class="text-[11px] text-text-tertiary mt-1">10:26 AM</div>
-            <div class="flex gap-1 mt-1">
-              <span class="bg-[#EEEDFE] border-[0.5px] border-[#AFA9EC] text-[#3C3489] text-[11px] px-[8px] py-[2px] rounded-full">👍 1</span>
-              <span class="bg-background-primary border-[0.5px] border-border-tertiary text-[11px] px-[8px] py-[2px] rounded-full">❤ 2</span>
+
+        <!-- Avatar -->
+        @if (conv.isGroup) {
+          <div class="relative w-[38px] h-[38px] shrink-0">
+            <div class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#534AB7] absolute top-0 left-0">
+              {{ initials(conv.otherParticipants[0]?.displayName ?? '?') }}
             </div>
+            @if (conv.otherParticipants[1]) {
+              <div class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#3B6D11] absolute bottom-0 right-0 border-[2px] border-background-primary">
+                {{ initials(conv.otherParticipants[1].displayName) }}
+              </div>
+            }
           </div>
-        </div>
-        <!-- Mine -->
-        <div class="flex gap-2 items-end max-w-[75%] self-end flex-row-reverse">
-          <div>
-            <div class="bg-[#534AB7] text-white rounded-[16px] rounded-br-[4px] px-[12px] py-[8px] text-[13px]">StackExchange.Redis — it's the best for .NET. Check this out:</div>
-            <div class="text-[11px] text-text-tertiary mt-1 text-right">10:29 AM</div>
-          </div>
-        </div>
-        <!-- Mine image bubble -->
-        <div class="flex gap-2 items-end max-w-[75%] self-end flex-row-reverse">
-          <div>
-            <div class="w-[160px] h-[90px] rounded-[12px] bg-[#AFA9EC] text-[#3C3489] text-[11px] flex items-center justify-center">code snippet preview</div>
-            <div class="text-[11px] text-text-tertiary mt-1 text-right">10:29 AM</div>
-            <div class="text-[11px] text-right text-[#9FE1CB]">✓✓ Seen</div>
-          </div>
-        </div>
-        <!-- Theirs -->
-        <div class="flex gap-2 items-end max-w-[75%]">
-          <div class="w-[24px] h-[24px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#0F6E56] shrink-0">PK</div>
-          <div>
-            <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-[16px] rounded-bl-[4px] px-[12px] py-[8px] text-[13px] text-text-primary">Great thread! What Redis client are you using in production?</div>
-            <div class="text-[11px] text-text-tertiary mt-1">10:31 AM</div>
-          </div>
-        </div>
-        <!-- Typing indicator -->
-        <div class="flex gap-2 items-end max-w-[75%]">
-          <div class="w-[24px] h-[24px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#0F6E56] shrink-0">PK</div>
-          <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-[16px] rounded-bl-[4px] px-[14px] py-[10px] flex items-center gap-[5px]">
-            <span class="w-[7px] h-[7px] rounded-full bg-text-tertiary animate-blink" style="animation-delay:0s"></span>
-            <span class="w-[7px] h-[7px] rounded-full bg-text-tertiary animate-blink" style="animation-delay:.2s"></span>
-            <span class="w-[7px] h-[7px] rounded-full bg-text-tertiary animate-blink" style="animation-delay:.4s"></span>
-          </div>
-        </div>
-      </div>
-      <div class="flex items-end gap-2 px-4 py-3 border-t-[0.5px] border-border-tertiary bg-background-primary shrink-0">
-        <button class="w-[32px] h-[32px] rounded-full bg-background-secondary flex items-center justify-center text-text-secondary text-[18px] shrink-0">+</button>
-        <textarea class="flex-1 bg-background-secondary border-[0.5px] border-border-secondary rounded-[20px] px-[14px] py-2 text-[13px] resize-none outline-none focus:border-[#534AB7] text-text-primary placeholder:text-text-tertiary" placeholder="Message Priya…" rows="1"></textarea>
-        <button class="w-[32px] h-[32px] rounded-full flex items-center justify-center text-text-secondary text-[18px] shrink-0">☺</button>
-        <button class="w-[34px] h-[34px] bg-[#534AB7] rounded-full flex items-center justify-center shrink-0">
-          <svg viewBox="0 0 16 16" fill="white" width="14" height="14"><path d="M2 8L14 2L10 8L14 14L2 8Z"/></svg>
-        </button>
-      </div>
-    </div>
-  }
-
-  <!-- Chat: Nikhil Mehta -->
-  @if (activeThread() === 'nikhil') {
-    <div class="flex flex-col h-full">
-      <div class="flex items-center gap-3 px-4 py-3 border-b-[0.5px] border-border-tertiary bg-background-primary shrink-0">
-        <button (click)="backToList()" class="md:hidden mr-1 text-text-secondary text-[20px] leading-none">←</button>
-        <div class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-[#185FA5] shrink-0">NM</div>
-        <div class="flex-1">
-          <div class="text-[14px] font-semibold text-text-primary">Nikhil Mehta</div>
-          <div class="text-[12px] text-text-secondary">Last seen 18 min ago</div>
-        </div>
-        <div class="flex gap-1">
-          <button class="w-[32px] h-[32px] rounded-full hover:bg-background-secondary flex items-center justify-center text-text-secondary text-[16px]">📞</button>
-          <button class="w-[32px] h-[32px] rounded-full hover:bg-background-secondary flex items-center justify-center text-text-secondary text-[16px]">📹</button>
-          <button class="w-[32px] h-[32px] rounded-full hover:bg-background-secondary flex items-center justify-center text-text-secondary text-[16px]">⋯</button>
-        </div>
-      </div>
-      <div class="flex-1 overflow-y-auto bg-background-secondary p-4 flex flex-col gap-3 hide-scrollbar">
-        <div class="text-center text-[11px] text-text-tertiary bg-background-secondary px-3 py-1 mx-auto rounded-full border-[0.5px] border-border-tertiary">Today</div>
-        <div class="flex gap-2 items-end max-w-[75%]">
-          <div class="w-[24px] h-[24px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#185FA5] shrink-0">NM</div>
-          <div>
-            <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-[16px] rounded-bl-[4px] px-[12px] py-[8px] text-[13px] text-text-primary">Hey, here's the repo — github.com/nikhil/signalr-demo</div>
-            <div class="text-[11px] text-text-tertiary mt-1">Yesterday 6:10 PM</div>
-          </div>
-        </div>
-        <div class="flex gap-2 items-end max-w-[75%]">
-          <div class="w-[24px] h-[24px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#185FA5] shrink-0">NM</div>
-          <div>
-            <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-[16px] rounded-bl-[4px] px-[12px] py-[8px] text-[13px] text-text-primary">Let me know what you think once you've had a look!</div>
-            <div class="text-[11px] text-text-tertiary mt-1">Yesterday 6:11 PM</div>
-          </div>
-        </div>
-      </div>
-      <div class="flex items-end gap-2 px-4 py-3 border-t-[0.5px] border-border-tertiary bg-background-primary shrink-0">
-        <button class="w-[32px] h-[32px] rounded-full bg-background-secondary flex items-center justify-center text-text-secondary text-[18px] shrink-0">+</button>
-        <textarea class="flex-1 bg-background-secondary border-[0.5px] border-border-secondary rounded-[20px] px-[14px] py-2 text-[13px] resize-none outline-none focus:border-[#534AB7] text-text-primary placeholder:text-text-tertiary" placeholder="Message Nikhil…" rows="1"></textarea>
-        <button class="w-[32px] h-[32px] rounded-full flex items-center justify-center text-text-secondary text-[18px] shrink-0">☺</button>
-        <button class="w-[34px] h-[34px] bg-[#534AB7] rounded-full flex items-center justify-center shrink-0">
-          <svg viewBox="0 0 16 16" fill="white" width="14" height="14"><path d="M2 8L14 2L10 8L14 14L2 8Z"/></svg>
-        </button>
-      </div>
-    </div>
-  }
-
-  <!-- Chat: Dev Squad -->
-  @if (activeThread() === 'devs') {
-    <div class="flex flex-col h-full">
-      <div class="flex items-center gap-3 px-4 py-3 border-b-[0.5px] border-border-tertiary bg-background-primary shrink-0">
-        <button (click)="backToList()" class="md:hidden mr-1 text-text-secondary text-[20px] leading-none">←</button>
-        <div class="relative w-[38px] h-[38px] shrink-0">
-          <div class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#BA7517] absolute top-0 left-0">VR</div>
-          <div class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#993556] absolute bottom-0 right-0 border-[2px] border-background-primary">AS</div>
-        </div>
-        <div class="flex-1">
-          <div class="text-[14px] font-semibold text-text-primary">Dev Squad</div>
-          <div class="text-[12px] text-text-secondary">Vikram Rao, Ananya Singh, +2</div>
-        </div>
-        <div class="flex gap-1">
-          <button class="w-[32px] h-[32px] rounded-full hover:bg-background-secondary flex items-center justify-center text-text-secondary text-[16px]">👥</button>
-          <button class="w-[32px] h-[32px] rounded-full hover:bg-background-secondary flex items-center justify-center text-text-secondary text-[16px]">⋯</button>
-        </div>
-      </div>
-      <!-- Request banner -->
-      <div class="flex items-center justify-between px-4 py-2 bg-[#EEEDFE] border-b-[0.5px] border-[#AFA9EC] shrink-0">
-        <span class="text-[12px] text-[#3C3489]">Karan Patel wants to join this group</span>
-        <div class="flex gap-2">
-          <button class="bg-[#534AB7] text-white text-[12px] px-3 py-1 rounded-full">Accept</button>
-          <button class="border-[0.5px] border-border-secondary text-text-secondary text-[12px] px-3 py-1 rounded-full">Decline</button>
-        </div>
-      </div>
-      <div class="flex-1 overflow-y-auto bg-background-secondary p-4 flex flex-col gap-3 hide-scrollbar">
-        <div class="text-center text-[11px] text-text-tertiary bg-background-secondary px-3 py-1 mx-auto rounded-full border-[0.5px] border-border-tertiary">Today</div>
-        <div class="flex gap-2 items-end max-w-[75%]">
-          <div class="w-[24px] h-[24px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#993556] shrink-0">AS</div>
-          <div>
-            <span class="text-[11px] text-[#3C3489] font-medium block mb-[2px]">Ananya</span>
-            <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-[16px] rounded-bl-[4px] px-[12px] py-[8px] text-[13px] text-text-primary">All PRs merged. Deploy at 3pm today?</div>
-            <div class="text-[11px] text-text-tertiary mt-1">1:10 PM</div>
-          </div>
-        </div>
-        <div class="flex gap-2 items-end max-w-[75%]">
-          <div class="w-[24px] h-[24px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#BA7517] shrink-0">VR</div>
-          <div>
-            <span class="text-[11px] text-[#633806] font-medium block mb-[2px]">Vikram</span>
-            <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-[16px] rounded-bl-[4px] px-[12px] py-[8px] text-[13px] text-text-primary">Works for me 👍</div>
-            <div class="text-[11px] text-text-tertiary mt-1">1:13 PM</div>
-            <div class="flex gap-1 mt-1">
-              <span class="bg-background-primary border-[0.5px] border-border-tertiary text-[11px] px-[8px] py-[2px] rounded-full">👍 3</span>
+        } @else {
+          @if (conv.otherParticipants[0]?.avatarUrl) {
+            <img [src]="conv.otherParticipants[0].avatarUrl"
+                 class="w-[38px] h-[38px] rounded-full object-cover shrink-0"
+                 [alt]="conv.otherParticipants[0].displayName">
+          } @else {
+            <div class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-[#534AB7] shrink-0">
+              {{ initials(conv.otherParticipants[0]?.displayName ?? '?') }}
             </div>
-          </div>
-        </div>
-        <div class="flex gap-2 items-end max-w-[75%] self-end flex-row-reverse">
-          <div>
-            <div class="bg-[#534AB7] text-white rounded-[16px] rounded-br-[4px] px-[12px] py-[8px] text-[13px]">We ship Monday!</div>
-            <div class="text-[11px] text-text-tertiary mt-1 text-right">1:15 PM</div>
-            <div class="text-[11px] text-right text-[#9FE1CB]">✓✓ Read by 3</div>
-          </div>
-        </div>
-      </div>
-      <div class="flex items-end gap-2 px-4 py-3 border-t-[0.5px] border-border-tertiary bg-background-primary shrink-0">
-        <button class="w-[32px] h-[32px] rounded-full bg-background-secondary flex items-center justify-center text-text-secondary text-[18px] shrink-0">+</button>
-        <textarea class="flex-1 bg-background-secondary border-[0.5px] border-border-secondary rounded-[20px] px-[14px] py-2 text-[13px] resize-none outline-none focus:border-[#534AB7] text-text-primary placeholder:text-text-tertiary" placeholder="Message Dev Squad…" rows="1"></textarea>
-        <button class="w-[32px] h-[32px] rounded-full flex items-center justify-center text-text-secondary text-[18px] shrink-0">☺</button>
-        <button class="w-[34px] h-[34px] bg-[#534AB7] rounded-full flex items-center justify-center shrink-0">
-          <svg viewBox="0 0 16 16" fill="white" width="14" height="14"><path d="M2 8L14 2L10 8L14 14L2 8Z"/></svg>
-        </button>
-      </div>
-    </div>
-  }
+          }
+        }
 
-  <!-- Chat: Rohan Gupta -->
-  @if (activeThread() === 'rohan') {
-    <div class="flex flex-col h-full">
-      <div class="flex items-center gap-3 px-4 py-3 border-b-[0.5px] border-border-tertiary bg-background-primary shrink-0">
-        <button (click)="backToList()" class="md:hidden mr-1 text-text-secondary text-[20px] leading-none">←</button>
-        <div class="relative shrink-0">
-          <div class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-[#854F0B] ring-2 ring-[#BA7517] ring-offset-1 ring-offset-background-primary">RG</div>
-          <div class="absolute bottom-0 right-0 w-[10px] h-[10px] rounded-full bg-[#BA7517] border-2 border-background-primary"></div>
-        </div>
         <div class="flex-1">
-          <div class="text-[14px] font-semibold text-text-primary">Rohan Gupta</div>
-          <div class="text-[12px] text-text-secondary">Away</div>
+          <div class="text-[14px] font-semibold text-text-primary">{{ convName(conv) }}</div>
+          @if (conv.isGroup) {
+            <div class="text-[12px] text-text-secondary">
+              {{ conv.otherParticipants.map(p => p.displayName).join(', ') }}
+            </div>
+          }
         </div>
+
         <div class="flex gap-1">
-          <button class="w-[32px] h-[32px] rounded-full hover:bg-background-secondary flex items-center justify-center text-text-secondary text-[16px]">📞</button>
           <button class="w-[32px] h-[32px] rounded-full hover:bg-background-secondary flex items-center justify-center text-text-secondary text-[16px]">⋯</button>
         </div>
       </div>
-      <div class="flex-1 overflow-y-auto bg-background-secondary p-4 flex flex-col gap-3 hide-scrollbar">
-        <div class="text-center text-[11px] text-text-tertiary bg-background-secondary px-3 py-1 mx-auto rounded-full border-[0.5px] border-border-tertiary">Today</div>
-        <div class="flex gap-2 items-end max-w-[75%]">
-          <div class="w-[24px] h-[24px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#854F0B] shrink-0">RG</div>
-          <div>
-            <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-[16px] rounded-bl-[4px] px-[12px] py-[8px] text-[13px] text-text-primary">Are you free for a call at 4?</div>
-            <div class="text-[11px] text-text-tertiary mt-1">2:45 PM</div>
-          </div>
-        </div>
-      </div>
-      <div class="flex items-end gap-2 px-4 py-3 border-t-[0.5px] border-border-tertiary bg-background-primary shrink-0">
-        <button class="w-[32px] h-[32px] rounded-full bg-background-secondary flex items-center justify-center text-text-secondary text-[18px] shrink-0">+</button>
-        <textarea class="flex-1 bg-background-secondary border-[0.5px] border-border-secondary rounded-[20px] px-[14px] py-2 text-[13px] resize-none outline-none focus:border-[#534AB7] text-text-primary placeholder:text-text-tertiary" placeholder="Message Rohan…" rows="1"></textarea>
-        <button class="w-[32px] h-[32px] rounded-full flex items-center justify-center text-text-secondary text-[18px] shrink-0">☺</button>
-        <button class="w-[34px] h-[34px] bg-[#534AB7] rounded-full flex items-center justify-center shrink-0">
-          <svg viewBox="0 0 16 16" fill="white" width="14" height="14"><path d="M2 8L14 2L10 8L14 14L2 8Z"/></svg>
-        </button>
-      </div>
-    </div>
-  }
 
-  <!-- Chat: Karan Patel -->
-  @if (activeThread() === 'karan') {
-    <div class="flex flex-col h-full">
-      <div class="flex items-center gap-3 px-4 py-3 border-b-[0.5px] border-border-tertiary bg-background-primary shrink-0">
-        <button (click)="backToList()" class="md:hidden mr-1 text-text-secondary text-[20px] leading-none">←</button>
-        <div class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-[#3B6D11] shrink-0">KP</div>
-        <div class="flex-1">
-          <div class="text-[14px] font-semibold text-text-primary">Karan Patel</div>
-          <div class="text-[12px] text-text-secondary">Last seen yesterday</div>
-        </div>
-        <div class="flex gap-1">
-          <button class="w-[32px] h-[32px] rounded-full hover:bg-background-secondary flex items-center justify-center text-text-secondary text-[16px]">📞</button>
-          <button class="w-[32px] h-[32px] rounded-full hover:bg-background-secondary flex items-center justify-center text-text-secondary text-[16px]">⋯</button>
-        </div>
-      </div>
+      <!-- Messages area -->
       <div class="flex-1 overflow-y-auto bg-background-secondary p-4 flex flex-col gap-3 hide-scrollbar">
-        <div class="text-center text-[11px] text-text-tertiary bg-background-secondary px-3 py-1 mx-auto rounded-full border-[0.5px] border-border-tertiary">Yesterday</div>
-        <div class="flex gap-2 items-end max-w-[75%]">
-          <div class="w-[24px] h-[24px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#3B6D11] shrink-0">KP</div>
-          <div>
-            <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-[16px] rounded-bl-[4px] px-[12px] py-[8px] text-[13px] text-text-primary">Thanks for the review!</div>
-            <div class="text-[11px] text-text-tertiary mt-1">4:00 PM</div>
-          </div>
-        </div>
-        <div class="flex gap-2 items-end max-w-[75%] self-end flex-row-reverse">
-          <div>
-            <div class="bg-[#534AB7] text-white rounded-[16px] rounded-br-[4px] px-[12px] py-[8px] text-[13px]">Anytime — great PR!</div>
-            <div class="text-[11px] text-text-tertiary mt-1 text-right">4:05 PM</div>
-          </div>
-        </div>
-      </div>
-      <div class="flex items-end gap-2 px-4 py-3 border-t-[0.5px] border-border-tertiary bg-background-primary shrink-0">
-        <button class="w-[32px] h-[32px] rounded-full bg-background-secondary flex items-center justify-center text-text-secondary text-[18px] shrink-0">+</button>
-        <textarea class="flex-1 bg-background-secondary border-[0.5px] border-border-secondary rounded-[20px] px-[14px] py-2 text-[13px] resize-none outline-none focus:border-[#534AB7] text-text-primary placeholder:text-text-tertiary" placeholder="Message Karan…" rows="1"></textarea>
-        <button class="w-[32px] h-[32px] rounded-full flex items-center justify-center text-text-secondary text-[18px] shrink-0">☺</button>
-        <button class="w-[34px] h-[34px] bg-[#534AB7] rounded-full flex items-center justify-center shrink-0">
-          <svg viewBox="0 0 16 16" fill="white" width="14" height="14"><path d="M2 8L14 2L10 8L14 14L2 8Z"/></svg>
-        </button>
-      </div>
-    </div>
-  }
 
-  <!-- Chat: Ananya Singh -->
-  @if (activeThread() === 'ananya') {
-    <div class="flex flex-col h-full">
-      <div class="flex items-center gap-3 px-4 py-3 border-b-[0.5px] border-border-tertiary bg-background-primary shrink-0">
-        <button (click)="backToList()" class="md:hidden mr-1 text-text-secondary text-[20px] leading-none">←</button>
-        <div class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-[#993556] shrink-0">AS</div>
-        <div class="flex-1">
-          <div class="text-[14px] font-semibold text-text-primary">Ananya Singh</div>
-          <div class="text-[12px] text-text-secondary">Last seen Monday</div>
-        </div>
-        <div class="flex gap-1">
-          <button class="w-[32px] h-[32px] rounded-full hover:bg-background-secondary flex items-center justify-center text-text-secondary text-[16px]">📞</button>
-          <button class="w-[32px] h-[32px] rounded-full hover:bg-background-secondary flex items-center justify-center text-text-secondary text-[16px]">⋯</button>
-        </div>
-      </div>
-      <div class="flex-1 overflow-y-auto bg-background-secondary p-4 flex flex-col gap-3 hide-scrollbar">
-        <div class="text-center text-[11px] text-text-tertiary bg-background-secondary px-3 py-1 mx-auto rounded-full border-[0.5px] border-border-tertiary">Monday</div>
-        <div class="flex gap-2 items-end max-w-[75%]">
-          <div class="w-[24px] h-[24px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#993556] shrink-0">AS</div>
-          <div>
-            <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-[16px] rounded-bl-[4px] px-[12px] py-[8px] text-[13px] text-text-primary">Loved the SignalR demo!</div>
-            <div class="text-[11px] text-text-tertiary mt-1">9:30 AM</div>
+        @if (hasMoreMessages()) {
+          <div class="text-center">
+            <button class="text-[12px] text-[#534AB7] hover:underline bg-transparent border-none cursor-pointer"
+                    [disabled]="loadingMessages()"
+                    (click)="loadMoreMessages()">
+              {{ loadingMessages() ? 'Loading…' : 'Load older messages' }}
+            </button>
           </div>
-        </div>
-        <div class="flex gap-2 items-end max-w-[75%] self-end flex-row-reverse">
-          <div>
-            <div class="bg-[#534AB7] text-white rounded-[16px] rounded-br-[4px] px-[12px] py-[8px] text-[13px]">Thanks so much! More coming soon.</div>
-            <div class="text-[11px] text-text-tertiary mt-1 text-right">9:35 AM</div>
-          </div>
-        </div>
-      </div>
-      <div class="flex items-end gap-2 px-4 py-3 border-t-[0.5px] border-border-tertiary bg-background-primary shrink-0">
-        <button class="w-[32px] h-[32px] rounded-full bg-background-secondary flex items-center justify-center text-text-secondary text-[18px] shrink-0">+</button>
-        <textarea class="flex-1 bg-background-secondary border-[0.5px] border-border-secondary rounded-[20px] px-[14px] py-2 text-[13px] resize-none outline-none focus:border-[#534AB7] text-text-primary placeholder:text-text-tertiary" placeholder="Message Ananya…" rows="1"></textarea>
-        <button class="w-[32px] h-[32px] rounded-full flex items-center justify-center text-text-secondary text-[18px] shrink-0">☺</button>
-        <button class="w-[34px] h-[34px] bg-[#534AB7] rounded-full flex items-center justify-center shrink-0">
-          <svg viewBox="0 0 16 16" fill="white" width="14" height="14"><path d="M2 8L14 2L10 8L14 14L2 8Z"/></svg>
-        </button>
-      </div>
-    </div>
-  }
+        }
 
-  <!-- Chat: Vikram Rao -->
-  @if (activeThread() === 'vikram') {
-    <div class="flex flex-col h-full">
-      <div class="flex items-center gap-3 px-4 py-3 border-b-[0.5px] border-border-tertiary bg-background-primary shrink-0">
-        <button (click)="backToList()" class="md:hidden mr-1 text-text-secondary text-[20px] leading-none">←</button>
-        <div class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-[#BA7517] shrink-0">VR</div>
-        <div class="flex-1">
-          <div class="text-[14px] font-semibold text-text-primary">Vikram Rao</div>
-          <div class="text-[12px] text-text-secondary">Last seen Sunday</div>
-        </div>
-        <div class="flex gap-1">
-          <button class="w-[32px] h-[32px] rounded-full hover:bg-background-secondary flex items-center justify-center text-text-secondary text-[16px]">📞</button>
-          <button class="w-[32px] h-[32px] rounded-full hover:bg-background-secondary flex items-center justify-center text-text-secondary text-[16px]">⋯</button>
-        </div>
-      </div>
-      <div class="flex-1 overflow-y-auto bg-background-secondary p-4 flex flex-col gap-3 hide-scrollbar">
-        <div class="text-center text-[11px] text-text-tertiary bg-background-secondary px-3 py-1 mx-auto rounded-full border-[0.5px] border-border-tertiary">Sunday</div>
-        <div class="flex gap-2 items-end max-w-[75%]">
-          <div class="w-[24px] h-[24px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#BA7517] shrink-0">VR</div>
-          <div>
-            <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-[16px] rounded-bl-[4px] px-[12px] py-[8px] text-[13px] text-text-primary">See you at the meetup!</div>
-            <div class="text-[11px] text-text-tertiary mt-1">11:00 AM</div>
+        @if (messages().length === 0 && !loadingMessages()) {
+          <div class="flex-1 flex items-center justify-center text-text-tertiary text-[13px]">
+            No messages yet — say hello!
           </div>
-        </div>
-        <div class="flex gap-2 items-end max-w-[75%] self-end flex-row-reverse">
-          <div>
-            <div class="bg-[#534AB7] text-white rounded-[16px] rounded-br-[4px] px-[12px] py-[8px] text-[13px]">Definitely — looking forward to it.</div>
-            <div class="text-[11px] text-text-tertiary mt-1 text-right">11:05 AM</div>
-          </div>
-        </div>
+        }
+
+        @for (msg of messages(); track msg.id) {
+          @if (msg.isMine) {
+            <!-- My message (right-aligned) -->
+            <div class="flex gap-2 items-end max-w-[75%] self-end flex-row-reverse">
+              <div>
+                <div class="bg-[#534AB7] text-white rounded-[16px] rounded-br-[4px] px-[12px] py-[8px] text-[13px]">{{ msg.content }}</div>
+                <div class="text-[11px] text-text-tertiary mt-1 text-right">{{ formatTime(msg.createdAt) }}</div>
+              </div>
+            </div>
+          } @else {
+            <!-- Their message (left-aligned) -->
+            <div class="flex gap-2 items-end max-w-[75%]">
+              @if (msg.senderAvatarUrl) {
+                <img [src]="msg.senderAvatarUrl" [alt]="msg.senderDisplayName"
+                     class="w-[24px] h-[24px] rounded-full object-cover shrink-0">
+              } @else {
+                <div class="w-[24px] h-[24px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#534AB7] shrink-0">
+                  {{ initials(msg.senderDisplayName) }}
+                </div>
+              }
+              <div>
+                @if (conv.isGroup) {
+                  <span class="text-[11px] text-[#534AB7] font-medium block mb-[2px]">{{ msg.senderDisplayName }}</span>
+                }
+                <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-[16px] rounded-bl-[4px] px-[12px] py-[8px] text-[13px] text-text-primary">{{ msg.content }}</div>
+                <div class="text-[11px] text-text-tertiary mt-1">{{ formatTime(msg.createdAt) }}</div>
+              </div>
+            </div>
+          }
+        }
+
+        <div #messagesEnd></div>
       </div>
+
+      <!-- Compose -->
       <div class="flex items-end gap-2 px-4 py-3 border-t-[0.5px] border-border-tertiary bg-background-primary shrink-0">
-        <button class="w-[32px] h-[32px] rounded-full bg-background-secondary flex items-center justify-center text-text-secondary text-[18px] shrink-0">+</button>
-        <textarea class="flex-1 bg-background-secondary border-[0.5px] border-border-secondary rounded-[20px] px-[14px] py-2 text-[13px] resize-none outline-none focus:border-[#534AB7] text-text-primary placeholder:text-text-tertiary" placeholder="Message Vikram…" rows="1"></textarea>
-        <button class="w-[32px] h-[32px] rounded-full flex items-center justify-center text-text-secondary text-[18px] shrink-0">☺</button>
-        <button class="w-[34px] h-[34px] bg-[#534AB7] rounded-full flex items-center justify-center shrink-0">
+        <textarea class="flex-1 bg-background-secondary border-[0.5px] border-border-secondary rounded-[20px] px-[14px] py-2 text-[13px] resize-none outline-none focus:border-[#534AB7] text-text-primary placeholder:text-text-tertiary"
+                  [placeholder]="'Message ' + convName(conv) + '…'"
+                  [value]="composeText()"
+                  (input)="onComposeInput($event)"
+                  (keydown)="onComposeKeydown($event)"
+                  rows="1"></textarea>
+        <button (click)="sendMessage()"
+                class="w-[34px] h-[34px] bg-[#534AB7] rounded-full flex items-center justify-center shrink-0 opacity-100 disabled:opacity-40 transition-opacity"
+                [disabled]="!composeText().trim()">
           <svg viewBox="0 0 16 16" fill="white" width="14" height="14"><path d="M2 8L14 2L10 8L14 14L2 8Z"/></svg>
         </button>
       </div>
@@ -525,3 +207,4 @@
   }
 
 </div>
+

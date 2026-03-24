@@ -50,6 +50,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IExploreService, ExploreService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
 
 // ── Controllers + Swagger ────────────────────────────────────────────────────
 builder.Services.AddControllers();
