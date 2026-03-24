@@ -7,7 +7,6 @@ using samvaad_backend.Data;
 using samvaad_backend.Middleware;
 using samvaad_backend.Services;
 using samvaad_backend.Services.Interfaces;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // ── Database ─────────────────────────────────────────────────────────────────
@@ -47,6 +46,8 @@ builder.Services.AddCors(options =>
 
 // ── Application services ─────────────────────────────────────────────────────
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPostService, PostService>();
 
 // ── Controllers + Swagger ────────────────────────────────────────────────────
 builder.Services.AddControllers();

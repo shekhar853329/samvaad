@@ -1,0 +1,95 @@
+<div class="p-[14px] border-b-[0.5px] border-border-tertiary">
+  <!-- Header -->
+  <div class="flex items-start gap-2.5 mb-2">
+    <a [routerLink]="['/users', post().author.username]" class="shrink-0">
+      @if (post().author.avatarUrl) {
+        <img [src]="post().author.avatarUrl" [alt]="post().author.displayName"
+             class="w-[38px] h-[38px] rounded-full object-cover" />
+      } @else {
+        <div class="w-[38px] h-[38px] rounded-full bg-[#534AB7] flex items-center justify-center text-white text-[14px] font-medium">
+          {{ getInitials(post().author.displayName) }}
+        </div>
+      }
+    </a>
+    <div class="flex-1">
+      <div class="text-[13px] font-medium text-text-primary flex items-center gap-1">
+        <a [routerLink]="['/users', post().author.username]" class="hover:underline text-text-primary no-underline">
+          {{ post().author.displayName }}
+        </a>
+        @if (post().author.isVerified) { <span class="text-[#534AB7] text-[11px]">✓</span> }
+        <span class="font-normal text-text-secondary">@{{ post().author.username }}</span>
+      </div>
+      <div class="text-[11px] text-text-tertiary">{{ timeAgo(post().createdAt) }}</div>
+    </div>
+    @if (post().isOwnPost) {
+      <button (click)="deletePost()" [disabled]="actionInProgress === 'delete'"
+              class="text-[13px] text-text-secondary cursor-pointer px-1 hover:text-red-500 transition-colors disabled:opacity-50"
+              title="Delete post">🗑</button>
+    }
+  </div>
+
+  <!-- Content -->
+  @if (post().content) {
+    <div class="text-[14px] text-text-primary leading-relaxed pl-0 md:pl-[50px] mb-1.5">
+      {{ post().content }}
+    </div>
+  }
+
+  <!-- Hashtags -->
+  @if (post().hashtags.length > 0) {
+    <div class="pl-0 md:pl-[50px] mb-2 flex flex-wrap gap-1">
+      @for (tag of post().hashtags; track tag) {
+        <span class="inline-block bg-background-secondary text-[#534AB7] text-[11px] px-2 py-0.5 rounded-[20px] cursor-pointer hover:bg-[#e0e5f5]">
+          #{{ tag }}
+        </span>
+      }
+    </div>
+  }
+
+  <!-- Media -->
+  @if (post().media.length > 0) {
+    <div class="ml-0 md:ml-[50px] mb-2.5 rounded-md overflow-hidden"
+         [class]="post().media.length > 1 ? 'grid grid-cols-2 gap-1' : ''">
+      @for (m of post().media; track m.id) {
+        @if (m.mediaType === 'Image' || m.mediaType === 'Gif') {
+          <img [src]="m.url" [alt]="'Media ' + m.displayOrder"
+               class="w-full object-cover rounded-md max-h-[320px]" />
+        } @else if (m.mediaType === 'Video') {
+          <video [src]="m.url" controls class="w-full rounded-md max-h-[320px]"></video>
+        }
+      }
+    </div>
+  }
+
+  <!-- Actions -->
+  <div class="flex gap-4 md:gap-5 mt-2.5 pl-0 md:pl-[50px]">
+    <!-- Like -->
+    <button (click)="toggleLike()" [disabled]="actionInProgress === 'like'"
+            [class]="post().isLiked
+              ? 'flex items-center gap-1 text-[12px] cursor-pointer text-[#e74c3c] font-medium transition-colors disabled:opacity-50'
+              : 'flex items-center gap-1 text-[12px] cursor-pointer text-text-secondary hover:text-[#e74c3c] transition-colors disabled:opacity-50'">
+      {{ post().isLiked ? '❤' : '🤍' }} {{ formatCount(post().likesCount) }}
+    </button>
+
+    <!-- Comment count (read-only for now) -->
+    <div class="flex items-center gap-1 text-[12px] text-text-secondary cursor-pointer hover:text-[#534AB7] transition-colors">
+      💬 {{ formatCount(post().commentsCount) }}
+    </div>
+
+    <!-- Repost -->
+    <button (click)="toggleRepost()" [disabled]="actionInProgress === 'repost'"
+            [class]="post().isReposted
+              ? 'flex items-center gap-1 text-[12px] cursor-pointer text-[#0F6E56] font-medium transition-colors disabled:opacity-50'
+              : 'flex items-center gap-1 text-[12px] cursor-pointer text-text-secondary hover:text-[#0F6E56] transition-colors disabled:opacity-50'">
+      ↗ {{ formatCount(post().repostsCount) }}
+    </button>
+
+    <!-- Bookmark -->
+    <button (click)="toggleBookmark()" [disabled]="actionInProgress === 'bookmark'"
+            [class]="post().isBookmarked
+              ? 'flex items-center gap-1 text-[12px] cursor-pointer text-[#534AB7] font-medium transition-colors ml-auto disabled:opacity-50'
+              : 'flex items-center gap-1 text-[12px] cursor-pointer text-text-secondary hover:text-[#534AB7] transition-colors ml-auto disabled:opacity-50'">
+      {{ post().isBookmarked ? '🔖' : '🔖' }}
+    </button>
+  </div>
+</div>

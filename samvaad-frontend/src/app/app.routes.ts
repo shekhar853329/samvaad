@@ -16,7 +16,7 @@ export const routes: Routes = [
 
   // Protected routes
   { path: '', component: Feed, canActivate: [authGuard] },
-  { path: 'profile', component: Profile, canActivate: [authGuard] },
+  { path: 'users/:username', component: Profile, canActivate: [authGuard] },
   { path: 'notifications', component: Notifications, canActivate: [authGuard] },
   { path: 'settings', component: Settings, canActivate: [authGuard] },
   { path: 'messages', component: Messages, canActivate: [authGuard] },

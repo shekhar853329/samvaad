@@ -43,69 +43,65 @@
   <!-- Compose -->
   <div class="p-[14px] border-b-[0.5px] border-border-tertiary">
     <div class="flex items-start gap-2.5">
-      <div class="w-[38px] h-[38px] bg-[#534AB7] flex items-center justify-center text-white text-[14px] font-medium rounded-full shrink-0">AS</div>
-      <div class="flex-1 bg-background-secondary border-[0.5px] border-border-tertiary rounded-lg px-3 py-[9px] text-[14px] text-text-secondary cursor-text">What's on your mind, Aryan?</div>
+      @if (auth.user()?.avatarUrl) {
+        <img [src]="auth.user()!.avatarUrl!" [alt]="auth.user()!.displayName"
+             class="w-[38px] h-[38px] rounded-full object-cover shrink-0" />
+      } @else {
+        <div class="w-[38px] h-[38px] bg-[#534AB7] flex items-center justify-center text-white text-[14px] font-medium rounded-full shrink-0">
+          {{ getInitials(auth.user()?.displayName ?? 'U') }}
+        </div>
+      }
+      @if (!composing()) {
+        <div class="flex-1 bg-background-secondary border-[0.5px] border-border-tertiary rounded-lg px-3 py-[9px] text-[14px] text-text-secondary cursor-text"
+             (click)="composing.set(true)">
+          What's on your mind, {{ greetingName() }}?
+        </div>
+      } @else {
+        <textarea [(ngModel)]="composeContent" [disabled]="posting()"
+                  placeholder="What's on your mind?"
+                  class="flex-1 bg-background-secondary border-[0.5px] border-border-tertiary rounded-lg px-3 py-[9px] text-[14px] text-text-primary resize-none min-h-[80px] outline-none focus:border-[#534AB7] transition-colors"
+                  maxlength="500" autofocus></textarea>
+      }
     </div>
-    <div class="flex justify-between items-center mt-2.5 pl-0 md:pl-[42px]">
-      <div class="flex gap-2.5">
-        <span class="text-[12px] text-[#534AB7] cursor-pointer font-medium hover:underline">📷 Photo</span>
-        <span class="text-[12px] text-[#0F6E56] cursor-pointer font-medium hover:underline">📎 File</span>
-        <span class="text-[12px] text-[#993C1D] cursor-pointer font-medium hover:underline">🔖 Tag</span>
+    @if (composing()) {
+      <div class="flex justify-between items-center mt-2.5 pl-0 md:pl-[50px]">
+        <div class="flex gap-2.5">
+          <span class="text-[12px] text-text-tertiary">{{ composeContent.length }}/500</span>
+        </div>
+        <div class="flex gap-2">
+          <button (click)="composing.set(false); composeContent = ''"
+                  class="px-3 py-1.5 text-[13px] text-text-secondary cursor-pointer hover:text-text-primary transition-colors">
+            Cancel
+          </button>
+          <button (click)="submitPost()" [disabled]="!composeContent.trim() || posting()"
+                  class="bg-[#534AB7] text-white border-none rounded-[20px] px-4 py-1.5 text-[13px] font-medium cursor-pointer hover:bg-[#463D99] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            {{ posting() ? 'Posting...' : 'Post' }}
+          </button>
+        </div>
       </div>
-      <button class="bg-[#534AB7] text-white border-none rounded-[20px] px-4 py-1.5 text-[13px] font-medium cursor-pointer hover:bg-[#463D99] transition-colors">Post</button>
-    </div>
+    }
   </div>
 
-  <!-- Post 1 -->
-  <div class="p-[14px] border-b-[0.5px] border-border-tertiary">
-    <div class="flex items-start gap-2.5 mb-2">
-      <div class="w-[38px] h-[38px] bg-[#0F6E56] flex items-center justify-center text-white text-[14px] font-medium rounded-full shrink-0">PK</div>
-      <div class="flex-1">
-        <div class="text-[13px] font-medium text-text-primary">Priya Kapoor <span class="font-normal text-text-secondary">@priya.k</span></div>
-        <div class="text-[12px] text-text-tertiary">2 min ago</div>
+  <!-- Posts -->
+  @if (loading() && posts().length === 0) {
+    <div class="p-8 text-center text-text-secondary text-[14px]">Loading feed...</div>
+  } @else if (posts().length === 0) {
+    <div class="p-8 text-center text-text-secondary text-[14px]">
+      No posts yet. Follow people to see their posts here.
+    </div>
+  } @else {
+    @for (post of posts(); track post.id) {
+      <app-post-card [post]="post"
+                     (postUpdated)="onPostUpdated($event)"
+                     (postDeleted)="onPostDeleted($event)" />
+    }
+    @if (hasMore()) {
+      <div class="p-4 text-center">
+        <button (click)="loadMore()" [disabled]="loading()"
+                class="text-[13px] text-[#534AB7] cursor-pointer hover:underline disabled:opacity-50">
+          {{ loading() ? 'Loading...' : 'Load more' }}
+        </button>
       </div>
-      <div class="text-[18px] text-text-secondary cursor-pointer px-1">···</div>
-    </div>
-    <div class="text-[14px] text-text-primary leading-relaxed pl-0 md:pl-[42px]">
-      Just shipped the new Angular 18 feature — standalone components are a game changer. Loving how clean the code is now! 
-      <div class="mt-1">
-        <span class="inline-block bg-background-secondary text-[#534AB7] text-[11px] px-2 py-0.5 rounded-[20px] mr-1 mt-1 cursor-pointer hover:bg-[#e0e5f5]">#Angular</span>
-        <span class="inline-block bg-background-secondary text-[#534AB7] text-[11px] px-2 py-0.5 rounded-[20px] mr-1 mt-1 cursor-pointer hover:bg-[#e0e5f5]">#WebDev</span>
-      </div>
-    </div>
-    <div class="my-2.5 ml-0 md:ml-[42px] rounded-md overflow-hidden h-[160px] md:h-[120px] flex items-center justify-center bg-gradient-to-br from-[#AFA9EC] to-[#5DCAA5]">
-      <span class="text-[12px] text-white/80 font-medium">code screenshot</span>
-    </div>
-    <div class="flex gap-4 md:gap-5 mt-2.5 pl-0 md:pl-[42px]">
-      <div class="flex items-center gap-1 text-[12px] text-text-secondary cursor-pointer hover:text-[#534AB7] transition-colors">❤ 142</div>
-      <div class="flex items-center gap-1 text-[12px] text-text-secondary cursor-pointer hover:text-[#534AB7] transition-colors">💬 28</div>
-      <div class="flex items-center gap-1 text-[12px] text-text-secondary cursor-pointer hover:text-[#534AB7] transition-colors">↗ Share</div>
-      <div class="flex items-center gap-1 text-[12px] text-text-secondary cursor-pointer hover:text-[#534AB7] ml-auto transition-colors">🔖</div>
-    </div>
-  </div>
-
-  <!-- Post 2 -->
-  <div class="p-[14px] border-b-[0.5px] border-border-tertiary md:border-none">
-    <div class="flex items-start gap-2.5 mb-2">
-      <div class="w-[38px] h-[38px] bg-[#185FA5] flex items-center justify-center text-white text-[14px] font-medium rounded-full shrink-0">NM</div>
-      <div class="flex-1">
-        <div class="text-[13px] font-medium text-text-primary">Nikhil Mehta <span class="font-normal text-text-secondary">@nikhil.dev</span></div>
-        <div class="text-[12px] text-text-tertiary">18 min ago</div>
-      </div>
-      <div class="text-[18px] text-text-secondary cursor-pointer px-1">···</div>
-    </div>
-    <div class="text-[14px] text-text-primary leading-relaxed pl-0 md:pl-[42px]">
-      Hot take: SignalR + Redis backplane is still the most underrated real-time stack for .NET teams. No extra infra, no learning curve — just works. 
-      <div class="mt-1">
-        <span class="inline-block bg-background-secondary text-[#534AB7] text-[11px] px-2 py-0.5 rounded-[20px] mr-1 mt-1 cursor-pointer hover:bg-[#e0e5f5]">#dotnet</span>
-        <span class="inline-block bg-background-secondary text-[#534AB7] text-[11px] px-2 py-0.5 rounded-[20px] mr-1 mt-1 cursor-pointer hover:bg-[#e0e5f5]">#SignalR</span>
-      </div>
-    </div>
-    <div class="flex gap-4 md:gap-5 mt-2.5 pl-0 md:pl-[42px]">
-      <div class="flex items-center gap-1 text-[12px] text-text-secondary cursor-pointer hover:text-[#534AB7] transition-colors">❤ 87</div>
-      <div class="flex items-center gap-1 text-[12px] text-text-secondary cursor-pointer hover:text-[#534AB7] transition-colors">💬 14</div>
-      <div class="flex items-center gap-1 text-[12px] text-text-secondary cursor-pointer hover:text-[#534AB7] transition-colors">↗ Share</div>
-      <div class="flex items-center gap-1 text-[12px] text-text-secondary cursor-pointer hover:text-[#534AB7] ml-auto transition-colors">🔖</div>
-    </div>
-  </div>
+    }
+  }
 </div>

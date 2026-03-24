@@ -31,7 +31,7 @@
     Messages
     <span class="ml-auto min-w-[20px] h-[20px] bg-[#e74c3c] text-white text-[10px] font-medium rounded-full flex items-center justify-center px-[4px]">2</span>
   </a>
-  <a routerLink="/profile" routerLinkActive="bg-[#EEEDFE] !text-[#534AB7]"
+  <a [routerLink]="['/users', auth.user()?.username]" routerLinkActive="bg-[#EEEDFE] !text-[#534AB7]"
      class="flex items-center gap-3 px-4 py-[10px] rounded-[12px] text-[14px] font-medium text-[#6b6880] transition-all hover:bg-[#EEEDFE] hover:text-[#534AB7] no-underline">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
