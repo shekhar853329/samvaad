@@ -119,6 +119,11 @@
             <div class="text-[16px] md:text-[18px] font-semibold text-text-primary">{{ formatCount(p.followingCount) }}</div>
             <div class="text-text-secondary text-[11px]">Following</div>
           </div>
+          <div class="text-center md:text-left cursor-pointer hover:underline"
+               [routerLink]="['/users', p.username, 'friends']">
+            <div class="text-[16px] md:text-[18px] font-semibold text-text-primary">{{ formatCount(p.friendsCount) }}</div>
+            <div class="text-text-secondary text-[11px]">Friends</div>
+          </div>
           <div class="text-center md:text-left">
             <div class="text-[16px] md:text-[18px] font-semibold text-text-primary">{{ formatCount(p.totalViewsCount) }}</div>
             <div class="text-text-secondary text-[11px]">Views</div>

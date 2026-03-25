@@ -74,4 +74,8 @@ export class UserService {
   getPendingFriendRequests(): Observable<FriendRequestItem[]> {
     return this.api.get<FriendRequestItem[]>('/friends/requests');
   }
+
+  getFriendsByUsername(username: string, page = 1, pageSize = 20): Observable<FriendRequestItem[]> {
+    return this.api.get<FriendRequestItem[]>(`/friends/users/${username}`, { page, pageSize });
+  }
 }

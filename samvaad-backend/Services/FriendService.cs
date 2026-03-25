@@ -177,7 +177,7 @@ public class FriendService(AppDbContext db, INotificationService notificationSer
     {
         return await db.Friendships
             .AsNoTracking()
-            .Where(f => f.UserId == userId)         // single-column indexed lookup
+            .Where(f => f.UserId == userId)
             .OrderByDescending(f => f.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
@@ -191,5 +191,19 @@ public class FriendService(AppDbContext db, INotificationService notificationSer
                 f.Friend.IsVerified,
                 f.CreatedAt))
             .ToListAsync();
+    }
+
+    public async Task<IReadOnlyList<FriendRequestDto>> GetFriendsByUsernameAsync(string username, int page, int pageSize)
+    {
+        var user = await db.Users.AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Username == username)
+            ?? throw new AppException("User not found.", 404);
+
+        return await GetFriendsAsync(user.Id, page, pageSize);
+    }
+
+    public async Task<int> GetFriendsCountAsync(Guid userId)
+    {
+        return await db.Friendships.CountAsync(f => f.UserId == userId);
     }
 }

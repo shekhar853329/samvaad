@@ -14,6 +14,7 @@ public record UserProfileDto(
     int PostsCount,
     int FollowersCount,
     int FollowingCount,
+    int FriendsCount,
     long TotalViewsCount,
     DateTime JoinedAt,
     bool IsFollowing,

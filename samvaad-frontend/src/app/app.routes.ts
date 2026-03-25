@@ -7,6 +7,7 @@ import { Messages } from './messages/messages';
 import { Explore } from './explore/explore';
 import { Login } from './auth/login/login';
 import { Register } from './auth/register/register';
+import { FriendsPage } from './friends-page/friends-page';
 import { authGuard, guestGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -17,6 +18,7 @@ export const routes: Routes = [
   // Protected routes
   { path: '', component: Feed, canActivate: [authGuard] },
   { path: 'users/:username', component: Profile, canActivate: [authGuard] },
+  { path: 'users/:username/friends', component: FriendsPage, canActivate: [authGuard] },
   { path: 'notifications', component: Notifications, canActivate: [authGuard] },
   { path: 'settings', component: Settings, canActivate: [authGuard] },
   { path: 'messages', component: Messages, canActivate: [authGuard] },

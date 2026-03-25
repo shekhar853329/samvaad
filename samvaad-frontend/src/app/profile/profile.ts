@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../core/services/user.service';
 import { AuthService } from '../core/services/auth.service';
@@ -10,7 +10,7 @@ import { PostCard } from '../shared/post-card/post-card';
 
 @Component({
   selector: 'app-profile',
-  imports: [CommonModule, PostCard],
+  imports: [CommonModule, PostCard, RouterLink],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })

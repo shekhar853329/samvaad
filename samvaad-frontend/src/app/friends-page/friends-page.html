@@ -1,0 +1,75 @@
+<div class="max-w-[680px] mx-auto font-sans">
+
+  <!-- Header -->
+  <div class="flex items-center gap-3 px-4 py-3 bg-background-primary border-b-[0.5px] border-border-tertiary sticky top-0 z-10">
+    <button (click)="goBack()"
+            class="text-text-secondary hover:text-text-primary transition-colors cursor-pointer">
+      ←
+    </button>
+    <div>
+      <div class="text-[15px] font-semibold text-text-primary">Friends</div>
+      <div class="text-[12px] text-text-secondary">@{{ username() }}</div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (loading() && friends().length === 0) {
+    <div class="flex items-center justify-center py-16 text-text-secondary text-[13px]">Loading…</div>
+  }
+
+  <!-- Error -->
+  @if (error()) {
+    <div class="flex items-center justify-center py-16 text-text-secondary text-[13px]">{{ error() }}</div>
+  }
+
+  <!-- Empty -->
+  @if (!loading() && !error() && friends().length === 0) {
+    <div class="flex flex-col items-center justify-center py-16 gap-2">
+      <div class="text-[32px]">🤝</div>
+      <div class="text-text-secondary text-[13px]">No friends yet.</div>
+    </div>
+  }
+
+  <!-- Friends list -->
+  @if (friends().length > 0) {
+    <div class="bg-background-primary md:border-[0.5px] border-b-[0.5px] border-border-tertiary md:rounded-lg overflow-hidden mt-3">
+      @for (friend of friends(); track friend.senderId) {
+        <div [routerLink]="['/users', friend.senderUsername]"
+             class="flex items-center gap-3 px-4 py-3 hover:bg-background-secondary transition-colors cursor-pointer border-b-[0.5px] border-border-tertiary last:border-none">
+
+          <!-- Avatar -->
+          @if (friend.senderAvatarUrl) {
+            <img [src]="friend.senderAvatarUrl" [alt]="friend.senderDisplayName"
+                 class="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+          } @else {
+            <div class="w-10 h-10 rounded-full bg-[#534AB7] flex items-center justify-center text-[15px] font-medium text-white flex-shrink-0">
+              {{ getInitials(friend.senderDisplayName) }}
+            </div>
+          }
+
+          <!-- Info -->
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-1">
+              <span class="text-[14px] font-medium text-text-primary truncate">{{ friend.senderDisplayName }}</span>
+              @if (friend.senderIsVerified) {
+                <span class="text-[#534AB7] text-[12px] flex-shrink-0">✓</span>
+              }
+            </div>
+            <div class="text-[12px] text-text-secondary">@{{ friend.senderUsername }}</div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Load more -->
+    @if (hasMore()) {
+      <div class="py-4 text-center">
+        <button (click)="loadMore()" [disabled]="loading()"
+                class="text-[13px] text-[#534AB7] cursor-pointer hover:underline disabled:opacity-50">
+          {{ loading() ? 'Loading…' : 'Load more' }}
+        </button>
+      </div>
+    }
+  }
+
+</div>

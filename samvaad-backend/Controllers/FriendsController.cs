@@ -28,6 +28,14 @@ public class FriendsController(IFriendService friendService) : ControllerBase
         return Ok(friends);
     }
 
+    /// <summary>Get the friends list of any user by username.</summary>
+    [HttpGet("users/{username}")]
+    public async Task<IActionResult> GetFriendsByUsername(string username, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+    {
+        var friends = await friendService.GetFriendsByUsernameAsync(username, page, pageSize);
+        return Ok(friends);
+    }
+
     /// <summary>Send a friend request to the given username.</summary>
     [HttpPost("requests/{username}")]
     public async Task<IActionResult> SendRequest(string username)

@@ -14,6 +14,7 @@ export interface UserProfile {
   postsCount: number;
   followersCount: number;
   followingCount: number;
+  friendsCount: number;
   totalViewsCount: number;
   joinedAt: string;
   isFollowing: boolean;

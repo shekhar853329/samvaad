@@ -22,6 +22,7 @@ public class UserService(AppDbContext db, INotificationService notifications, IF
         bool isFollowing = false;
         bool isOwnProfile = requestingUserId.HasValue && requestingUserId.Value == user.Id;
         var friendRelation = FriendRequestRelation.None;
+        int friendsCount = await friendService.GetFriendsCountAsync(user.Id);
 
         if (requestingUserId.HasValue && !isOwnProfile)
         {
@@ -30,7 +31,7 @@ public class UserService(AppDbContext db, INotificationService notifications, IF
             friendRelation = await friendService.GetRelationAsync(requestingUserId.Value, user.Id);
         }
 
-        return MapToProfileDto(user, isFollowing, isOwnProfile, friendRelation);
+        return MapToProfileDto(user, isFollowing, isOwnProfile, friendRelation, friendsCount);
     }
 
     public async Task<UserProfileDto> GetMyProfileAsync(Guid userId)
@@ -41,7 +42,8 @@ public class UserService(AppDbContext db, INotificationService notifications, IF
             .FirstOrDefaultAsync(u => u.Id == userId)
             ?? throw new AppException("User not found.", 404);
 
-        return MapToProfileDto(user, isFollowing: false, isOwnProfile: true, FriendRequestRelation.None);
+        return MapToProfileDto(user, isFollowing: false, isOwnProfile: true, FriendRequestRelation.None,
+            await friendService.GetFriendsCountAsync(user.Id));
     }
 
     public async Task<UserProfileDto> UpdateProfileAsync(Guid userId, UpdateProfileRequest request)
@@ -89,7 +91,8 @@ public class UserService(AppDbContext db, INotificationService notifications, IF
         // Reload tags after save
         await db.Entry(user).Collection(u => u.Tags).LoadAsync();
 
-        return MapToProfileDto(user, isFollowing: false, isOwnProfile: true, FriendRequestRelation.None);
+        return MapToProfileDto(user, isFollowing: false, isOwnProfile: true, FriendRequestRelation.None,
+            await friendService.GetFriendsCountAsync(user.Id));
     }
 
     public async Task FollowAsync(Guid followerId, string targetUsername)
@@ -222,10 +225,10 @@ public class UserService(AppDbContext db, INotificationService notifications, IF
 
     // ── Helpers ──────────────────────────────────────────────────────────────
 
-    private static UserProfileDto MapToProfileDto(User u, bool isFollowing, bool isOwnProfile, FriendRequestRelation friendRelation) =>
+    private static UserProfileDto MapToProfileDto(User u, bool isFollowing, bool isOwnProfile, FriendRequestRelation friendRelation, int friendsCount) =>
         new(u.Id, u.Username, u.DisplayName, u.AvatarUrl, u.CoverImageUrl,
             u.Bio, u.Location, u.Website, u.IsVerified, u.IsPrivate,
-            u.PostsCount, u.FollowersCount, u.FollowingCount, u.TotalViewsCount,
+            u.PostsCount, u.FollowersCount, u.FollowingCount, friendsCount, u.TotalViewsCount,
             u.JoinedAt, isFollowing, isOwnProfile,
             (u.Tags ?? (ICollection<UserTag>)[]).Select(t => t.Name).ToList(),
             friendRelation.ToString());

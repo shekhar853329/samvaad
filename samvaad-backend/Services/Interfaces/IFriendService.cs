@@ -27,4 +27,10 @@ public interface IFriendService
 
     /// <summary>Get the list of friends for <paramref name="userId"/>.</summary>
     Task<IReadOnlyList<FriendRequestDto>> GetFriendsAsync(Guid userId, int page, int pageSize);
+
+    /// <summary>Get friends of a user identified by username (public endpoint).</summary>
+    Task<IReadOnlyList<FriendRequestDto>> GetFriendsByUsernameAsync(string username, int page, int pageSize);
+
+    /// <summary>Get the total number of friends for <paramref name="userId"/>.</summary>
+    Task<int> GetFriendsCountAsync(Guid userId);
 }
