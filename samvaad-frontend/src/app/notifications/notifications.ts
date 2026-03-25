@@ -1,4 +1,5 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { NotificationService } from '../core/services/notification.service';
 import { Notification } from '../core/models/notification.models';
 
@@ -23,6 +24,7 @@ const TAB_TYPES: Record<Tab, string | undefined> = {
 })
 export class Notifications implements OnInit {
   private notifService = inject(NotificationService);
+  private router = inject(Router);
 
   readonly tabs = TABS;
   readonly tabLabels = TAB_LABELS;
@@ -49,12 +51,16 @@ export class Notifications implements OnInit {
     this.load(false);
   }
 
-  markRead(n: Notification): void {
-    if (n.isRead) return;
-    this.notifService.markAsRead(n.id).subscribe(() => {
-      this.items.update(list => list.map(x => x.id === n.id ? { ...x, isRead: true } : x));
-      this.notifService.unreadCount.update(c => Math.max(0, c - 1));
-    });
+  handleClick(n: Notification): void {
+    if (!n.isRead) {
+      this.notifService.markAsRead(n.id).subscribe(() => {
+        this.items.update(list => list.map(x => x.id === n.id ? { ...x, isRead: true } : x));
+        this.notifService.unreadCount.update(c => Math.max(0, c - 1));
+      });
+    }
+    if (n.actor) {
+      this.router.navigate(['/users', n.actor.username]);
+    }
   }
 
   markAllRead(): void {

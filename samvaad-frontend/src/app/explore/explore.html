@@ -58,18 +58,20 @@
               <div class="grid grid-cols-1 sm:grid-cols-2">
                 @for (user of searchResultUsers(); track user.id) {
                   <div class="flex items-center gap-[10px] px-[14px] py-[10px] border-b-[0.5px] border-border-tertiary">
-                    @if (user.avatarUrl) {
-                      <img [src]="user.avatarUrl" [alt]="user.displayName"
-                           class="w-[32px] h-[32px] rounded-full object-cover shrink-0" />
-                    } @else {
-                      <div class="w-[32px] h-[32px] rounded-full bg-[#534AB7] flex items-center justify-center text-white text-[12px] font-medium shrink-0">
-                        {{ getInitials(user.displayName) }}
+                    <a [routerLink]="['/users', user.username]" class="flex items-center gap-[10px] flex-1 min-w-0 no-underline">
+                      @if (user.avatarUrl) {
+                        <img [src]="user.avatarUrl" [alt]="user.displayName"
+                             class="w-[32px] h-[32px] rounded-full object-cover shrink-0" />
+                      } @else {
+                        <div class="w-[32px] h-[32px] rounded-full bg-[#534AB7] flex items-center justify-center text-white text-[12px] font-medium shrink-0">
+                          {{ getInitials(user.displayName) }}
+                        </div>
+                      }
+                      <div class="min-w-0">
+                        <div class="text-[13px] font-medium text-text-primary truncate">{{ user.displayName }}</div>
+                        <div class="text-[11px] text-text-secondary">@{{ user.username }}</div>
                       </div>
-                    }
-                    <div class="flex-1 min-w-0">
-                      <div class="text-[13px] font-medium text-text-primary truncate">{{ user.displayName }}</div>
-                      <div class="text-[11px] text-text-secondary">@{{ user.username }}</div>
-                    </div>
+                    </a>
                     <button (click)="toggleFollow(user)" [disabled]="followInProgress.has(user.id)"
                             class="border-[0.5px] rounded-[20px] px-[14px] py-[5px] text-[12px] cursor-pointer shrink-0 transition-colors disabled:opacity-50"
                             [class]="user.isFollowing
@@ -116,18 +118,20 @@
             @for (user of suggestedPeople(); track user.id; let i = $index) {
               <div class="flex items-center gap-[10px] px-[14px] py-[10px] border-b-[0.5px] border-border-tertiary"
                    [class]="i % 2 === 0 ? 'sm:border-r-[0.5px] sm:border-border-tertiary' : ''">
-                @if (user.avatarUrl) {
-                  <img [src]="user.avatarUrl" [alt]="user.displayName"
-                       class="w-[32px] h-[32px] rounded-full object-cover shrink-0" />
-                } @else {
-                  <div class="w-[32px] h-[32px] rounded-full bg-[#534AB7] flex items-center justify-center text-white text-[12px] font-medium shrink-0">
-                    {{ getInitials(user.displayName) }}
+                <a [routerLink]="['/users', user.username]" class="flex items-center gap-[10px] flex-1 min-w-0 no-underline">
+                  @if (user.avatarUrl) {
+                    <img [src]="user.avatarUrl" [alt]="user.displayName"
+                         class="w-[32px] h-[32px] rounded-full object-cover shrink-0" />
+                  } @else {
+                    <div class="w-[32px] h-[32px] rounded-full bg-[#534AB7] flex items-center justify-center text-white text-[12px] font-medium shrink-0">
+                      {{ getInitials(user.displayName) }}
+                    </div>
+                  }
+                  <div class="min-w-0">
+                    <div class="text-[13px] font-medium text-text-primary truncate">{{ user.displayName }}</div>
+                    <div class="text-[11px] text-text-secondary">@{{ user.username }}</div>
                   </div>
-                }
-                <div class="flex-1 min-w-0">
-                  <div class="text-[13px] font-medium text-text-primary truncate">{{ user.displayName }}</div>
-                  <div class="text-[11px] text-text-secondary">@{{ user.username }}</div>
-                </div>
+                </a>
                 <button (click)="toggleFollow(user)" [disabled]="followInProgress.has(user.id)"
                         class="border-[0.5px] rounded-[20px] px-[14px] py-[5px] text-[12px] cursor-pointer shrink-0 transition-colors disabled:opacity-50"
                         [class]="user.isFollowing

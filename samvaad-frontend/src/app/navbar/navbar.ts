@@ -1,17 +1,20 @@
 import { Component, signal, HostListener, inject, OnInit, OnDestroy } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../core/services/auth.service';
 import { NotificationService } from '../core/services/notification.service';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink],
+  imports: [RouterLink, FormsModule],
   templateUrl: './navbar.html'
 })
 export class Navbar implements OnInit, OnDestroy {
   dropdownOpen = signal(false);
+  navSearchQuery = '';
   protected auth = inject(AuthService);
   protected notifService = inject(NotificationService);
+  private router = inject(Router);
   private pollTimer: ReturnType<typeof setInterval> | null = null;
 
   ngOnInit(): void {
@@ -26,6 +29,13 @@ export class Navbar implements OnInit, OnDestroy {
   @HostListener('document:click')
   closeDropdown() {
     this.dropdownOpen.set(false);
+  }
+
+  performSearch(): void {
+    const q = this.navSearchQuery.trim();
+    if (!q) return;
+    this.router.navigate(['/explore'], { queryParams: { q } });
+    this.navSearchQuery = '';
   }
 
   logout(): void {

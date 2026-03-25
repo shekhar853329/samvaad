@@ -3,18 +3,19 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import { ExploreService } from '../core/services/explore.service';
 import { UserService } from '../core/services/user.service';
 import { TrendingHashtag } from '../core/models/explore.models';
 import { Post } from '../core/models/post.models';
 import { FollowerUser } from '../core/models/user.models';
 import { PostCard } from '../shared/post-card/post-card';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-explore',
   standalone: true,
-  imports: [CommonModule, FormsModule, PostCard],
+  imports: [CommonModule, FormsModule, PostCard, RouterLink],
   templateUrl: './explore.html'
 })
 export class Explore implements OnInit, OnDestroy {
@@ -54,13 +55,18 @@ export class Explore implements OnInit, OnDestroy {
     ).subscribe(query => this.executeSearch(query));
     this.subs.push(searchSub);
 
-    // Pre-fill search from query param (e.g. from trending widget)
-    const q = this.route.snapshot.queryParamMap.get('q');
-    if (q) {
-      this.searchQuery = q;
-      this.isSearching.set(true);
-      this.executeSearch(q);
-    }
+    // React to ?q= query param — fires on init AND whenever navbar navigates here again
+    const routeSub = this.route.queryParamMap.subscribe(params => {
+      const q = params.get('q') ?? '';
+      if (q) {
+        this.searchQuery = q;
+        this.isSearching.set(true);
+        this.executeSearch(q);
+      } else if (!this.searchQuery) {
+        this.isSearching.set(false);
+      }
+    });
+    this.subs.push(routeSub);
 
     this.loadTrendingData();
   }

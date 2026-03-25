@@ -18,7 +18,9 @@
       </svg>
     </span>
     <input class="w-full h-[36px] bg-[#F7F7FB] border border-[rgba(83,74,183,0.12)] rounded-[20px] pl-8 pr-[14px] text-[13.5px] text-[#18162e] outline-none transition-all focus:border-[#534AB7] focus:bg-white placeholder:text-[#a09db8]"
-           type="text" placeholder="Search people, posts, topics…">
+               type="text" placeholder="Search people, posts, topics…"
+               [(ngModel)]="navSearchQuery"
+               (keydown.enter)="performSearch()">
   </div>
 
   <!-- Right Controls -->
@@ -43,7 +45,7 @@
             <div class="text-[13.5px] font-medium text-[#18162e]">Aryan Sharma</div>
             <div class="text-[12px] text-[#a09db8] mt-[2px]">@aryan.dev · Patna, India</div>
           </div>
-          <a routerLink="/profile" (click)="dropdownOpen.set(false)" class="flex items-center gap-[10px] px-[15px] py-[10px] text-[13px] text-[#6b6880] hover:bg-[#F7F7FB] hover:text-[#534AB7] transition-all no-underline cursor-pointer">
+          <a [routerLink]="['/users', auth.user()?.username]" (click)="dropdownOpen.set(false)" class="flex items-center gap-[10px] px-[15px] py-[10px] text-[13px] text-[#6b6880] hover:bg-[#F7F7FB] hover:text-[#534AB7] transition-all no-underline cursor-pointer">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
             View profile
           </a>
