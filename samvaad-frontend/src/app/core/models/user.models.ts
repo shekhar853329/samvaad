@@ -16,6 +16,7 @@ export interface UserProfile {
   joinedAt: string;
   isFollowing: boolean;
   isOwnProfile: boolean;
+  tags: string[];
 }
 
 export interface FollowerUser {
@@ -28,10 +29,12 @@ export interface FollowerUser {
 }
 
 export interface UpdateProfileRequest {
+  username?: string;
   displayName?: string;
   bio?: string;
   location?: string;
   website?: string;
   avatarUrl?: string;
   coverImageUrl?: string;
+  tags?: string[];
 }

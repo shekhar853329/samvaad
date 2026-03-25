@@ -1,39 +1,64 @@
-<div class="text-[16px] font-medium text-text-primary mb-1">Account</div>
+<div class="sticky top-0 z-10 bg-background-primary px-4 md:px-6 py-3 border-b-[0.5px] border-border-tertiary flex items-center">
+  <div class="text-[16px] font-medium text-text-primary">Account</div>
+</div>
+<div class="px-4 md:px-6 py-4">
 <div class="text-[13px] text-text-secondary mb-5">Email, password, and account management.</div>
 
+<!-- Email -->
 <div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
-  <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Login details</div>
+  <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Email address</div>
+  @if (emailSuccess()) {
+    <div class="mx-[14px] mt-3 px-3 py-2 rounded-md bg-[#EEFAF4] border-[0.5px] border-[#6FCF97] text-[12px] text-[#1A6B3C]">{{ emailSuccess() }}</div>
+  }
+  @if (emailError()) {
+    <div class="mx-[14px] mt-3 px-3 py-2 rounded-md bg-[#FFF5F5] border-[0.5px] border-[#f5c6cb] text-[12px] text-[#842029]">{{ emailError() }}</div>
+  }
   <div class="flex flex-col gap-1.5 px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
-    <label class="text-[12px] font-medium text-text-secondary">Email address</label>
-    <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-[#534AB7]" type="email" value="aryan.sharma@email.com">
+    <label class="text-[12px] font-medium text-text-secondary">Current email</label>
+    <div class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-secondary bg-background-secondary select-all">{{ email() }}</div>
   </div>
   <div class="flex flex-col gap-1.5 px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
+    <label class="text-[12px] font-medium text-text-secondary">New email address</label>
+    <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-[#534AB7]" type="email" placeholder="new@email.com" [ngModel]="newEmail()" (ngModelChange)="newEmail.set($event)">
+  </div>
+  <div class="flex flex-col gap-1.5 px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
+    <label class="text-[12px] font-medium text-text-secondary">Current password (to confirm)</label>
+    <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-[#534AB7]" type="password" placeholder="Enter your current password" [ngModel]="currentPwdForEmail()" (ngModelChange)="currentPwdForEmail.set($event)">
+  </div>
+  <div class="flex justify-end px-[14px] py-3">
+    <button type="button" (click)="saveEmail()" [disabled]="savingEmail()" class="bg-[#534AB7] text-white border-none rounded-md px-5 py-2 text-[13px] font-medium cursor-pointer hover:bg-[#3C3489] transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2">
+      @if (savingEmail()) { <span class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin inline-block"></span> }
+      {{ savingEmail() ? 'Updating...' : 'Update email' }}
+    </button>
+  </div>
+</div>
+
+<!-- Password -->
+<div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
+  <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Change password</div>
+  @if (pwdSuccess()) {
+    <div class="mx-[14px] mt-3 px-3 py-2 rounded-md bg-[#EEFAF4] border-[0.5px] border-[#6FCF97] text-[12px] text-[#1A6B3C]">{{ pwdSuccess() }}</div>
+  }
+  @if (pwdError()) {
+    <div class="mx-[14px] mt-3 px-3 py-2 rounded-md bg-[#FFF5F5] border-[0.5px] border-[#f5c6cb] text-[12px] text-[#842029]">{{ pwdError() }}</div>
+  }
+  <div class="flex flex-col gap-1.5 px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
     <label class="text-[12px] font-medium text-text-secondary">Current password</label>
-    <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-[#534AB7]" type="password" placeholder="Enter current password">
+    <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-[#534AB7]" type="password" placeholder="Enter current password" [ngModel]="currentPwd()" (ngModelChange)="currentPwd.set($event)">
   </div>
   <div class="flex flex-col gap-1.5 px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
     <label class="text-[12px] font-medium text-text-secondary">New password</label>
-    <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-[#534AB7]" type="password" placeholder="Min 8 characters">
+    <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-[#534AB7]" type="password" placeholder="Min 8 characters" [ngModel]="newPwd()" (ngModelChange)="newPwd.set($event)">
   </div>
-  <div class="flex flex-col gap-1.5 px-[14px] py-3">
+  <div class="flex flex-col gap-1.5 px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
     <label class="text-[12px] font-medium text-text-secondary">Confirm new password</label>
-    <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-[#534AB7]" type="password" placeholder="Repeat new password">
+    <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-[#534AB7]" type="password" placeholder="Repeat new password" [ngModel]="confirmPwd()" (ngModelChange)="confirmPwd.set($event)">
+  </div>
+  <div class="flex justify-end px-[14px] py-3">
+    <button type="button" (click)="savePassword()" [disabled]="savingPwd()" class="bg-[#534AB7] text-white border-none rounded-md px-5 py-2 text-[13px] font-medium cursor-pointer hover:bg-[#3C3489] transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2">
+      @if (savingPwd()) { <span class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin inline-block"></span> }
+      {{ savingPwd() ? 'Changing...' : 'Change password' }}
+    </button>
   </div>
 </div>
-
-<div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
-  <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Linked accounts</div>
-  <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
-    <div><div class="text-[13px] font-medium text-text-primary">Google</div><div class="text-[12px] text-text-secondary mt-0.5">aryan.sharma&#64;gmail.com</div></div>
-    <button class="border-[0.5px] border-[#f5c6cb] text-[#842029] rounded-md px-[14px] py-1.5 text-[12px] cursor-pointer bg-transparent hover:bg-[#fff5f5] transition-colors shrink-0">Unlink</button>
-  </div>
-  <div class="flex items-center justify-between px-[14px] py-[13px] gap-4">
-    <div><div class="text-[13px] font-medium text-text-primary">GitHub</div><div class="text-[12px] text-text-secondary mt-0.5">Not connected</div></div>
-    <button class="border-[0.5px] border-border-secondary text-text-primary rounded-md px-[14px] py-1.5 text-[12px] cursor-pointer bg-transparent hover:bg-background-secondary transition-colors shrink-0">Connect</button>
-  </div>
-</div>
-
-<div class="flex justify-end gap-2 mt-5">
-  <button class="bg-transparent border-[0.5px] border-border-secondary text-text-secondary rounded-md px-4 py-2 text-[13px] cursor-pointer hover:bg-background-secondary transition-colors">Cancel</button>
-  <button class="bg-[#534AB7] text-white border-none rounded-md px-5 py-2 text-[13px] font-medium cursor-pointer hover:bg-[#3C3489] transition-colors">Update account</button>
 </div>

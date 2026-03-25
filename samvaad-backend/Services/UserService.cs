@@ -14,6 +14,7 @@ public class UserService(AppDbContext db, INotificationService notifications) : 
     {
         var user = await db.Users
             .AsNoTracking()
+            .Include(u => u.Tags)
             .FirstOrDefaultAsync(u => u.Username == username.ToLowerInvariant())
             ?? throw new AppException($"User '{username}' not found.", 404);
 
@@ -29,10 +30,35 @@ public class UserService(AppDbContext db, INotificationService notifications) : 
         return MapToProfileDto(user, isFollowing, isOwnProfile);
     }
 
+    public async Task<UserProfileDto> GetMyProfileAsync(Guid userId)
+    {
+        var user = await db.Users
+            .AsNoTracking()
+            .Include(u => u.Tags)
+            .FirstOrDefaultAsync(u => u.Id == userId)
+            ?? throw new AppException("User not found.", 404);
+
+        return MapToProfileDto(user, isFollowing: false, isOwnProfile: true);
+    }
+
     public async Task<UserProfileDto> UpdateProfileAsync(Guid userId, UpdateProfileRequest request)
     {
-        var user = await db.Users.FindAsync(userId)
+        var user = await db.Users
+            .Include(u => u.Tags)
+            .FirstOrDefaultAsync(u => u.Id == userId)
             ?? throw new AppException("User not found.", 404);
+
+        if (request.Username is not null)
+        {
+            var normalized = request.Username.ToLowerInvariant();
+            if (normalized != user.Username)
+            {
+                var taken = await db.Users.AnyAsync(u => u.Username == normalized && u.Id != userId);
+                if (taken)
+                    throw new AppException("Username is already taken.", 409);
+                user.Username = normalized;
+            }
+        }
 
         if (request.DisplayName is not null) user.DisplayName = request.DisplayName;
         if (request.Bio is not null) user.Bio = request.Bio;
@@ -41,7 +67,24 @@ public class UserService(AppDbContext db, INotificationService notifications) : 
         if (request.AvatarUrl is not null) user.AvatarUrl = request.AvatarUrl;
         if (request.CoverImageUrl is not null) user.CoverImageUrl = request.CoverImageUrl;
 
+        if (request.Tags is not null)
+        {
+            // Replace all tags with the new set (max 10, each max 50 chars)
+            db.UserTags.RemoveRange(user.Tags);
+            var newTags = request.Tags
+                .Select(t => t.Trim().ToLowerInvariant().TrimStart('#'))
+                .Where(t => t.Length > 0 && t.Length <= 50)
+                .Distinct()
+                .Take(10)
+                .Select(t => new UserTag { UserId = userId, Name = t })
+                .ToList();
+            db.UserTags.AddRange(newTags);
+        }
+
         await db.SaveChangesAsync();
+
+        // Reload tags after save
+        await db.Entry(user).Collection(u => u.Tags).LoadAsync();
 
         return MapToProfileDto(user, isFollowing: false, isOwnProfile: true);
     }
@@ -171,7 +214,8 @@ public class UserService(AppDbContext db, INotificationService notifications) : 
         new(u.Id, u.Username, u.DisplayName, u.AvatarUrl, u.CoverImageUrl,
             u.Bio, u.Location, u.Website, u.IsVerified, u.IsPrivate,
             u.PostsCount, u.FollowersCount, u.FollowingCount, u.TotalViewsCount,
-            u.JoinedAt, isFollowing, isOwnProfile);
+            u.JoinedAt, isFollowing, isOwnProfile,
+            (u.Tags ?? (ICollection<UserTag>)[]).Select(t => t.Name).ToList());
 
     private async Task<IReadOnlyList<FollowerDto>> MapToFollowerDtos(
         IEnumerable<User> users, Guid? requestingUserId)

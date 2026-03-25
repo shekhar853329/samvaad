@@ -1,4 +1,7 @@
-<div class="text-[16px] font-medium text-text-primary mb-1">Security</div>
+<div class="sticky top-0 z-10 bg-background-primary px-4 md:px-6 py-3 border-b-[0.5px] border-border-tertiary flex items-center">
+  <div class="text-[16px] font-medium text-text-primary">Security</div>
+</div>
+<div class="px-4 md:px-6 py-4">
 <div class="text-[13px] text-text-secondary mb-5">Two-factor authentication and active sessions.</div>
 
 <div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
@@ -28,28 +31,38 @@
 
 <div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
   <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Active sessions</div>
-  <div class="flex items-center justify-between px-[14px] py-2.5 border-b-[0.5px] border-border-tertiary">
-    <div>
-      <div class="text-[13px] font-medium text-text-primary">Chrome · Windows 11</div>
-      <div class="text-[11px] text-text-secondary">Patna, India · Active now</div>
+  @if (success()) {
+    <div class="mx-[14px] mt-3 px-3 py-2 rounded-md bg-[#EEFAF4] border-[0.5px] border-[#6FCF97] text-[12px] text-[#1A6B3C]">{{ success() }}</div>
+  }
+  @if (error()) {
+    <div class="mx-[14px] mt-3 px-3 py-2 rounded-md bg-[#FFF5F5] border-[0.5px] border-[#f5c6cb] text-[12px] text-[#842029]">{{ error() }}</div>
+  }
+  @if (loading()) {
+    <div class="px-[14px] py-8 text-center text-[13px] text-text-secondary">Loading sessions...</div>
+  } @else {
+    @for (session of sessions(); track session.id; let first = $first; let last = $last) {
+      <div class="flex items-center justify-between px-[14px] py-2.5" [class.border-b-[0.5px]]="!last" [class.border-border-tertiary]="!last">
+        <div>
+          <div class="text-[13px] font-medium text-text-primary">Session {{ session.createdAt | date:'MMM d, y, h:mm a' }}</div>
+          <div class="text-[11px] text-text-secondary">Expires {{ session.expiresAt | date:'mediumDate' }}</div>
+        </div>
+        @if (first) {
+          <span class="text-[10px] bg-[#EAF3DE] text-[#27500A] px-2 py-0.5 rounded-[10px] shrink-0">Current</span>
+        } @else {
+          <button type="button" (click)="revoke(session.id)" [disabled]="revoking() === session.id" class="text-[11px] text-[#842029] cursor-pointer border-[0.5px] border-[#f5c6cb] rounded-[20px] px-2.5 py-[3px] bg-transparent hover:bg-[#fff5f5] transition-colors shrink-0 disabled:opacity-60">
+            {{ revoking() === session.id ? 'Revoking...' : 'Revoke' }}
+          </button>
+        }
+      </div>
+    }
+    @if (sessions().length === 0) {
+      <div class="px-[14px] py-4 text-[13px] text-text-secondary">No other active sessions found.</div>
+    }
+    <div class="px-[14px] py-2.5 border-t-[0.5px] border-border-tertiary">
+      <button type="button" (click)="revokeAll()" [disabled]="revokingAll()" class="border-[0.5px] border-[#f5c6cb] text-[#842029] rounded-md px-[14px] py-1.5 text-[12px] cursor-pointer bg-transparent hover:bg-[#fff5f5] transition-colors disabled:opacity-60">
+        {{ revokingAll() ? 'Signing out...' : 'Sign out all other sessions' }}
+      </button>
     </div>
-    <span class="text-[10px] bg-[#EAF3DE] text-[#27500A] px-2 py-0.5 rounded-[10px] shrink-0">Current</span>
-  </div>
-  <div class="flex items-center justify-between px-[14px] py-2.5 border-b-[0.5px] border-border-tertiary">
-    <div>
-      <div class="text-[13px] font-medium text-text-primary">Safari · iPhone 15</div>
-      <div class="text-[11px] text-text-secondary">Patna, India · 2 hours ago</div>
-    </div>
-    <button class="text-[11px] text-[#842029] cursor-pointer border-[0.5px] border-[#f5c6cb] rounded-[20px] px-2.5 py-[3px] bg-transparent hover:bg-[#fff5f5] transition-colors shrink-0">Revoke</button>
-  </div>
-  <div class="flex items-center justify-between px-[14px] py-2.5 border-b-[0.5px] border-border-tertiary">
-    <div>
-      <div class="text-[13px] font-medium text-text-primary">Firefox · macOS</div>
-      <div class="text-[11px] text-text-secondary">Mumbai, India · 3 days ago</div>
-    </div>
-    <button class="text-[11px] text-[#842029] cursor-pointer border-[0.5px] border-[#f5c6cb] rounded-[20px] px-2.5 py-[3px] bg-transparent hover:bg-[#fff5f5] transition-colors shrink-0">Revoke</button>
-  </div>
-  <div class="px-[14px] py-2.5">
-    <button class="border-[0.5px] border-[#f5c6cb] text-[#842029] rounded-md px-[14px] py-1.5 text-[12px] cursor-pointer bg-transparent hover:bg-[#fff5f5] transition-colors">Sign out all other sessions</button>
-  </div>
+  }
+</div>
 </div>

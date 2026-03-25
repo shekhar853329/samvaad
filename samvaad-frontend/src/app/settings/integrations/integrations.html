@@ -1,19 +1,26 @@
-<div class="text-[16px] font-medium text-text-primary mb-1">Integrations</div>
+<div class="sticky top-0 z-10 bg-background-primary px-4 md:px-6 py-3 border-b-[0.5px] border-border-tertiary flex items-center">
+  <div class="text-[16px] font-medium text-text-primary">Integrations</div>
+</div>
+<div class="px-4 md:px-6 py-4">
 <div class="text-[13px] text-text-secondary mb-5">Manage connected apps and third-party access.</div>
+
+@if (toast()) {
+  <div class="mb-4 px-3 py-2 rounded-md bg-[#EEFAF4] border-[0.5px] border-[#6FCF97] text-[12px] text-[#1A6B3C]">{{ toast() }}</div>
+}
 
 <div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
   <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Connected apps</div>
   <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
     <div><div class="text-[13px] font-medium text-text-primary">VS Code Extension</div><div class="text-[12px] text-text-secondary mt-0.5">Connected · Last used 2 days ago</div></div>
-    <button class="border-[0.5px] border-[#f5c6cb] text-[#842029] rounded-md px-[14px] py-1.5 text-[12px] cursor-pointer bg-transparent hover:bg-[#fff5f5] transition-colors shrink-0">Revoke</button>
+    <button type="button" (click)="notify('VS Code Extension access revoked.')" class="border-[0.5px] border-[#f5c6cb] text-[#842029] rounded-md px-[14px] py-1.5 text-[12px] cursor-pointer bg-transparent hover:bg-[#fff5f5] transition-colors shrink-0">Revoke</button>
   </div>
   <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
     <div><div class="text-[13px] font-medium text-text-primary">GitHub Actions</div><div class="text-[12px] text-text-secondary mt-0.5">Connected · Read-only access</div></div>
-    <button class="border-[0.5px] border-[#f5c6cb] text-[#842029] rounded-md px-[14px] py-1.5 text-[12px] cursor-pointer bg-transparent hover:bg-[#fff5f5] transition-colors shrink-0">Revoke</button>
+    <button type="button" (click)="notify('GitHub Actions access revoked.')" class="border-[0.5px] border-[#f5c6cb] text-[#842029] rounded-md px-[14px] py-1.5 text-[12px] cursor-pointer bg-transparent hover:bg-[#fff5f5] transition-colors shrink-0">Revoke</button>
   </div>
   <div class="flex items-center justify-between px-[14px] py-[13px] gap-4">
     <div><div class="text-[13px] font-medium text-text-primary">Zapier</div><div class="text-[12px] text-text-secondary mt-0.5">Not connected</div></div>
-    <button class="border-[0.5px] border-border-secondary text-text-primary rounded-md px-[14px] py-1.5 text-[12px] cursor-pointer bg-transparent hover:bg-background-secondary transition-colors shrink-0">Connect</button>
+    <button type="button" (click)="notify('OAuth integrations coming soon.')" class="border-[0.5px] border-border-secondary text-text-primary rounded-md px-[14px] py-1.5 text-[12px] cursor-pointer bg-transparent hover:bg-background-secondary transition-colors shrink-0">Connect</button>
   </div>
 </div>
 
@@ -25,6 +32,7 @@
   </div>
   <div class="flex items-center justify-between px-[14px] py-[13px] gap-4">
     <div><div class="text-[13px] font-medium text-text-primary">API key</div><div class="text-[12px] text-text-secondary mt-0.5">sk_live_●●●●●●●●●●●●3f9a</div></div>
-    <button class="border-[0.5px] border-border-secondary text-text-primary rounded-md px-[14px] py-1.5 text-[12px] cursor-pointer bg-transparent hover:bg-background-secondary transition-colors shrink-0">Regenerate</button>
+    <button type="button" (click)="notify('API key regenerated. Copy the new key from your dashboard.')" class="border-[0.5px] border-border-secondary text-text-primary rounded-md px-[14px] py-1.5 text-[12px] cursor-pointer bg-transparent hover:bg-background-secondary transition-colors shrink-0">Regenerate</button>
   </div>
+</div>
 </div>

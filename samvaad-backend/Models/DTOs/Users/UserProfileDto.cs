@@ -17,5 +17,6 @@ public record UserProfileDto(
     long TotalViewsCount,
     DateTime JoinedAt,
     bool IsFollowing,
-    bool IsOwnProfile
+    bool IsOwnProfile,
+    IReadOnlyList<string> Tags
 );

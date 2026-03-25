@@ -1,51 +1,88 @@
-<div class="text-[16px] font-medium text-text-primary mb-1">Notifications</div>
+<div class="sticky top-0 z-10 bg-background-primary px-4 md:px-6 py-3 border-b-[0.5px] border-border-tertiary flex items-center justify-between gap-2">
+  <div class="text-[16px] font-medium text-text-primary">Notifications</div>
+  <div class="flex items-center gap-2">
+    <button type="button" (click)="save()" [disabled]="saving()" class="bg-[#534AB7] text-white border-none rounded-md px-5 py-1.5 text-[13px] font-medium cursor-pointer hover:bg-[#3C3489] transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2">
+      @if (saving()) { <span class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin inline-block"></span> }
+      {{ saving() ? 'Saving...' : 'Save preferences' }}
+    </button>
+  </div>
+</div>
+<div class="px-4 md:px-6 py-4">
 <div class="text-[13px] text-text-secondary mb-5">Choose what you hear about and how.</div>
 
-<div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
-  <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Push notifications</div>
-  @for (item of [
-    {label:'New follower', checked: true},
-    {label:'Likes on your posts', checked: true},
-    {label:'Replies & comments', checked: true},
-    {label:'Mentions', checked: true},
-    {label:'Reposts', checked: false},
-    {label:'Direct messages', checked: true}
-  ]; track item.label; let last = $last) {
-    <div [ngClass]="last ? '' : 'border-b-[0.5px] border-border-tertiary'" class="flex items-center justify-between px-[14px] py-[13px] gap-4">
-      <div class="text-[13px] font-medium text-text-primary">{{item.label}}</div>
-      <label class="toggle"><input type="checkbox" [checked]="item.checked"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+@if (success()) {
+  <div class="mb-4 px-3 py-2 rounded-md bg-[#EEFAF4] border-[0.5px] border-[#6FCF97] text-[12px] text-[#1A6B3C]">{{ success() }}</div>
+}
+@if (error()) {
+  <div class="mb-4 px-3 py-2 rounded-md bg-[#FFF5F5] border-[0.5px] border-[#f5c6cb] text-[12px] text-[#842029]">{{ error() }}</div>
+}
+
+@if (loading()) {
+  <div class="py-10 text-center text-[13px] text-text-secondary">Loading preferences...</div>
+} @else if (prefs()) {
+  <div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
+    <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Push notifications</div>
+    <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
+      <div class="text-[13px] font-medium text-text-primary">New follower</div>
+      <label class="toggle"><input type="checkbox" [ngModel]="prefs()!.pushNewFollower" (ngModelChange)="set('pushNewFollower', $event)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
     </div>
-  }
-</div>
+    <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
+      <div class="text-[13px] font-medium text-text-primary">Likes on your posts</div>
+      <label class="toggle"><input type="checkbox" [ngModel]="prefs()!.pushLikes" (ngModelChange)="set('pushLikes', $event)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+    </div>
+    <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
+      <div class="text-[13px] font-medium text-text-primary">Replies &amp; comments</div>
+      <label class="toggle"><input type="checkbox" [ngModel]="prefs()!.pushReplies" (ngModelChange)="set('pushReplies', $event)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+    </div>
+    <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
+      <div class="text-[13px] font-medium text-text-primary">Mentions</div>
+      <label class="toggle"><input type="checkbox" [ngModel]="prefs()!.pushMentions" (ngModelChange)="set('pushMentions', $event)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+    </div>
+    <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
+      <div class="text-[13px] font-medium text-text-primary">Reposts</div>
+      <label class="toggle"><input type="checkbox" [ngModel]="prefs()!.pushReposts" (ngModelChange)="set('pushReposts', $event)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+    </div>
+    <div class="flex items-center justify-between px-[14px] py-[13px] gap-4">
+      <div class="text-[13px] font-medium text-text-primary">Direct messages</div>
+      <label class="toggle"><input type="checkbox" [ngModel]="prefs()!.pushDirectMessages" (ngModelChange)="set('pushDirectMessages', $event)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+    </div>
+  </div>
 
-<div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
-  <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Email notifications</div>
-  <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
-    <div><div class="text-[13px] font-medium text-text-primary">Weekly digest</div><div class="text-[12px] text-text-secondary mt-0.5">Summary of your top posts</div></div>
-    <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+  <div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
+    <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Email notifications</div>
+    <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
+      <div><div class="text-[13px] font-medium text-text-primary">Weekly digest</div><div class="text-[12px] text-text-secondary mt-0.5">Summary of your top posts</div></div>
+      <label class="toggle"><input type="checkbox" [ngModel]="prefs()!.emailWeeklyDigest" (ngModelChange)="set('emailWeeklyDigest', $event)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+    </div>
+    <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
+      <div><div class="text-[13px] font-medium text-text-primary">Security alerts</div><div class="text-[12px] text-text-secondary mt-0.5">New logins and account changes</div></div>
+      <label class="toggle"><input type="checkbox" [ngModel]="prefs()!.emailSecurityAlerts" (ngModelChange)="set('emailSecurityAlerts', $event)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+    </div>
+    <div class="flex items-center justify-between px-[14px] py-[13px] gap-4">
+      <div><div class="text-[13px] font-medium text-text-primary">Product updates</div><div class="text-[12px] text-text-secondary mt-0.5">New features and announcements</div></div>
+      <label class="toggle"><input type="checkbox" [ngModel]="prefs()!.emailProductUpdates" (ngModelChange)="set('emailProductUpdates', $event)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+    </div>
   </div>
-  <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
-    <div><div class="text-[13px] font-medium text-text-primary">Security alerts</div><div class="text-[12px] text-text-secondary mt-0.5">New logins and account changes</div></div>
-    <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-  </div>
-  <div class="flex items-center justify-between px-[14px] py-[13px] gap-4">
-    <div><div class="text-[13px] font-medium text-text-primary">Product updates</div><div class="text-[12px] text-text-secondary mt-0.5">New features and announcements</div></div>
-    <label class="toggle"><input type="checkbox"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-  </div>
-</div>
 
-<div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
-  <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Quiet hours</div>
-  <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
-    <div><div class="text-[13px] font-medium text-text-primary">Enable quiet hours</div><div class="text-[12px] text-text-secondary mt-0.5">Pause all notifications during set times</div></div>
-    <label class="toggle"><input type="checkbox"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+  <div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
+    <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Quiet hours</div>
+    <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
+      <div><div class="text-[13px] font-medium text-text-primary">Enable quiet hours</div><div class="text-[12px] text-text-secondary mt-0.5">Pause all notifications during set times</div></div>
+      <label class="toggle"><input type="checkbox" [ngModel]="prefs()!.quietHoursEnabled" (ngModelChange)="set('quietHoursEnabled', $event)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+    </div>
+    <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
+      <div class="text-[13px] font-medium text-text-primary">From</div>
+      <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary font-[inherit] focus:outline-none" [ngModel]="prefs()!.quietHoursFrom" (ngModelChange)="set('quietHoursFrom', $event)">
+        <option value="22:00">10:00 PM</option><option value="23:00">11:00 PM</option><option value="00:00">12:00 AM</option>
+      </select>
+    </div>
+    <div class="flex items-center justify-between px-[14px] py-[13px] gap-4">
+      <div class="text-[13px] font-medium text-text-primary">Until</div>
+      <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary font-[inherit] focus:outline-none" [ngModel]="prefs()!.quietHoursUntil" (ngModelChange)="set('quietHoursUntil', $event)">
+        <option value="07:00">7:00 AM</option><option value="08:00">8:00 AM</option><option value="09:00">9:00 AM</option>
+      </select>
+    </div>
   </div>
-  <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
-    <div class="text-[13px] font-medium text-text-primary">From</div>
-    <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary font-[inherit] focus:outline-none"><option>10:00 PM</option><option>11:00 PM</option><option>12:00 AM</option></select>
-  </div>
-  <div class="flex items-center justify-between px-[14px] py-[13px] gap-4">
-    <div class="text-[13px] font-medium text-text-primary">Until</div>
-    <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary font-[inherit] focus:outline-none"><option>7:00 AM</option><option>8:00 AM</option><option>9:00 AM</option></select>
-  </div>
+
+}
 </div>

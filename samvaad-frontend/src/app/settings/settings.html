@@ -14,10 +14,10 @@
 </div>
 
 <!-- Desktop: 2-column layout; Mobile: single-column content -->
-<div class="md:flex md:border-[0.5px] md:border-border-tertiary md:rounded-lg md:overflow-hidden bg-background-primary md:min-h-[600px]">
+<div class="md:flex md:border-[0.5px] md:border-border-tertiary md:rounded-lg md:overflow-hidden bg-background-primary md:sticky md:top-[78px] md:h-[calc(100vh-94px)]">
 
   <!-- Desktop sidebar nav -->
-  <nav class="hidden md:block w-[200px] shrink-0 border-r-[0.5px] border-border-tertiary bg-background-secondary">
+  <nav class="hidden md:block w-[200px] shrink-0 border-r-[0.5px] border-border-tertiary bg-background-secondary overflow-y-auto">
     <!-- Account -->
     <div class="text-[10px] font-medium text-text-tertiary px-4 pt-3 pb-1 uppercase tracking-[0.07em]">Account</div>
     <button (click)="showSection('profile')" [ngClass]="activeSection() === 'profile' ? 'bg-background-primary text-[#534AB7] border-l-2 border-[#534AB7] font-medium' : 'text-text-secondary border-l-2 border-transparent hover:bg-background-primary hover:text-text-primary'" class="flex items-center gap-2 w-full px-4 py-2 text-[13px] text-left transition-all duration-100">
@@ -63,7 +63,7 @@
   </nav>
 
   <!-- Content area -->
-  <main class="flex-1 p-4 md:p-6 overflow-y-auto">
+  <main class="flex-1 overflow-y-auto min-h-0 overscroll-contain">
 
     @if (activeSection() === 'profile') { <app-settings-profile /> }
     @if (activeSection() === 'account') { <app-settings-account /> }

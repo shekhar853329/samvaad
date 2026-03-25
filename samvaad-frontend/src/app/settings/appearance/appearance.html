@@ -1,84 +1,87 @@
-<div class="text-[16px] font-medium text-text-primary mb-1">Appearance</div>
+<div class="sticky top-0 z-10 bg-background-primary px-4 md:px-6 py-3 border-b-[0.5px] border-border-tertiary flex items-center justify-between gap-2">
+  <div class="text-[16px] font-medium text-text-primary">Appearance</div>
+  <div class="flex items-center gap-2">
+    <button type="button" (click)="reset()" class="bg-transparent border-[0.5px] border-border-secondary text-text-secondary rounded-md px-4 py-1.5 text-[13px] cursor-pointer hover:bg-background-secondary transition-colors">Reset to defaults</button>
+    <button type="button" (click)="save()" class="bg-[#534AB7] text-white border-none rounded-md px-5 py-1.5 text-[13px] font-medium cursor-pointer hover:bg-[#3C3489] transition-colors">Save appearance</button>
+  </div>
+</div>
+<div class="px-4 md:px-6 py-4">
 <div class="text-[13px] text-text-secondary mb-5">Theme, font size, and display preferences.</div>
 
-<!-- Theme -->
+@if (saved()) {
+  <div class="mb-4 px-3 py-2 rounded-md bg-[#EEFAF4] border-[0.5px] border-[#6FCF97] text-[12px] text-[#1A6B3C]">Appearance preferences saved locally.</div>
+}
+
 <div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
   <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Theme</div>
   <div class="grid grid-cols-3 gap-2 p-[14px]">
-    <div class="border-2 border-[#534AB7] rounded-md p-2.5 cursor-pointer text-center">
+    <div (click)="theme.set('light')" [class]="theme() === 'light' ? 'border-2 border-[#534AB7] rounded-md p-2.5 cursor-pointer text-center' : 'border-[0.5px] border-border-tertiary rounded-md p-2.5 cursor-pointer text-center hover:border-[#534AB7] transition-colors'">
       <div class="h-9 rounded-[6px] mb-1.5 border-[0.5px] border-border-tertiary bg-white"></div>
       <div class="text-[11px] text-text-secondary">Light</div>
     </div>
-    <div class="border-[0.5px] border-border-tertiary rounded-md p-2.5 cursor-pointer text-center hover:border-[#534AB7] transition-colors">
+    <div (click)="theme.set('dark')" [class]="theme() === 'dark' ? 'border-2 border-[#534AB7] rounded-md p-2.5 cursor-pointer text-center' : 'border-[0.5px] border-border-tertiary rounded-md p-2.5 cursor-pointer text-center hover:border-[#534AB7] transition-colors'">
       <div class="h-9 rounded-[6px] mb-1.5 bg-[#1c1c1e]"></div>
       <div class="text-[11px] text-text-secondary">Dark</div>
     </div>
-    <div class="border-[0.5px] border-border-tertiary rounded-md p-2.5 cursor-pointer text-center hover:border-[#534AB7] transition-colors">
+    <div (click)="theme.set('system')" [class]="theme() === 'system' ? 'border-2 border-[#534AB7] rounded-md p-2.5 cursor-pointer text-center' : 'border-[0.5px] border-border-tertiary rounded-md p-2.5 cursor-pointer text-center hover:border-[#534AB7] transition-colors'">
       <div class="h-9 rounded-[6px] mb-1.5" style="background:linear-gradient(to right,#fff 50%,#1c1c1e 50%)"></div>
       <div class="text-[11px] text-text-secondary">System</div>
     </div>
   </div>
 </div>
 
-<!-- Font -->
 <div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
   <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Font family</div>
   <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
     <div class="text-[13px] font-medium text-text-primary">Interface font</div>
-    <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary cursor-pointer font-[inherit] focus:outline-none">
+    <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary cursor-pointer font-[inherit] focus:outline-none" [ngModel]="fontFamily()" (ngModelChange)="fontFamily.set($event)">
       <option>Inter</option><option>Roboto</option><option>Poppins</option><option>Merriweather</option><option>Georgia</option><option>Monospace</option>
     </select>
   </div>
   <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
     <div class="text-[13px] font-medium text-text-primary">Font size</div>
     <div class="flex gap-1.5">
-      <button class="px-3 py-1 rounded-[20px] text-[12px] cursor-pointer border-[0.5px] border-border-secondary text-text-secondary bg-transparent hover:bg-background-secondary transition-colors">XS</button>
-      <button class="px-3 py-1 rounded-[20px] text-[12px] cursor-pointer border-[0.5px] border-border-secondary text-text-secondary bg-transparent hover:bg-background-secondary transition-colors">S</button>
-      <button class="px-3 py-1 rounded-[20px] text-[12px] cursor-pointer border-[0.5px] bg-[#534AB7] text-white border-[#534AB7]">M</button>
-      <button class="px-3 py-1 rounded-[20px] text-[12px] cursor-pointer border-[0.5px] border-border-secondary text-text-secondary bg-transparent hover:bg-background-secondary transition-colors">L</button>
-      <button class="px-3 py-1 rounded-[20px] text-[12px] cursor-pointer border-[0.5px] border-border-secondary text-text-secondary bg-transparent hover:bg-background-secondary transition-colors">XL</button>
+      @for (size of ['xs','s','m','l','xl']; track size) {
+        <button type="button" (click)="fontSize.set($any(size))" [class]="fontSize() === size ? 'px-3 py-1 rounded-[20px] text-[12px] cursor-pointer border-[0.5px] bg-[#534AB7] text-white border-[#534AB7]' : 'px-3 py-1 rounded-[20px] text-[12px] cursor-pointer border-[0.5px] border-border-secondary text-text-secondary bg-transparent hover:bg-background-secondary transition-colors'">{{ size.toUpperCase() }}</button>
+      }
     </div>
   </div>
   <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
     <div class="text-[13px] font-medium text-text-primary">Font weight</div>
-    <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary cursor-pointer font-[inherit] focus:outline-none">
-      <option>Light (300)</option><option selected>Regular (400)</option><option>Medium (500)</option>
+    <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary cursor-pointer font-[inherit] focus:outline-none" [ngModel]="fontWeight()" (ngModelChange)="fontWeight.set($event)">
+      <option>Light (300)</option><option>Regular (400)</option><option>Medium (500)</option>
     </select>
   </div>
   <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
     <div class="text-[13px] font-medium text-text-primary">Line height</div>
-    <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary cursor-pointer font-[inherit] focus:outline-none">
-      <option>Compact (1.4)</option><option selected>Normal (1.6)</option><option>Relaxed (1.8)</option><option>Spacious (2.0)</option>
+    <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary cursor-pointer font-[inherit] focus:outline-none" [ngModel]="lineHeight()" (ngModelChange)="lineHeight.set($event)">
+      <option>Compact (1.4)</option><option>Normal (1.6)</option><option>Relaxed (1.8)</option><option>Spacious (2.0)</option>
     </select>
   </div>
   <div class="mx-[14px] mb-[14px] border-[0.5px] border-border-tertiary rounded-md p-3 bg-background-secondary">
     <div class="text-[14px] leading-relaxed text-text-primary">The quick brown fox jumps over the lazy dog. Building social experiences with ASP.NET and Angular — real-time, scalable, and beautiful.</div>
-    <div class="text-[11px] text-text-tertiary mt-2">Inter · 14px · Regular · 1.6 line height</div>
+    <div class="text-[11px] text-text-tertiary mt-2">{{ fontFamily() }} · M · {{ fontWeight() }} · {{ lineHeight() }}</div>
   </div>
 </div>
 
-<!-- Display -->
 <div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
   <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Display</div>
   <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
     <div><div class="text-[13px] font-medium text-text-primary">Compact mode</div><div class="text-[12px] text-text-secondary mt-0.5">Reduce spacing between posts</div></div>
-    <label class="toggle"><input type="checkbox"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+    <label class="toggle"><input type="checkbox" [ngModel]="compactMode()" (ngModelChange)="compactMode.set($event)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
   </div>
   <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
     <div><div class="text-[13px] font-medium text-text-primary">Show post previews</div><div class="text-[12px] text-text-secondary mt-0.5">Expand link previews in feed</div></div>
-    <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+    <label class="toggle"><input type="checkbox" [ngModel]="showPreviews()" (ngModelChange)="showPreviews.set($event)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
   </div>
   <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
     <div><div class="text-[13px] font-medium text-text-primary">Reduce motion</div><div class="text-[12px] text-text-secondary mt-0.5">Minimize animations</div></div>
-    <label class="toggle"><input type="checkbox"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+    <label class="toggle"><input type="checkbox" [ngModel]="reduceMotion()" (ngModelChange)="reduceMotion.set($event)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
   </div>
   <div class="flex items-center justify-between px-[14px] py-[13px] gap-4">
     <div><div class="text-[13px] font-medium text-text-primary">High contrast</div><div class="text-[12px] text-text-secondary mt-0.5">Increase text contrast</div></div>
-    <label class="toggle"><input type="checkbox"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+    <label class="toggle"><input type="checkbox" [ngModel]="highContrast()" (ngModelChange)="highContrast.set($event)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
   </div>
 </div>
 
-<div class="flex justify-end gap-2 mt-5">
-  <button class="bg-transparent border-[0.5px] border-border-secondary text-text-secondary rounded-md px-4 py-2 text-[13px] cursor-pointer hover:bg-background-secondary transition-colors">Cancel</button>
-  <button class="bg-[#534AB7] text-white border-none rounded-md px-5 py-2 text-[13px] font-medium cursor-pointer hover:bg-[#3C3489] transition-colors">Save appearance</button>
 </div>

@@ -1,22 +1,42 @@
-<div class="text-[16px] font-medium text-text-primary mb-1">Language &amp; region</div>
+<div class="sticky top-0 z-10 bg-background-primary px-4 md:px-6 py-3 border-b-[0.5px] border-border-tertiary flex items-center justify-between gap-2">
+  <div class="text-[16px] font-medium text-text-primary">Language &amp; region</div>
+  <div class="flex items-center gap-2">
+    <button type="button" (click)="save()" class="bg-[#534AB7] text-white border-none rounded-md px-5 py-1.5 text-[13px] font-medium cursor-pointer hover:bg-[#3C3489] transition-colors">Save preferences</button>
+  </div>
+</div>
+<div class="px-4 md:px-6 py-4">
 <div class="text-[13px] text-text-secondary mb-5">Set your display language, timezone, and date format.</div>
+
+@if (saved()) {
+  <div class="mb-4 px-3 py-2 rounded-md bg-[#EEFAF4] border-[0.5px] border-[#6FCF97] text-[12px] text-[#1A6B3C]">Language preferences saved.</div>
+}
 
 <div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
   <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Locale</div>
   <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
     <div class="text-[13px] font-medium text-text-primary">Display language</div>
-    <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary font-[inherit] focus:outline-none"><option>English (US)</option><option>English (UK)</option><option>Hindi</option><option>Bengali</option></select>
+    <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary font-[inherit] focus:outline-none" [ngModel]="displayLanguage()" (ngModelChange)="displayLanguage.set($event)">
+      <option>English (US)</option><option>English (UK)</option><option>Hindi</option><option>Bengali</option>
+    </select>
   </div>
   <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
     <div><div class="text-[13px] font-medium text-text-primary">Content languages</div><div class="text-[12px] text-text-secondary mt-0.5">Which languages to show in feed</div></div>
-    <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary font-[inherit] focus:outline-none"><option>English + Hindi</option><option>English only</option><option>All languages</option></select>
+    <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary font-[inherit] focus:outline-none" [ngModel]="contentLanguages()" (ngModelChange)="contentLanguages.set($event)">
+      <option>English + Hindi</option><option>English only</option><option>All languages</option>
+    </select>
   </div>
   <div class="flex items-center justify-between px-[14px] py-[13px] border-b-[0.5px] border-border-tertiary gap-4">
     <div class="text-[13px] font-medium text-text-primary">Timezone</div>
-    <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary font-[inherit] focus:outline-none"><option>Asia/Kolkata (IST, UTC+5:30)</option><option>UTC</option><option>America/New_York</option></select>
+    <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary font-[inherit] focus:outline-none" [ngModel]="timezone()" (ngModelChange)="timezone.set($event)">
+      <option>Asia/Kolkata (IST, UTC+5:30)</option><option>UTC</option><option>America/New_York</option><option>Europe/London</option>
+    </select>
   </div>
   <div class="flex items-center justify-between px-[14px] py-[13px] gap-4">
     <div class="text-[13px] font-medium text-text-primary">Date format</div>
-    <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary font-[inherit] focus:outline-none"><option>DD/MM/YYYY</option><option>MM/DD/YYYY</option><option>YYYY-MM-DD</option></select>
+    <select class="bg-background-secondary border-[0.5px] border-border-secondary rounded-md px-2.5 py-[5px] text-[12px] text-text-primary font-[inherit] focus:outline-none" [ngModel]="dateFormat()" (ngModelChange)="dateFormat.set($event)">
+      <option>DD/MM/YYYY</option><option>MM/DD/YYYY</option><option>YYYY-MM-DD</option>
+    </select>
   </div>
+</div>
+
 </div>

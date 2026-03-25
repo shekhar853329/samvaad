@@ -16,6 +16,10 @@ export class ApiService {
     return this.http.post<T>(`${this.base}${path}`, body);
   }
 
+  postForm<T>(path: string, body: FormData): Observable<T> {
+    return this.http.post<T>(`${this.base}${path}`, body);
+  }
+
   put<T>(path: string, body: unknown): Observable<T> {
     return this.http.put<T>(`${this.base}${path}`, body);
   }
@@ -24,7 +28,7 @@ export class ApiService {
     return this.http.patch<T>(`${this.base}${path}`, body);
   }
 
-  delete<T>(path: string): Observable<T> {
-    return this.http.delete<T>(`${this.base}${path}`);
+  delete<T>(path: string, body?: unknown): Observable<T> {
+    return this.http.delete<T>(`${this.base}${path}`, body ? { body } : undefined);
   }
 }

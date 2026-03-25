@@ -7,12 +7,22 @@ import { FollowerUser, UpdateProfileRequest, UserProfile } from '../models/user.
 export class UserService {
   private api = inject(ApiService);
 
+  getMyProfile(): Observable<UserProfile> {
+    return this.api.get<UserProfile>('/users/me');
+  }
+
   getProfile(username: string): Observable<UserProfile> {
     return this.api.get<UserProfile>(`/users/${username}`);
   }
 
   updateProfile(request: UpdateProfileRequest): Observable<UserProfile> {
     return this.api.put<UserProfile>('/users/me', request);
+  }
+
+  uploadAvatar(file: File): Observable<{ avatarUrl: string }> {
+    const form = new FormData();
+    form.append('file', file);
+    return this.api.postForm<{ avatarUrl: string }>('/users/me/avatar', form);
   }
 
   follow(username: string): Observable<void> {

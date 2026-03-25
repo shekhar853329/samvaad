@@ -5,6 +5,7 @@ namespace samvaad_backend.Services.Interfaces;
 public interface IUserService
 {
     Task<UserProfileDto> GetProfileAsync(string username, Guid? requestingUserId);
+    Task<UserProfileDto> GetMyProfileAsync(Guid userId);
     Task<UserProfileDto> UpdateProfileAsync(Guid userId, UpdateProfileRequest request);
     Task FollowAsync(Guid followerId, string targetUsername);
     Task UnfollowAsync(Guid followerId, string targetUsername);

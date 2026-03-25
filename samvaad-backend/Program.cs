@@ -51,6 +51,7 @@ builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IExploreService, ExploreService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<ISettingsService, SettingsService>();
 
 // ── Controllers + Swagger ────────────────────────────────────────────────────
 builder.Services.AddControllers();
@@ -99,6 +100,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles(); // serves wwwroot (avatars stored at wwwroot/avatars/)
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
