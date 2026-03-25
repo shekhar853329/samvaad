@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using samvaad_backend.Common;
 using samvaad_backend.Extensions;
+using samvaad_backend.Hubs;
 using samvaad_backend.Models.DTOs.Users;
 using samvaad_backend.Services.Interfaces;
 using System.Net.Mime;
@@ -10,7 +11,7 @@ namespace samvaad_backend.Controllers;
 
 [ApiController]
 [Route("api/users")]
-public class UsersController(IUserService userService, IWebHostEnvironment env) : ControllerBase
+public class UsersController(IUserService userService, IWebHostEnvironment env, IOnlineTracker onlineTracker) : ControllerBase
 {
     private static readonly HashSet<string> _allowedImageExts =
         [".jpg", ".jpeg", ".png", ".gif", ".webp"];
@@ -135,5 +136,17 @@ public class UsersController(IUserService userService, IWebHostEnvironment env) 
         var userId = User.GetUserId();
         var suggestions = await userService.GetWhoToFollowAsync(userId, count);
         return Ok(suggestions);
+    }
+
+    /// <summary>Get the online userIds among the users the caller follows.</summary>
+    [Authorize]
+    [HttpGet("online")]
+    public async Task<IActionResult> GetOnlineFollowing()
+    {
+        var userId = User.GetUserId();
+        var followingIds = await userService.GetFollowingIdsAsync(userId);
+        var onlineIds = onlineTracker.GetOnlineUserIds();
+        var onlineFollowing = followingIds.Intersect(onlineIds).Select(id => id.ToString()).ToList();
+        return Ok(onlineFollowing);
     }
 }

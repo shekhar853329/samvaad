@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using samvaad_backend.Data;
@@ -11,9 +12,11 @@ using samvaad_backend.Data;
 namespace samvaad_backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260325050036_FriendRequestTable")]
+    partial class FriendRequestTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -155,26 +158,6 @@ namespace samvaad_backend.Migrations
                     b.HasIndex("ReceiverId", "Status", "CreatedAt");
 
                     b.ToTable("FriendRequests");
-                });
-
-            modelBuilder.Entity("samvaad_backend.Models.Entities.Friendship", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("FriendId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("UserId", "FriendId");
-
-                    b.HasIndex("FriendId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Friendships");
                 });
 
             modelBuilder.Entity("samvaad_backend.Models.Entities.HashTag", b =>
@@ -831,25 +814,6 @@ namespace samvaad_backend.Migrations
                     b.Navigation("Sender");
                 });
 
-            modelBuilder.Entity("samvaad_backend.Models.Entities.Friendship", b =>
-                {
-                    b.HasOne("samvaad_backend.Models.Entities.User", "Friend")
-                        .WithMany("FriendedBy")
-                        .HasForeignKey("FriendId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("samvaad_backend.Models.Entities.User", "User")
-                        .WithMany("Friendships")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Friend");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("samvaad_backend.Models.Entities.Like", b =>
                 {
                     b.HasOne("samvaad_backend.Models.Entities.Post", "Post")
@@ -1168,10 +1132,6 @@ namespace samvaad_backend.Migrations
                     b.Navigation("StoryViews");
 
                     b.Navigation("Tags");
-
-                    b.Navigation("FriendedBy");
-
-                    b.Navigation("Friendships");
                 });
 
             modelBuilder.Entity("samvaad_backend.Models.Entities.UserFeedPreferences", b =>

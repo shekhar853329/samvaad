@@ -40,6 +40,10 @@ public class User
     public ICollection<Story> Stories { get; set; } = [];
     public ICollection<StoryView> StoryViews { get; set; } = [];
     public ICollection<UserTag> Tags { get; set; } = [];
+    public ICollection<FriendRequest> SentFriendRequests { get; set; } = [];
+    public ICollection<FriendRequest> ReceivedFriendRequests { get; set; } = [];
+    public ICollection<Friendship> Friendships { get; set; } = [];
+    public ICollection<Friendship> FriendedBy { get; set; } = [];
     public UserNotificationPreferences? NotificationPreferences { get; set; }
     public UserPrivacySettings? PrivacySettings { get; set; }
     public UserFeedPreferences? FeedPreferences { get; set; }

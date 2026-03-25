@@ -18,5 +18,6 @@ public record UserProfileDto(
     DateTime JoinedAt,
     bool IsFollowing,
     bool IsOwnProfile,
-    IReadOnlyList<string> Tags
+    IReadOnlyList<string> Tags,
+    string FriendRelation
 );

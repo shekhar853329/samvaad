@@ -1,15 +1,20 @@
-import { Component, signal, inject, OnInit, ElementRef, ViewChild, AfterViewChecked } from '@angular/core';
-import { NgClass } from '@angular/common';
+import { Component, signal, computed, inject, OnInit, OnDestroy, ElementRef, ViewChild, AfterViewChecked } from '@angular/core';
+import { NgClass, CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { MessageService } from '../core/services/message.service';
+import { UserService } from '../core/services/user.service';
+import { ChatHubService } from '../core/services/chat-hub.service';
 import { Conversation, Message } from '../core/models/message.models';
 
 @Component({
   selector: 'app-messages',
-  imports: [NgClass],
+  imports: [NgClass, CommonModule, RouterLink],
   templateUrl: './messages.html'
 })
-export class Messages implements OnInit, AfterViewChecked {
+export class Messages implements OnInit, OnDestroy, AfterViewChecked {
   private msgService = inject(MessageService);
+  private userService = inject(UserService);
+  readonly hub = inject(ChatHubService);
 
   @ViewChild('messagesEnd') private messagesEnd!: ElementRef;
 
@@ -24,8 +29,70 @@ export class Messages implements OnInit, AfterViewChecked {
 
   composeText = signal('');
 
+  // Typing indicators: map of conversationId → displayName of the person typing
+  typingUsers = signal<Map<string, string>>(new Map());
+  private typingTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
+  // Online users panel: derived reactively from conversations + hub online set
+  readonly onlineFollowingProfiles = computed(() =>
+    this.conversations()
+      .filter(c => !c.isGroup && c.otherParticipants[0] && this.hub.onlineUserIds().has(c.otherParticipants[0].userId))
+      .map(c => ({
+        id: c.otherParticipants[0].userId,
+        username: c.otherParticipants[0].username,
+        displayName: c.otherParticipants[0].displayName,
+        avatarUrl: c.otherParticipants[0].avatarUrl,
+      }))
+  );
+
   ngOnInit(): void {
+    // Connect to SignalR hub
+    this.hub.connect();
+
+    // Register real-time callbacks
+    this.hub.onMessage((convId, msg) => {
+      const active = this.activeConversation();
+      if (active?.id === convId) {
+        // Deduplicate: REST send already adds our own message
+        if (!msg.isMine) {
+          this.messages.update(list => [...list, msg]);
+          this.shouldScrollToBottom = true;
+        }
+        // Mark as read since window is open
+        this.msgService.markRead(convId).subscribe();
+      }
+      // Update conversation preview
+      this.conversations.update(list =>
+        list.map(c => c.id === convId
+          ? { ...c, lastMessageContent: msg.content, lastMessageAt: msg.createdAt,
+              unreadCount: active?.id === convId ? 0 : c.unreadCount + 1 }
+          : c));
+    });
+
+    this.hub.onUserTyping(evt => {
+      this.typingUsers.update(m => {
+        const next = new Map(m);
+        next.set(evt.conversationId, evt.displayName);
+        return next;
+      });
+      // Auto-clear after 3 s if no stop event
+      const key = evt.conversationId + ':' + evt.userId;
+      if (this.typingTimers.has(key)) clearTimeout(this.typingTimers.get(key));
+      this.typingTimers.set(key, setTimeout(() => this.clearTyping(evt.conversationId, key), 3000));
+    });
+
+    this.hub.onUserStoppedTyping(evt => {
+      const key = evt.conversationId + ':' + evt.userId;
+      this.clearTyping(evt.conversationId, key);
+    });
+
     this.loadConversations();
+    this.loadOnlineFollowing();
+  }
+
+  ngOnDestroy(): void {
+    this.typingTimers.forEach(t => clearTimeout(t));
+    // Keep hub connected (app-level) — only disconnect on logout
   }
 
   ngAfterViewChecked(): void {
@@ -35,9 +102,29 @@ export class Messages implements OnInit, AfterViewChecked {
     }
   }
 
+  private clearTyping(conversationId: string, key: string): void {
+    this.typingUsers.update(m => {
+      const next = new Map(m);
+      next.delete(conversationId);
+      return next;
+    });
+    this.typingTimers.delete(key);
+  }
+
   loadConversations(): void {
     this.msgService.getConversations().subscribe({
       next: convs => this.conversations.set(convs),
+      error: () => {}
+    });
+  }
+
+  loadOnlineFollowing(): void {
+    this.userService.getOnlineFollowing().subscribe({
+      next: (onlineIds: string[]) => {
+        // Seed the hub's onlineUserIds signal with the REST snapshot.
+        // The computed() will automatically re-derive the panel.
+        this.hub.onlineUserIds.set(new Set(onlineIds));
+      },
       error: () => {}
     });
   }
@@ -53,6 +140,7 @@ export class Messages implements OnInit, AfterViewChecked {
     this.messages.set([]);
     this.messagePage = 1;
     this.loadMessages(false);
+    this.hub.joinConversation(conv.id);
     this.msgService.markRead(conv.id).subscribe(() => {
       this.conversations.update(list =>
         list.map(c => c.id === conv.id ? { ...c, unreadCount: 0 } : c));
@@ -68,17 +156,20 @@ export class Messages implements OnInit, AfterViewChecked {
     this.loadMessages(true);
   }
 
+  private typingDebounce: ReturnType<typeof setTimeout> | null = null;
+
   sendMessage(): void {
     const text = this.composeText().trim();
     const conv = this.activeConversation();
     if (!text || !conv) return;
 
     this.composeText.set('');
+    this.hub.sendStopTyping(conv.id);
+
     this.msgService.sendMessage(conv.id, text).subscribe({
       next: msg => {
         this.messages.update(list => [...list, msg]);
         this.shouldScrollToBottom = true;
-        // Update last message in conversation list
         this.conversations.update(list =>
           list.map(c => c.id === conv.id
             ? { ...c, lastMessageContent: msg.content, lastMessageAt: msg.createdAt }
@@ -89,7 +180,16 @@ export class Messages implements OnInit, AfterViewChecked {
   }
 
   onComposeInput(event: Event): void {
-    this.composeText.set((event.target as HTMLTextAreaElement).value);
+    const value = (event.target as HTMLTextAreaElement).value;
+    this.composeText.set(value);
+
+    const conv = this.activeConversation();
+    if (!conv) return;
+
+    // Send typing indicator with debounce
+    this.hub.sendTyping(conv.id);
+    if (this.typingDebounce) clearTimeout(this.typingDebounce);
+    this.typingDebounce = setTimeout(() => this.hub.sendStopTyping(conv.id), 2000);
   }
 
   onComposeKeydown(event: KeyboardEvent): void {
@@ -97,6 +197,12 @@ export class Messages implements OnInit, AfterViewChecked {
       event.preventDefault();
       this.sendMessage();
     }
+  }
+
+  isOtherUserOnline(conv: Conversation): boolean {
+    if (conv.isGroup) return false;
+    const otherId = conv.otherParticipants[0]?.userId;
+    return otherId ? this.hub.isUserOnline(otherId) : false;
   }
 
   convName(conv: Conversation): string {

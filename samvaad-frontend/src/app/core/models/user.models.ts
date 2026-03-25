@@ -1,3 +1,5 @@
+export type FriendRelation = 'None' | 'RequestSent' | 'RequestReceived' | 'Friends';
+
 export interface UserProfile {
   id: string;
   username: string;
@@ -17,6 +19,17 @@ export interface UserProfile {
   isFollowing: boolean;
   isOwnProfile: boolean;
   tags: string[];
+  friendRelation: FriendRelation;
+}
+
+export interface FriendRequestItem {
+  id: string;
+  senderId: string;
+  senderUsername: string;
+  senderDisplayName: string;
+  senderAvatarUrl: string | null;
+  senderIsVerified: boolean;
+  createdAt: string;
 }
 
 export interface FollowerUser {

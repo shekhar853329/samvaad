@@ -1,13 +1,15 @@
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using samvaad_backend.Common;
 using samvaad_backend.Data;
+using samvaad_backend.Hubs;
 using samvaad_backend.Models.DTOs.Messages;
 using samvaad_backend.Models.Entities;
 using samvaad_backend.Services.Interfaces;
 
 namespace samvaad_backend.Services;
 
-public class MessageService(AppDbContext db) : IMessageService
+public class MessageService(AppDbContext db, IHubContext<ChatHub> hubContext) : IMessageService
 {
     public async Task<List<ConversationDto>> GetConversationsAsync(Guid userId)
     {
@@ -150,8 +152,20 @@ public class MessageService(AppDbContext db) : IMessageService
         await db.SaveChangesAsync();
 
         var sender = await db.Users.FindAsync(senderId);
-        return new MessageDto(message.Id, senderId, sender!.DisplayName, sender.AvatarUrl,
-            message.Content, message.CreatedAt, true);
+        var dto = new MessageDto(message.Id, senderId, sender!.DisplayName, sender.AvatarUrl,
+                     message.Content, message.CreatedAt, true);
+
+        // Broadcast to all participants in the conversation room
+        // Each recipient receives isMine=false
+        var recipientDto = dto with { IsMine = false };
+        await hubContext.Clients.Group(conversationId.ToString())
+            .SendAsync("NewMessage", new
+            {
+                conversationId = conversationId.ToString(),
+                message = recipientDto
+            });
+
+        return dto;
     }
 
     public async Task MarkReadAsync(Guid conversationId, Guid userId)

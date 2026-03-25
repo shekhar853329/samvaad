@@ -123,10 +123,11 @@ public class ExploreService(AppDbContext db) : IExploreService
     private async Task<IReadOnlyList<PostDto>> MapManyToDtoAsync(IList<Post> posts, Guid? requestingUserId)
     {
         if (!requestingUserId.HasValue || posts.Count == 0)
-            return posts.Select(p => BuildDto(p, null, false, false, false)).ToList();
+            return posts.Select(p => BuildDto(p, null, false, false, false, false)).ToList();
 
         var uid = requestingUserId.Value;
         var postIds = posts.Select(p => p.Id).ToList();
+        var authorIds = posts.Select(p => p.AuthorId).Distinct().ToList();
 
         var likedIds = await db.Likes.AsNoTracking()
             .Where(l => l.UserId == uid && postIds.Contains(l.PostId))
@@ -140,15 +141,20 @@ public class ExploreService(AppDbContext db) : IExploreService
             .Where(p => p.AuthorId == uid && p.RepostOfId != null && postIds.Contains(p.RepostOfId!.Value))
             .Select(p => p.RepostOfId!.Value).ToHashSetAsync();
 
+        var followedAuthorIds = await db.Follow.AsNoTracking()
+            .Where(f => f.FollowerId == uid && authorIds.Contains(f.FollowingId))
+            .Select(f => f.FollowingId).ToHashSetAsync();
+
         return posts.Select(p => BuildDto(
             p, requestingUserId,
             likedIds.Contains(p.Id),
             bookmarkedIds.Contains(p.Id),
-            repostedOriginalIds.Contains(p.Id)
+            repostedOriginalIds.Contains(p.Id),
+            followedAuthorIds.Contains(p.AuthorId) && p.AuthorId != uid
         )).ToList();
     }
 
-    private static PostDto BuildDto(Post p, Guid? requestingUserId, bool isLiked, bool isBookmarked, bool isReposted) =>
+    private static PostDto BuildDto(Post p, Guid? requestingUserId, bool isLiked, bool isBookmarked, bool isReposted, bool isFollowingAuthor) =>
         new(
             p.Id,
             new PostAuthorDto(p.Author.Id, p.Author.Username, p.Author.DisplayName, p.Author.AvatarUrl, p.Author.IsVerified),
@@ -167,6 +173,7 @@ public class ExploreService(AppDbContext db) : IExploreService
                    .ToList(),
             p.PostHashTags.Select(ph => ph.HashTag.Name).ToList(),
             p.ParentPostId,
-            p.RepostOfId
+            p.RepostOfId,
+            isFollowingAuthor
         );
 }

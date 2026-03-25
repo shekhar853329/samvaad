@@ -25,6 +25,15 @@
       <button (click)="deletePost()" [disabled]="actionInProgress === 'delete'"
               class="text-[13px] text-text-secondary cursor-pointer px-1 hover:text-red-500 transition-colors disabled:opacity-50"
               title="Delete post">🗑</button>
+    } @else {
+      <button (click)="toggleFollowAuthor($event)"
+              [disabled]="followInProgress()"
+              class="shrink-0 text-[11px] font-medium px-2.5 py-[3px] rounded-full border transition-colors disabled:opacity-50"
+              [ngClass]="isFollowingAuthor()
+                ? 'border-border-secondary text-text-secondary hover:border-red-400 hover:text-red-400'
+                : 'border-[#534AB7] text-[#534AB7] hover:bg-[#534AB7] hover:text-white'">
+        {{ followInProgress() ? '…' : (isFollowingAuthor() ? 'Following' : '+ Follow') }}
+      </button>
     }
   </div>
 

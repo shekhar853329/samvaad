@@ -7,5 +7,7 @@ public enum NotificationType
     Follow,
     Repost,
     Mention,
-    System
+    System,
+    FriendRequest,
+    FriendRequestAccepted
 }

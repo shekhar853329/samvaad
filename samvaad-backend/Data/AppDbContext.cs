@@ -27,6 +27,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<UserTag> UserTags => Set<UserTag>();
     public DbSet<UserFeedPreferences> UserFeedPreferences => Set<UserFeedPreferences>();
     public DbSet<MutedWord> MutedWords => Set<MutedWord>();
+    public DbSet<FriendRequest> FriendRequests => Set<FriendRequest>();
+    public DbSet<Friendship> Friendships => Set<Friendship>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -381,6 +383,47 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
              .WithMany(fp => fp.MutedWords)
              .HasForeignKey(mw => mw.UserId)
              .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ── FriendRequest ──────────────────────────────────────────────────────
+        modelBuilder.Entity<FriendRequest>(b =>
+        {
+            b.HasKey(fr => fr.Id);
+            b.Property(fr => fr.Status).HasConversion<string>().IsRequired();
+
+            b.HasIndex(fr => fr.SenderId);
+            b.HasIndex(fr => fr.ReceiverId);
+            b.HasIndex(fr => new { fr.SenderId, fr.ReceiverId }).IsUnique();
+            b.HasIndex(fr => new { fr.ReceiverId, fr.Status, fr.CreatedAt });
+
+            b.HasOne(fr => fr.Sender)
+             .WithMany(u => u.SentFriendRequests)
+             .HasForeignKey(fr => fr.SenderId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(fr => fr.Receiver)
+             .WithMany(u => u.ReceivedFriendRequests)
+             .HasForeignKey(fr => fr.ReceiverId)
+             .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // ── Friendship (adjacency list — two rows per pair) ────────────────────
+        modelBuilder.Entity<Friendship>(b =>
+        {
+            b.HasKey(f => new { f.UserId, f.FriendId });
+
+            // Primary lookup: "give me all friends of user X" — single-column, no OR
+            b.HasIndex(f => f.UserId);
+
+            b.HasOne(f => f.User)
+             .WithMany(u => u.Friendships)
+             .HasForeignKey(f => f.UserId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(f => f.Friend)
+             .WithMany(u => u.FriendedBy)
+             .HasForeignKey(f => f.FriendId)
+             .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

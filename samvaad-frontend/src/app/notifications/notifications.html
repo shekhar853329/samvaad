@@ -54,11 +54,21 @@
           }
         </div>
 
-        <!-- Time + unread dot -->
-        <div class="flex flex-col items-end gap-1 shrink-0">
+        <!-- Time + unread dot + follow back -->
+        <div class="flex flex-col items-end gap-1.5 shrink-0">
           <div class="text-[11px] text-text-tertiary">{{ timeAgo(n.createdAt) }}</div>
           @if (!n.isRead) {
-            <div class="w-[7px] h-[7px] bg-[#534AB7] rounded-full mt-1"></div>
+            <div class="w-[7px] h-[7px] bg-[#534AB7] rounded-full"></div>
+          }
+          @if (n.type === 'Follow' && n.actor) {
+            <button (click)="toggleFollowBack(n, $event)"
+                    [disabled]="followInProgress().has(n.actor.id)"
+                    class="text-[11px] font-medium px-3 py-[3px] rounded-full border transition-colors disabled:opacity-50"
+                    [ngClass]="n.actor.isFollowing
+                      ? 'border-border-secondary text-text-secondary hover:border-red-400 hover:text-red-400'
+                      : 'bg-[#534AB7] text-white border-[#534AB7] hover:bg-[#4039a0]'">
+              {{ followInProgress().has(n.actor.id) ? '…' : (n.actor.isFollowing ? 'Following' : 'Follow back') }}
+            </button>
           }
         </div>
       </div>

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using samvaad_backend.Common;
 using samvaad_backend.Data;
+using samvaad_backend.Models.DTOs.Friends;
 using samvaad_backend.Models.DTOs.Users;
 using samvaad_backend.Models.Entities;
 using samvaad_backend.Models.Enums;
@@ -8,7 +9,7 @@ using samvaad_backend.Services.Interfaces;
 
 namespace samvaad_backend.Services;
 
-public class UserService(AppDbContext db, INotificationService notifications) : IUserService
+public class UserService(AppDbContext db, INotificationService notifications, IFriendService friendService) : IUserService
 {
     public async Task<UserProfileDto> GetProfileAsync(string username, Guid? requestingUserId)
     {
@@ -20,14 +21,16 @@ public class UserService(AppDbContext db, INotificationService notifications) : 
 
         bool isFollowing = false;
         bool isOwnProfile = requestingUserId.HasValue && requestingUserId.Value == user.Id;
+        var friendRelation = FriendRequestRelation.None;
 
         if (requestingUserId.HasValue && !isOwnProfile)
         {
             isFollowing = await db.Follow.AnyAsync(f =>
                 f.FollowerId == requestingUserId.Value && f.FollowingId == user.Id);
+            friendRelation = await friendService.GetRelationAsync(requestingUserId.Value, user.Id);
         }
 
-        return MapToProfileDto(user, isFollowing, isOwnProfile);
+        return MapToProfileDto(user, isFollowing, isOwnProfile, friendRelation);
     }
 
     public async Task<UserProfileDto> GetMyProfileAsync(Guid userId)
@@ -38,7 +41,7 @@ public class UserService(AppDbContext db, INotificationService notifications) : 
             .FirstOrDefaultAsync(u => u.Id == userId)
             ?? throw new AppException("User not found.", 404);
 
-        return MapToProfileDto(user, isFollowing: false, isOwnProfile: true);
+        return MapToProfileDto(user, isFollowing: false, isOwnProfile: true, FriendRequestRelation.None);
     }
 
     public async Task<UserProfileDto> UpdateProfileAsync(Guid userId, UpdateProfileRequest request)
@@ -86,7 +89,7 @@ public class UserService(AppDbContext db, INotificationService notifications) : 
         // Reload tags after save
         await db.Entry(user).Collection(u => u.Tags).LoadAsync();
 
-        return MapToProfileDto(user, isFollowing: false, isOwnProfile: true);
+        return MapToProfileDto(user, isFollowing: false, isOwnProfile: true, FriendRequestRelation.None);
     }
 
     public async Task FollowAsync(Guid followerId, string targetUsername)
@@ -208,14 +211,24 @@ public class UserService(AppDbContext db, INotificationService notifications) : 
         )).ToList();
     }
 
+    public async Task<IReadOnlyList<Guid>> GetFollowingIdsAsync(Guid userId)
+    {
+        return await db.Follow
+            .AsNoTracking()
+            .Where(f => f.FollowerId == userId)
+            .Select(f => f.FollowingId)
+            .ToListAsync();
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────────────
 
-    private static UserProfileDto MapToProfileDto(User u, bool isFollowing, bool isOwnProfile) =>
+    private static UserProfileDto MapToProfileDto(User u, bool isFollowing, bool isOwnProfile, FriendRequestRelation friendRelation) =>
         new(u.Id, u.Username, u.DisplayName, u.AvatarUrl, u.CoverImageUrl,
             u.Bio, u.Location, u.Website, u.IsVerified, u.IsPrivate,
             u.PostsCount, u.FollowersCount, u.FollowingCount, u.TotalViewsCount,
             u.JoinedAt, isFollowing, isOwnProfile,
-            (u.Tags ?? (ICollection<UserTag>)[]).Select(t => t.Name).ToList());
+            (u.Tags ?? (ICollection<UserTag>)[]).Select(t => t.Name).ToList(),
+            friendRelation.ToString());
 
     private async Task<IReadOnlyList<FollowerDto>> MapToFollowerDtos(
         IEnumerable<User> users, Guid? requestingUserId)

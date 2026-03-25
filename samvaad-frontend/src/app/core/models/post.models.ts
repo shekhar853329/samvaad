@@ -28,6 +28,7 @@ export interface Post {
   isBookmarked: boolean;
   isReposted: boolean;
   isOwnPost: boolean;
+  isFollowingAuthor: boolean;
   media: PostMedia[];
   hashtags: string[];
   parentPostId: string | null;

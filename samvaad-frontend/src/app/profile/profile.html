@@ -38,6 +38,7 @@
               Edit profile
             </button>
           } @else {
+            <!-- Follow button -->
             <button
               (click)="toggleFollow()"
               [disabled]="followLoading()"
@@ -46,6 +47,35 @@
                 : 'bg-[#534AB7] text-white border-none rounded-[20px] px-5 py-[7px] text-[13px] font-medium cursor-pointer hover:bg-[#463D99] transition-colors disabled:opacity-60'">
               {{ followLoading() ? '…' : (p.isFollowing ? 'Following' : '+ Follow') }}
             </button>
+
+            <!-- Friend request button(s) -->
+            @if (p.friendRelation === 'RequestReceived') {
+              <!-- Two-button row when we received a request -->
+              <button
+                (click)="handleFriendAction()"
+                [disabled]="friendLoading()"
+                class="bg-[#534AB7] text-white border-none rounded-[20px] px-4 py-[7px] text-[13px] font-medium cursor-pointer hover:bg-[#463D99] transition-colors disabled:opacity-60">
+                {{ friendLoading() ? '…' : 'Accept' }}
+              </button>
+              <button
+                (click)="declineFriendRequest()"
+                [disabled]="friendLoading()"
+                class="bg-transparent border-[0.5px] border-border-secondary rounded-[20px] px-3 py-1.5 text-[12px] md:text-[13px] font-medium cursor-pointer text-text-primary hover:bg-background-secondary transition-colors disabled:opacity-60">
+                Decline
+              </button>
+            } @else {
+              <button
+                (click)="handleFriendAction()"
+                [disabled]="friendLoading()"
+                [class]="(p.friendRelation === 'None')
+                  ? 'bg-transparent border-[0.5px] border-[#534AB7] text-[#534AB7] rounded-[20px] px-3 md:px-4 py-1.5 text-[12px] md:text-[13px] font-medium cursor-pointer hover:bg-[#534AB7]/10 transition-colors disabled:opacity-60'
+                  : 'bg-transparent border-[0.5px] border-border-secondary rounded-[20px] px-3 md:px-4 py-1.5 text-[12px] md:text-[13px] font-medium cursor-pointer text-text-primary hover:bg-background-secondary transition-colors disabled:opacity-60'">
+                @if (friendLoading()) { … }
+                @else if (p.friendRelation === 'None') { Add Friend }
+                @else if (p.friendRelation === 'RequestSent') { Request Sent }
+                @else if (p.friendRelation === 'Friends') { Friends }
+              </button>
+            }
           }
         </div>
       </div>

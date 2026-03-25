@@ -288,7 +288,7 @@ public partial class PostService(AppDbContext db, INotificationService notificat
 
     private async Task<PostDto> MapToDtoAsync(Post post, Guid? requestingUserId)
     {
-        bool isLiked = false, isBookmarked = false, isReposted = false;
+        bool isLiked = false, isBookmarked = false, isReposted = false, isFollowingAuthor = false;
 
         if (requestingUserId.HasValue)
         {
@@ -296,18 +296,21 @@ public partial class PostService(AppDbContext db, INotificationService notificat
             isLiked = await db.Likes.AnyAsync(l => l.PostId == post.Id && l.UserId == uid);
             isBookmarked = await db.Bookmarks.AnyAsync(b => b.PostId == post.Id && b.UserId == uid);
             isReposted = await db.Posts.AnyAsync(p => p.AuthorId == uid && p.RepostOfId == post.Id);
+            isFollowingAuthor = post.AuthorId != uid &&
+                await db.Follow.AnyAsync(f => f.FollowerId == uid && f.FollowingId == post.AuthorId);
         }
 
-        return BuildDto(post, requestingUserId, isLiked, isBookmarked, isReposted);
+        return BuildDto(post, requestingUserId, isLiked, isBookmarked, isReposted, isFollowingAuthor);
     }
 
     private async Task<IReadOnlyList<PostDto>> MapManyToDtoAsync(IList<Post> posts, Guid? requestingUserId)
     {
         if (!requestingUserId.HasValue || posts.Count == 0)
-            return posts.Select(p => BuildDto(p, null, false, false, false)).ToList();
+            return posts.Select(p => BuildDto(p, null, false, false, false, false)).ToList();
 
         var uid = requestingUserId.Value;
         var postIds = posts.Select(p => p.Id).ToList();
+        var authorIds = posts.Select(p => p.AuthorId).Distinct().ToList();
 
         var likedIds = await db.Likes.AsNoTracking()
             .Where(l => l.UserId == uid && postIds.Contains(l.PostId))
@@ -321,15 +324,20 @@ public partial class PostService(AppDbContext db, INotificationService notificat
             .Where(p => p.AuthorId == uid && p.RepostOfId != null && postIds.Contains(p.RepostOfId!.Value))
             .Select(p => p.RepostOfId!.Value).ToHashSetAsync();
 
+        var followedAuthorIds = await db.Follow.AsNoTracking()
+            .Where(f => f.FollowerId == uid && authorIds.Contains(f.FollowingId))
+            .Select(f => f.FollowingId).ToHashSetAsync();
+
         return posts.Select(p => BuildDto(
             p, requestingUserId,
             likedIds.Contains(p.Id),
             bookmarkedIds.Contains(p.Id),
-            repostedOriginalIds.Contains(p.Id)
+            repostedOriginalIds.Contains(p.Id),
+            followedAuthorIds.Contains(p.AuthorId) && p.AuthorId != uid
         )).ToList();
     }
 
-    private static PostDto BuildDto(Post p, Guid? requestingUserId, bool isLiked, bool isBookmarked, bool isReposted) =>
+    private static PostDto BuildDto(Post p, Guid? requestingUserId, bool isLiked, bool isBookmarked, bool isReposted, bool isFollowingAuthor) =>
         new(
             p.Id,
             new PostAuthorDto(p.Author.Id, p.Author.Username, p.Author.DisplayName, p.Author.AvatarUrl, p.Author.IsVerified),
@@ -348,6 +356,7 @@ public partial class PostService(AppDbContext db, INotificationService notificat
                    .ToList(),
             p.PostHashTags.Select(ph => ph.HashTag.Name).ToList(),
             p.ParentPostId,
-            p.RepostOfId
+            p.RepostOfId,
+            isFollowingAuthor
         );
 }

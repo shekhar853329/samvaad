@@ -12,4 +12,5 @@ public interface IUserService
     Task<IReadOnlyList<FollowerDto>> GetFollowersAsync(string username, Guid? requestingUserId, int page, int pageSize);
     Task<IReadOnlyList<FollowerDto>> GetFollowingAsync(string username, Guid? requestingUserId, int page, int pageSize);
     Task<IReadOnlyList<FollowerDto>> GetWhoToFollowAsync(Guid userId, int count);
+    Task<IReadOnlyList<Guid>> GetFollowingIdsAsync(Guid userId);
 }

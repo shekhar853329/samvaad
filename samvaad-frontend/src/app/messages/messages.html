@@ -14,6 +14,31 @@
              class="w-full bg-background-primary border-[0.5px] border-border-secondary rounded-[20px] px-4 py-[7px] text-[13px] text-text-primary placeholder:text-text-tertiary outline-none focus:border-[#534AB7]">
     </div>
 
+    <!-- Online Now Panel -->
+    @if (onlineFollowingProfiles().length > 0) {
+      <div class="px-4 pb-3 shrink-0">
+        <div class="text-[11px] font-medium text-text-tertiary uppercase tracking-wide mb-2">Online now</div>
+        <div class="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
+          @for (u of onlineFollowingProfiles(); track u.id) {
+            <a [routerLink]="['/users', u.username]" class="flex flex-col items-center gap-1 shrink-0 cursor-pointer no-underline">
+              <div class="relative">
+                @if (u.avatarUrl) {
+                  <img [src]="u.avatarUrl" [alt]="u.displayName"
+                       class="w-[38px] h-[38px] rounded-full object-cover border-2 border-background-secondary" />
+                } @else {
+                  <div class="w-[38px] h-[38px] rounded-full bg-[#534AB7] flex items-center justify-center text-white text-[12px] font-medium">
+                    {{ initials(u.displayName) }}
+                  </div>
+                }
+                <span class="absolute bottom-[1px] right-[1px] w-[10px] h-[10px] bg-[#22c55e] rounded-full border-2 border-background-secondary"></span>
+              </div>
+              <span class="text-[10px] text-text-secondary truncate max-w-[42px]">{{ u.displayName.split(' ')[0] }}</span>
+            </a>
+          }
+        </div>
+      </div>
+    }
+
     <div class="flex border-b-[0.5px] border-border-tertiary px-2 shrink-0">
       <button (click)="activeTab.set('all')" class="flex-1 py-2 text-[13px] font-medium transition-colors"
               [ngClass]="activeTab() === 'all' ? 'text-[#534AB7] border-b-2 border-[#534AB7]' : 'text-text-secondary'">All</button>
@@ -32,7 +57,7 @@
                ? 'bg-background-primary border-[#534AB7]'
                : 'border-transparent hover:bg-background-primary/70'">
 
-          <!-- Avatar -->
+          <!-- Avatar with online dot -->
           <div class="relative shrink-0">
             @if (conv.isGroup) {
               <div class="relative w-[38px] h-[38px]">
@@ -55,6 +80,9 @@
                   {{ initials(conv.otherParticipants[0]?.displayName ?? '?') }}
                 </div>
               }
+              @if (isOtherUserOnline(conv)) {
+                <span class="absolute bottom-[1px] right-[1px] w-[10px] h-[10px] bg-[#22c55e] rounded-full border-2 border-background-secondary"></span>
+              }
             }
           </div>
 
@@ -65,12 +93,16 @@
                     [class.font-semibold]="conv.unreadCount > 0">{{ convName(conv) }}</span>
               <span class="text-[11px] text-text-secondary shrink-0 ml-1">{{ timeAgo(conv.lastMessageAt) }}</span>
             </div>
-            <div class="text-[12px] truncate"
-                 [class.text-text-primary]="conv.unreadCount > 0"
-                 [class.font-medium]="conv.unreadCount > 0"
-                 [class.text-text-secondary]="conv.unreadCount === 0">
-              {{ convLastLine(conv) }}
-            </div>
+            @if (typingUsers().has(conv.id)) {
+              <div class="text-[12px] text-[#534AB7] italic">typing…</div>
+            } @else {
+              <div class="text-[12px] truncate"
+                   [class.text-text-primary]="conv.unreadCount > 0"
+                   [class.font-medium]="conv.unreadCount > 0"
+                   [class.text-text-secondary]="conv.unreadCount === 0">
+                {{ convLastLine(conv) }}
+              </div>
+            }
           </div>
 
           @if (conv.unreadCount > 0) {
@@ -98,7 +130,7 @@
       <div class="flex items-center gap-3 px-4 py-3 border-b-[0.5px] border-border-tertiary bg-background-primary shrink-0">
         <button (click)="backToList()" class="md:hidden mr-1 text-text-secondary text-[20px] leading-none">←</button>
 
-        <!-- Avatar -->
+        <!-- Avatar with online dot -->
         @if (conv.isGroup) {
           <div class="relative w-[38px] h-[38px] shrink-0">
             <div class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#534AB7] absolute top-0 left-0">
@@ -111,15 +143,20 @@
             }
           </div>
         } @else {
-          @if (conv.otherParticipants[0]?.avatarUrl) {
-            <img [src]="conv.otherParticipants[0].avatarUrl"
-                 class="w-[38px] h-[38px] rounded-full object-cover shrink-0"
-                 [alt]="conv.otherParticipants[0].displayName">
-          } @else {
-            <div class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-[#534AB7] shrink-0">
-              {{ initials(conv.otherParticipants[0]?.displayName ?? '?') }}
-            </div>
-          }
+          <div class="relative shrink-0">
+            @if (conv.otherParticipants[0]?.avatarUrl) {
+              <img [src]="conv.otherParticipants[0].avatarUrl"
+                   class="w-[38px] h-[38px] rounded-full object-cover"
+                   [alt]="conv.otherParticipants[0].displayName">
+            } @else {
+              <div class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-[#534AB7]">
+                {{ initials(conv.otherParticipants[0]?.displayName ?? '?') }}
+              </div>
+            }
+            @if (isOtherUserOnline(conv)) {
+              <span class="absolute bottom-[1px] right-[1px] w-[10px] h-[10px] bg-[#22c55e] rounded-full border-2 border-background-primary"></span>
+            }
+          </div>
         }
 
         <div class="flex-1">
@@ -128,6 +165,10 @@
             <div class="text-[12px] text-text-secondary">
               {{ conv.otherParticipants.map(p => p.displayName).join(', ') }}
             </div>
+          } @else if (isOtherUserOnline(conv)) {
+            <div class="text-[11px] text-[#22c55e] font-medium">Online</div>
+          } @else if (typingUsers().has(conv.id)) {
+            <div class="text-[11px] text-[#534AB7] italic">typing…</div>
           }
         </div>
 
@@ -186,6 +227,17 @@
           }
         }
 
+        <!-- Typing bubble -->
+        @if (typingUsers().has(conv.id)) {
+          <div class="flex gap-2 items-end max-w-[75%]">
+            <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-[16px] rounded-bl-[4px] px-[14px] py-[10px] flex gap-[4px] items-center">
+              <span class="w-[6px] h-[6px] rounded-full bg-text-tertiary animate-bounce [animation-delay:0ms]"></span>
+              <span class="w-[6px] h-[6px] rounded-full bg-text-tertiary animate-bounce [animation-delay:150ms]"></span>
+              <span class="w-[6px] h-[6px] rounded-full bg-text-tertiary animate-bounce [animation-delay:300ms]"></span>
+            </div>
+          </div>
+        }
+
         <div #messagesEnd></div>
       </div>
 
@@ -207,4 +259,3 @@
   }
 
 </div>
-

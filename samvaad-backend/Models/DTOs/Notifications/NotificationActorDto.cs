@@ -5,4 +5,5 @@ public record NotificationActorDto(
     string Username,
     string DisplayName,
     string? AvatarUrl,
-    bool IsVerified);
+    bool IsVerified,
+    bool IsFollowing);

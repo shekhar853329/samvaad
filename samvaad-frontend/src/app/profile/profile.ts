@@ -25,6 +25,7 @@ export class Profile implements OnInit {
   loading = signal(true);
   error = signal<string | null>(null);
   followLoading = signal(false);
+  friendLoading = signal(false);
   activeTab = signal<'posts' | 'replies' | 'media' | 'likes' | 'saved'>('posts');
 
   posts = signal<Post[]>([]);
@@ -112,6 +113,62 @@ export class Profile implements OnInit {
         this.followLoading.set(false);
       },
       error: () => this.followLoading.set(false)
+    });
+  }
+
+  handleFriendAction(): void {
+    const p = this.profile();
+    if (!p || this.friendLoading()) return;
+
+    const relation = p.friendRelation;
+    this.friendLoading.set(true);
+
+    let action$: import('rxjs').Observable<void>;
+    let optimisticRelation: import('../core/models/user.models').FriendRelation;
+
+    switch (relation) {
+      case 'None':
+        action$ = this.userService.sendFriendRequest(p.username);
+        optimisticRelation = 'RequestSent';
+        break;
+      case 'RequestSent':
+        action$ = this.userService.cancelFriendRequest(p.username);
+        optimisticRelation = 'None';
+        break;
+      case 'RequestReceived':
+        // Accept is the primary action; decline handled by separate button
+        action$ = this.userService.acceptFriendRequest(p.username);
+        optimisticRelation = 'Friends';
+        break;
+      case 'Friends':
+        action$ = this.userService.unfriend(p.username);
+        optimisticRelation = 'None';
+        break;
+      default:
+        this.friendLoading.set(false);
+        return;
+    }
+
+    action$.subscribe({
+      next: () => {
+        this.profile.update(prev => prev ? { ...prev, friendRelation: optimisticRelation } : null);
+        this.friendLoading.set(false);
+      },
+      error: () => this.friendLoading.set(false)
+    });
+  }
+
+  declineFriendRequest(): void {
+    const p = this.profile();
+    if (!p || this.friendLoading()) return;
+
+    this.friendLoading.set(true);
+    this.userService.declineFriendRequest(p.username).subscribe({
+      next: () => {
+        this.profile.update(prev => prev ? { ...prev, friendRelation: 'None' } : null);
+        this.friendLoading.set(false);
+      },
+      error: () => this.friendLoading.set(false)
     });
   }
 

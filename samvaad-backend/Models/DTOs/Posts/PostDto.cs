@@ -16,5 +16,6 @@ public record PostDto(
     IReadOnlyList<PostMediaDto> Media,
     IReadOnlyList<string> Hashtags,
     Guid? ParentPostId,
-    Guid? RepostOfId
+    Guid? RepostOfId,
+    bool IsFollowingAuthor
 );

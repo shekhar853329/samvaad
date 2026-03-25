@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
-import { FollowerUser, UpdateProfileRequest, UserProfile } from '../models/user.models';
+import { FollowerUser, FriendRequestItem, UpdateProfileRequest, UserProfile } from '../models/user.models';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -43,5 +43,35 @@ export class UserService {
 
   getWhoToFollow(count = 5): Observable<FollowerUser[]> {
     return this.api.get<FollowerUser[]>('/users/who-to-follow', { count });
+  }
+
+  getOnlineFollowing(): Observable<string[]> {
+    return this.api.get<string[]>('/users/online');
+  }
+
+  // ── Friend requests ───────────────────────────────────────────────────────
+
+  sendFriendRequest(username: string): Observable<void> {
+    return this.api.post<void>(`/friends/requests/${username}`, {});
+  }
+
+  cancelFriendRequest(username: string): Observable<void> {
+    return this.api.delete<void>(`/friends/requests/${username}`);
+  }
+
+  acceptFriendRequest(username: string): Observable<void> {
+    return this.api.post<void>(`/friends/requests/${username}/accept`, {});
+  }
+
+  declineFriendRequest(username: string): Observable<void> {
+    return this.api.post<void>(`/friends/requests/${username}/decline`, {});
+  }
+
+  unfriend(username: string): Observable<void> {
+    return this.api.delete<void>(`/friends/${username}`);
+  }
+
+  getPendingFriendRequests(): Observable<FriendRequestItem[]> {
+    return this.api.get<FriendRequestItem[]>('/friends/requests');
   }
 }

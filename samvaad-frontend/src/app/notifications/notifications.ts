@@ -1,6 +1,8 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { Router } from '@angular/router';
 import { NotificationService } from '../core/services/notification.service';
+import { UserService } from '../core/services/user.service';
 import { Notification } from '../core/models/notification.models';
 
 const TABS = ['all', 'mention', 'follow', 'like', 'repost', 'system'] as const;
@@ -18,12 +20,13 @@ const TAB_TYPES: Record<Tab, string | undefined> = {
 
 @Component({
   selector: 'app-notifications',
-  imports: [],
+  imports: [NgClass],
   templateUrl: './notifications.html',
   styleUrl: './notifications.css',
 })
 export class Notifications implements OnInit {
   private notifService = inject(NotificationService);
+  private userService = inject(UserService);
   private router = inject(Router);
 
   readonly tabs = TABS;
@@ -32,6 +35,7 @@ export class Notifications implements OnInit {
   items = signal<Notification[]>([]);
   hasMore = signal(false);
   loading = signal(false);
+  followInProgress = signal<Set<string>>(new Set());
   private page = signal(1);
 
   ngOnInit(): void {
@@ -61,6 +65,31 @@ export class Notifications implements OnInit {
     if (n.actor) {
       this.router.navigate(['/users', n.actor.username]);
     }
+  }
+
+  toggleFollowBack(n: Notification, event: Event): void {
+    event.stopPropagation();
+    const actor = n.actor;
+    if (!actor || this.followInProgress().has(actor.id)) return;
+
+    this.followInProgress.update(s => new Set(s).add(actor.id));
+    const currentlyFollowing = actor.isFollowing;
+    const action = currentlyFollowing
+      ? this.userService.unfollow(actor.username)
+      : this.userService.follow(actor.username);
+
+    action.subscribe({
+      next: () => {
+        this.items.update(list =>
+          list.map(x => x.id === n.id && x.actor
+            ? { ...x, actor: { ...x.actor, isFollowing: !currentlyFollowing } }
+            : x));
+        this.followInProgress.update(s => { const ns = new Set(s); ns.delete(actor.id); return ns; });
+      },
+      error: () => {
+        this.followInProgress.update(s => { const ns = new Set(s); ns.delete(actor.id); return ns; });
+      }
+    });
   }
 
   markAllRead(): void {

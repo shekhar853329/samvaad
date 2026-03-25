@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using samvaad_backend.Data;
+using samvaad_backend.Hubs;
 using samvaad_backend.Middleware;
 using samvaad_backend.Services;
 using samvaad_backend.Services.Interfaces;
@@ -32,6 +33,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
             ClockSkew = TimeSpan.Zero
         };
+        // Allow SignalR to receive the JWT from the query string (websocket transport)
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = ctx =>
+            {
+                var token = ctx.Request.Query["access_token"];
+                if (!string.IsNullOrEmpty(token) &&
+                    ctx.HttpContext.Request.Path.StartsWithSegments("/hubs"))
+                {
+                    ctx.Token = token;
+                }
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.AddAuthorization();
@@ -52,6 +67,11 @@ builder.Services.AddScoped<IExploreService, ExploreService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<ISettingsService, SettingsService>();
+builder.Services.AddScoped<IFriendService, FriendService>();
+
+// ── SignalR + Online presence ────────────────────────────────────────────────
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<IOnlineTracker, OnlineTracker>();
 
 // ── Controllers + Swagger ────────────────────────────────────────────────────
 builder.Services.AddControllers();
@@ -105,6 +125,7 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<ChatHub>("/hubs/chat");
 
 app.Run();
 

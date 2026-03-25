@@ -1,8 +1,9 @@
-import { Component, input, output, inject } from '@angular/core';
+import { Component, input, output, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Post } from '../../core/models/post.models';
 import { PostService } from '../../core/services/post.service';
+import { UserService } from '../../core/services/user.service';
 
 @Component({
   selector: 'app-post-card',
@@ -16,8 +17,16 @@ export class PostCard {
   postDeleted = output<string>();
 
   private postService = inject(PostService);
+  private userService = inject(UserService);
 
   actionInProgress: 'like' | 'bookmark' | 'repost' | 'delete' | null = null;
+  followInProgress = signal(false);
+  // Local override after a follow/unfollow action (null = use post().isFollowingAuthor)
+  private followOverride = signal<boolean | null>(null);
+
+  isFollowingAuthor(): boolean {
+    return this.followOverride() ?? this.post().isFollowingAuthor;
+  }
 
   toggleLike(): void {
     if (this.actionInProgress) return;
@@ -59,6 +68,21 @@ export class PostCard {
     this.postService.deletePost(p.id).subscribe({
       next: () => { this.postDeleted.emit(p.id); this.actionInProgress = null; },
       error: () => { this.actionInProgress = null; }
+    });
+  }
+
+  toggleFollowAuthor(event: Event): void {
+    event.stopPropagation();
+    if (this.followInProgress()) return;
+    this.followInProgress.set(true);
+    const p = this.post();
+    const currentlyFollowing = this.isFollowingAuthor();
+    const action = currentlyFollowing
+      ? this.userService.unfollow(p.author.username)
+      : this.userService.follow(p.author.username);
+    action.subscribe({
+      next: () => { this.followOverride.set(!currentlyFollowing); this.followInProgress.set(false); },
+      error: () => { this.followInProgress.set(false); }
     });
   }
 

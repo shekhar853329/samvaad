@@ -57,6 +57,22 @@ public class NotificationService(AppDbContext db) : INotificationService
         var hasMore = notifications.Count > pageSize;
         var items = notifications.Take(pageSize).ToList();
 
+        // Resolve which actors the requesting user already follows
+        var actorIds = items
+            .Where(n => n.Actor is not null)
+            .Select(n => n.ActorId!.Value)
+            .Distinct()
+            .ToList();
+
+        HashSet<Guid> followedActorIds = [];
+        if (actorIds.Count > 0)
+        {
+            followedActorIds = await db.Follow.AsNoTracking()
+                .Where(f => f.FollowerId == userId && actorIds.Contains(f.FollowingId))
+                .Select(f => f.FollowingId)
+                .ToHashSetAsync();
+        }
+
         var dtos = items.Select(n => new NotificationDto(
             n.Id,
             n.Type.ToString(),
@@ -67,7 +83,8 @@ public class NotificationService(AppDbContext db) : INotificationService
                 n.Actor.Username,
                 n.Actor.DisplayName,
                 n.Actor.AvatarUrl,
-                n.Actor.IsVerified),
+                n.Actor.IsVerified,
+                followedActorIds.Contains(n.Actor.Id)),
             n.PostId,
             n.Post is not null
                 ? (n.Post.Content.Length > 80 ? n.Post.Content[..80] + "…" : n.Post.Content)
