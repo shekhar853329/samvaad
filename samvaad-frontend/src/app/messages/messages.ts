@@ -100,8 +100,9 @@ export class Messages implements OnInit, OnDestroy, AfterViewChecked {
 
   ngAfterViewChecked(): void {
     if (this.shouldScrollToBottom) {
-      this.scrollToBottom(this.shouldScrollToBottom);
+      const behavior = this.shouldScrollToBottom;
       this.shouldScrollToBottom = false;
+      setTimeout(() => this.scrollToBottom(behavior), 0);
     }
   }
 
