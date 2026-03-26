@@ -31,17 +31,6 @@ export class SettingsProfile implements OnInit {
   // Original data (for cancel)
   private _original: Partial<UserProfile> = {};
 
-  readonly accentColors = [
-    { hex: '#534AB7', label: 'Purple' },
-    { hex: '#0F6E56', label: 'Teal' },
-    { hex: '#185FA5', label: 'Blue' },
-    { hex: '#993C1D', label: 'Coral' },
-    { hex: '#BA7517', label: 'Amber' },
-    { hex: '#3B6D11', label: 'Green' },
-    { hex: '#993556', label: 'Pink' },
-  ];
-  selectedAccent = signal('#534AB7');
-
   ngOnInit(): void {
     this.loadProfile();
   }
@@ -120,10 +109,6 @@ export class SettingsProfile implements OnInit {
       event.preventDefault();
       this.addTag();
     }
-  }
-
-  selectAccent(hex: string): void {
-    this.selectedAccent.set(hex);
   }
 
   save(): void {

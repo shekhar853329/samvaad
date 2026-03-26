@@ -1,4 +1,4 @@
-<div
+﻿<div
   class="flex flex-col h-[calc(100dvh-62px)] overflow-hidden md:grid md:grid-cols-[280px_1fr] md:h-[calc(100vh-94px)] md:sticky md:top-[78px] md:border-[0.5px] md:border-border-tertiary md:rounded-lg">
 
   <!-- ── Thread Panel ──────────────────────────────────────────────── -->
@@ -13,7 +13,7 @@
 
     <div class="px-4 pb-3 shrink-0">
       <input type="text" placeholder="Search messages…"
-        class="w-full bg-background-primary border-[0.5px] border-border-secondary rounded-[20px] px-4 py-[7px] text-[13px] text-text-primary placeholder:text-text-tertiary outline-none focus:border-[#534AB7]">
+        class="w-full bg-background-primary border-[0.5px] border-border-secondary rounded-[20px] px-4 py-[7px] text-[13px] text-text-primary placeholder:text-text-tertiary outline-none focus:border-accent">
     </div>
 
     <!-- Online Now Panel -->
@@ -30,7 +30,7 @@
               class="w-[38px] h-[38px] rounded-full object-cover border-2 border-background-secondary" />
             } @else {
             <div
-              class="w-[38px] h-[38px] rounded-full bg-[#534AB7] flex items-center justify-center text-white text-[12px] font-medium">
+              class="w-[38px] h-[38px] rounded-full bg-accent flex items-center justify-center text-white text-[12px] font-medium">
               {{ initials(u.displayName) }}
             </div>
             }
@@ -46,9 +46,9 @@
 
     <div class="flex border-b-[0.5px] border-border-tertiary px-2 shrink-0">
       <button (click)="activeTab.set('all')" class="flex-1 py-2 text-[13px] font-medium transition-colors"
-        [ngClass]="activeTab() === 'all' ? 'text-[#534AB7] border-b-2 border-[#534AB7] font-medium' : 'text-text-secondary border-b-2 border-transparent'">All</button>
+        [ngClass]="activeTab() === 'all' ? 'text-accent border-b-2 border-accent font-medium' : 'text-text-secondary border-b-2 border-transparent'">All</button>
       <button (click)="activeTab.set('groups')" class="flex-1 py-2 text-[13px] font-medium transition-colors"
-        [ngClass]="activeTab() === 'groups' ? 'text-[#534AB7] border-b-2 border-[#534AB7] font-medium' : 'text-text-secondary border-b-2 border-transparent'">Groups</button>
+        [ngClass]="activeTab() === 'groups' ? 'text-accent border-b-2 border-accent font-medium' : 'text-text-secondary border-b-2 border-transparent'">Groups</button>
     </div>
 
     <div class="flex-1 overflow-y-auto hide-scrollbar">
@@ -58,7 +58,7 @@
       @for (conv of filteredConversations(); track conv.id) {
       <div (click)="selectConversation(conv)"
         class="flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors border-l-2" [ngClass]="activeConversation()?.id === conv.id
-               ? 'bg-background-primary border-[#534AB7]'
+               ? 'bg-background-primary border-accent'
                : 'border-transparent hover:bg-background-primary/70'">
 
         <!-- Avatar with online dot -->
@@ -66,7 +66,7 @@
           @if (conv.isGroup) {
           <div class="relative w-[38px] h-[38px]">
             <div
-              class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#534AB7] absolute top-0 left-0">
+              class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-accent absolute top-0 left-0">
               {{ initials(conv.otherParticipants[0]?.displayName ?? '?') }}
             </div>
             @if (conv.otherParticipants[1]) {
@@ -82,7 +82,7 @@
             [alt]="conv.otherParticipants[0].displayName">
           } @else {
           <div
-            class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-[#534AB7]">
+            class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-accent">
             {{ initials(conv.otherParticipants[0]?.displayName ?? '?') }}
           </div>
           }
@@ -101,7 +101,7 @@
             <span class="text-[11px] text-text-secondary shrink-0 ml-1">{{ timeAgo(conv.lastMessageAt) }}</span>
           </div>
           @if (typingUsers().has(conv.id)) {
-          <div class="text-[12px] text-[#534AB7] italic">typing…</div>
+          <div class="text-[12px] text-accent italic">typing…</div>
           } @else {
           <div class="text-[12px] truncate" [class.text-text-primary]="conv.unreadCount > 0"
             [class.font-medium]="conv.unreadCount > 0" [class.text-text-secondary]="conv.unreadCount === 0">
@@ -112,7 +112,7 @@
 
         @if (conv.unreadCount > 0) {
         <span
-          class="min-w-[18px] h-[18px] bg-[#534AB7] text-white text-[10px] rounded-full flex items-center justify-center px-1 shrink-0">
+          class="min-w-[18px] h-[18px] bg-accent text-white text-[10px] rounded-full flex items-center justify-center px-1 shrink-0">
           {{ conv.unreadCount > 99 ? '99+' : conv.unreadCount }}
         </span>
         }
@@ -141,7 +141,7 @@
       @if (conv.isGroup) {
       <div class="relative w-[38px] h-[38px] shrink-0">
         <div
-          class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#534AB7] absolute top-0 left-0">
+          class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-accent absolute top-0 left-0">
           {{ initials(conv.otherParticipants[0]?.displayName ?? '?') }}
         </div>
         @if (conv.otherParticipants[1]) {
@@ -158,7 +158,7 @@
           [alt]="conv.otherParticipants[0].displayName">
         } @else {
         <div
-          class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-[#534AB7]">
+          class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-accent">
           {{ initials(conv.otherParticipants[0]?.displayName ?? '?') }}
         </div>
         }
@@ -178,7 +178,7 @@
         } @else if (isOtherUserOnline(conv)) {
         <div class="text-[11px] text-[#22c55e] font-medium">Online</div>
         } @else if (typingUsers().has(conv.id)) {
-        <div class="text-[11px] text-[#534AB7] italic">typing…</div>
+        <div class="text-[11px] text-accent italic">typing…</div>
         }
       </div>
 
@@ -195,7 +195,7 @@
 
       @if (hasMoreMessages()) {
       <div class="text-center">
-        <button class="text-[12px] text-[#534AB7] hover:underline bg-transparent border-none cursor-pointer"
+        <button class="text-[12px] text-accent hover:underline bg-transparent border-none cursor-pointer"
           [disabled]="loadingMessages()" (click)="loadMoreMessages()">
           {{ loadingMessages() ? 'Loading…' : 'Load older messages' }}
         </button>
@@ -213,7 +213,7 @@
       <!-- My message (right-aligned) -->
       <div class="flex gap-2 items-end max-w-[75%] self-end flex-row-reverse">
         <div>
-          <div class="bg-[#534AB7] text-white rounded-[16px] rounded-br-[4px] px-[12px] py-[8px] text-[13px]">{{
+          <div class="bg-accent text-white rounded-[16px] rounded-br-[4px] px-[12px] py-[8px] text-[13px]">{{
             msg.content }}</div>
           <div class="text-[11px] text-text-tertiary mt-1 text-right">{{ formatTime(msg.createdAt) }}</div>
         </div>
@@ -226,13 +226,13 @@
           class="w-[24px] h-[24px] rounded-full object-cover shrink-0">
         } @else {
         <div
-          class="w-[24px] h-[24px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#534AB7] shrink-0">
+          class="w-[24px] h-[24px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-accent shrink-0">
           {{ initials(msg.senderDisplayName) }}
         </div>
         }
         <div>
           @if (conv.isGroup) {
-          <span class="text-[11px] text-[#534AB7] font-medium block mb-[2px]">{{ msg.senderDisplayName }}</span>
+          <span class="text-[11px] text-accent font-medium block mb-[2px]">{{ msg.senderDisplayName }}</span>
           }
           <div
             class="bg-background-primary border-[0.5px] border-border-tertiary rounded-[16px] rounded-bl-[4px] px-[12px] py-[8px] text-[13px] text-text-primary">
@@ -261,11 +261,11 @@
     <!-- Compose -->
     <div class="flex items-end gap-2 px-4 py-3 border-t-[0.5px] border-border-tertiary bg-background-primary shrink-0">
       <textarea
-        class="flex-1 bg-background-secondary border-[0.5px] border-border-secondary rounded-[20px] px-[14px] py-2 text-[13px] resize-none outline-none focus:border-[#534AB7] text-text-primary placeholder:text-text-tertiary"
+        class="flex-1 bg-background-secondary border-[0.5px] border-border-secondary rounded-[20px] px-[14px] py-2 text-[13px] resize-none outline-none focus:border-accent text-text-primary placeholder:text-text-tertiary"
         [placeholder]="'Message ' + convName(conv) + '…'" [value]="composeText()" (input)="onComposeInput($event)"
         (keydown)="onComposeKeydown($event)" rows="1"></textarea>
       <button (click)="sendMessage()"
-        class="w-[34px] h-[34px] bg-[#534AB7] rounded-full flex items-center justify-center shrink-0 opacity-100 disabled:opacity-40 transition-opacity"
+        class="w-[34px] h-[34px] bg-accent rounded-full flex items-center justify-center shrink-0 opacity-100 disabled:opacity-40 transition-opacity"
         [disabled]="!composeText().trim()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
           <path d="M2 21l21-9L2 3v7l15 2-15 2v7z" />

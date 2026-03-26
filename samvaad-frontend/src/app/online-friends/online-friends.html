@@ -1,4 +1,4 @@
-<div class="bg-background-primary border border-[rgba(83,74,183,0.12)] rounded-lg overflow-hidden">
+﻿<div class="bg-background-primary border border-[rgba(83,74,183,0.12)] rounded-lg overflow-hidden">
   <div class="px-[14px] py-3 text-[13px] font-medium text-text-primary border-b border-[rgba(83,74,183,0.12)]">
     Online now
     @if (onlineFriends().length > 0) {
@@ -20,7 +20,7 @@
           <img [src]="friend.senderAvatarUrl" [alt]="friend.senderDisplayName"
                class="w-[30px] h-[30px] rounded-full object-cover" />
         } @else {
-          <div class="w-[30px] h-[30px] bg-[#534AB7] flex items-center justify-center text-white text-[11px] font-medium rounded-full">
+          <div class="w-[30px] h-[30px] bg-accent flex items-center justify-center text-white text-[11px] font-medium rounded-full">
             {{ getInitials(friend.senderDisplayName) }}
           </div>
         }
@@ -30,7 +30,7 @@
         <div class="text-[12px] font-medium text-text-primary truncate">{{ friend.senderDisplayName }}</div>
         <div class="text-[11px] text-[#22c55e]">Active now</div>
       </div>
-      <button class="text-[#a09db8] hover:text-[#534AB7] transition-colors shrink-0"
+      <button class="text-[#a09db8] hover:text-accent transition-colors shrink-0"
               title="Send message"
               (click)="openChat(friend, $event)">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">

@@ -1,9 +1,9 @@
-<div class="min-h-screen bg-[#F7F7FB] flex items-center justify-center px-4">
+﻿<div class="min-h-screen bg-[#F7F7FB] flex items-center justify-center px-4">
   <div class="w-full max-w-[400px]">
 
     <!-- Logo / Brand -->
     <div class="text-center mb-8">
-      <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#534AB7] mb-3">
+      <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-accent mb-3">
         <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
           <path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/>
         </svg>
@@ -30,7 +30,7 @@
             type="text"
             autocomplete="username"
             placeholder="you@example.com"
-            class="w-full px-3 py-2.5 rounded-lg border border-[#ccced2] bg-[#f0f2f5] text-sm text-[#050505] placeholder-[#8c939d] outline-none focus:border-[#534AB7] focus:ring-2 focus:ring-[#534AB7]/20 transition"
+            class="w-full px-3 py-2.5 rounded-lg border border-[#ccced2] bg-[#f0f2f5] text-sm text-[#050505] placeholder-[#8c939d] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition"
           />
           @if (form.controls.identifier.invalid && form.controls.identifier.touched) {
             <span class="text-xs text-red-600">This field is required.</span>
@@ -44,7 +44,7 @@
             type="password"
             autocomplete="current-password"
             placeholder="••••••••"
-            class="w-full px-3 py-2.5 rounded-lg border border-[#ccced2] bg-[#f0f2f5] text-sm text-[#050505] placeholder-[#8c939d] outline-none focus:border-[#534AB7] focus:ring-2 focus:ring-[#534AB7]/20 transition"
+            class="w-full px-3 py-2.5 rounded-lg border border-[#ccced2] bg-[#f0f2f5] text-sm text-[#050505] placeholder-[#8c939d] outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition"
           />
           @if (form.controls.password.invalid && form.controls.password.touched) {
             <span class="text-xs text-red-600">This field is required.</span>
@@ -54,7 +54,7 @@
         <button
           type="submit"
           [disabled]="loading()"
-          class="w-full py-2.5 rounded-lg bg-[#534AB7] text-white text-sm font-semibold hover:bg-[#463D99] active:bg-[#3A3380] transition disabled:opacity-60 disabled:cursor-not-allowed mt-1"
+          class="w-full py-2.5 rounded-lg bg-accent text-white text-sm font-semibold hover:bg-accent-dark active:bg-accent-dark transition disabled:opacity-60 disabled:cursor-not-allowed mt-1"
         >
           @if (loading()) {
             <span>Signing in…</span>
@@ -69,7 +69,7 @@
     <!-- Footer link -->
     <p class="text-center text-sm text-[#65676b] mt-5">
       Don't have an account?
-      <a routerLink="/register" class="text-[#534AB7] font-medium hover:underline">Sign up</a>
+      <a routerLink="/register" class="text-accent font-medium hover:underline">Sign up</a>
     </p>
 
   </div>

@@ -1,4 +1,4 @@
-<div class="max-w-[680px] mx-auto font-sans bg-background-primary md:bg-transparent">
+﻿<div class="max-w-[680px] mx-auto font-sans bg-background-primary md:bg-transparent">
 
   <!-- Loading state -->
   @if (loading()) {
@@ -14,7 +14,7 @@
   @if (!loading() && profile(); as p) {
     <!-- Cover image -->
     <div class="h-[140px] md:rounded-t-lg relative overflow-hidden"
-         [style.background]="p.coverImageUrl ? 'url(' + p.coverImageUrl + ') center/cover' : 'linear-gradient(135deg, #3C3489, #0F6E56)'">
+         [style.background]="p.coverImageUrl ? 'url(' + p.coverImageUrl + ') center/cover' : 'linear-gradient(135deg, var(--color-accent-dark), #0F6E56)'">
     </div>
 
     <div class="bg-background-primary md:border-[0.5px] border-b-[0.5px] border-border-tertiary md:rounded-b-lg px-4 md:px-5 pb-4 mb-3">
@@ -25,7 +25,7 @@
             <img [src]="p.avatarUrl" [alt]="p.displayName"
                  class="w-[72px] h-[72px] rounded-full object-cover border-[3px] border-background-primary" />
           } @else {
-            <div class="w-[72px] h-[72px] rounded-full bg-[#534AB7] flex items-center justify-center text-[26px] font-medium text-white border-[3px] border-background-primary">
+            <div class="w-[72px] h-[72px] rounded-full bg-accent flex items-center justify-center text-[26px] font-medium text-white border-[3px] border-background-primary">
               {{ getInitials(p.displayName) }}
             </div>
           }
@@ -44,7 +44,7 @@
               [disabled]="followLoading()"
               [class]="p.isFollowing
                 ? 'bg-transparent border-[0.5px] border-border-secondary rounded-[20px] px-3 md:px-4 py-1.5 text-[12px] md:text-[13px] font-medium cursor-pointer text-text-primary hover:bg-background-secondary transition-colors disabled:opacity-60'
-                : 'bg-[#534AB7] text-white border-none rounded-[20px] px-5 py-[7px] text-[13px] font-medium cursor-pointer hover:bg-[#463D99] transition-colors disabled:opacity-60'">
+                : 'bg-accent text-white border-none rounded-[20px] px-5 py-[7px] text-[13px] font-medium cursor-pointer hover:bg-accent-dark transition-colors disabled:opacity-60'">
               {{ followLoading() ? '…' : (p.isFollowing ? 'Following' : '+ Follow') }}
             </button>
 
@@ -54,7 +54,7 @@
               <button
                 (click)="handleFriendAction()"
                 [disabled]="friendLoading()"
-                class="bg-[#534AB7] text-white border-none rounded-[20px] px-4 py-[7px] text-[13px] font-medium cursor-pointer hover:bg-[#463D99] transition-colors disabled:opacity-60">
+                class="bg-accent text-white border-none rounded-[20px] px-4 py-[7px] text-[13px] font-medium cursor-pointer hover:bg-accent-dark transition-colors disabled:opacity-60">
                 {{ friendLoading() ? '…' : 'Accept' }}
               </button>
               <button
@@ -68,7 +68,7 @@
                 (click)="handleFriendAction()"
                 [disabled]="friendLoading()"
                 [class]="(p.friendRelation === 'None')
-                  ? 'bg-transparent border-[0.5px] border-[#534AB7] text-[#534AB7] rounded-[20px] px-3 md:px-4 py-1.5 text-[12px] md:text-[13px] font-medium cursor-pointer hover:bg-[#534AB7]/10 transition-colors disabled:opacity-60'
+                  ? 'bg-transparent border-[0.5px] border-accent text-accent rounded-[20px] px-3 md:px-4 py-1.5 text-[12px] md:text-[13px] font-medium cursor-pointer hover:bg-accent/10 transition-colors disabled:opacity-60'
                   : 'bg-transparent border-[0.5px] border-border-secondary rounded-[20px] px-3 md:px-4 py-1.5 text-[12px] md:text-[13px] font-medium cursor-pointer text-text-primary hover:bg-background-secondary transition-colors disabled:opacity-60'">
                 @if (friendLoading()) { … }
                 @else if (p.friendRelation === 'None') { Add Friend }
@@ -84,7 +84,7 @@
         <!-- Name & handle -->
         <div class="text-[18px] md:text-[20px] font-semibold text-text-primary flex items-center gap-1.5">
           {{ p.displayName }}
-          @if (p.isVerified) { <span class="text-[#534AB7] text-[14px]">✓</span> }
+          @if (p.isVerified) { <span class="text-accent text-[14px]">✓</span> }
         </div>
         <div class="text-[13px] text-text-secondary">@{{ p.username }}</div>
 
@@ -100,7 +100,7 @@
           }
           @if (p.website) {
             <a [href]="p.website" target="_blank" rel="noopener noreferrer"
-               class="flex items-center gap-1 text-[#534AB7] hover:underline">🔗 {{ p.website }}</a>
+               class="flex items-center gap-1 text-accent hover:underline">🔗 {{ p.website }}</a>
           }
           <span class="flex items-center gap-1">📅 Joined {{ p.joinedAt | date:'MMMM yyyy' }}</span>
         </div>
@@ -137,7 +137,7 @@
       @for (tab of tabs; track tab.key) {
         <div (click)="setTab(tab.key)"
              [class]="activeTab() === tab.key
-               ? 'px-4 py-2.5 text-[13px] cursor-pointer border-b-2 text-[#534AB7] border-[#534AB7] font-medium'
+               ? 'px-4 py-2.5 text-[13px] cursor-pointer border-b-2 text-accent border-accent font-medium'
                : 'px-4 py-2.5 text-[13px] text-text-secondary cursor-pointer border-b-2 border-transparent hover:bg-background-secondary transition-colors'">
           {{ tab.label }}
         </div>
@@ -160,7 +160,7 @@
           @if (postsHasMore()) {
             <div class="p-4 text-center">
               <button (click)="loadMorePosts()" [disabled]="postsLoading()"
-                      class="text-[13px] text-[#534AB7] cursor-pointer hover:underline disabled:opacity-50">
+                      class="text-[13px] text-accent cursor-pointer hover:underline disabled:opacity-50">
                 {{ postsLoading() ? 'Loading...' : 'Load more' }}
               </button>
             </div>

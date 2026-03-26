@@ -10,6 +10,8 @@ module.exports = {
         sans: ['var(--font-sans)', 'sans-serif'],
       },
       colors: {
+        'accent':      'rgb(var(--color-accent-rgb, 83 74 183) / <alpha-value>)',
+        'accent-dark': 'rgb(var(--color-accent-dark-rgb, 60 52 137) / <alpha-value>)',
         'background-page': 'var(--color-background-page, #F7F7FB)',
         'background-primary': 'var(--color-background-primary, #ffffff)',
         'background-secondary': 'var(--color-background-secondary, #f0f2f5)',

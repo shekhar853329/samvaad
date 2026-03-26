@@ -1,4 +1,4 @@
-<div class="sticky top-0 z-10 bg-background-primary px-4 md:px-6 py-3 border-b-[0.5px] border-border-tertiary flex items-center">
+﻿<div class="sticky top-0 z-10 bg-background-primary px-4 md:px-6 py-3 border-b-[0.5px] border-border-tertiary flex items-center">
   <div class="text-[16px] font-medium text-text-primary">Account</div>
 </div>
 <div class="px-4 md:px-6 py-4">
@@ -16,11 +16,11 @@
   </div>
   <div class="flex flex-col gap-1.5 px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
     <label class="text-[12px] font-medium text-text-secondary">New email address</label>
-    <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-[#534AB7]" type="email" placeholder="new@email.com" [ngModel]="newEmail()" (ngModelChange)="newEmail.set($event)">
+    <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-accent" type="email" placeholder="new@email.com" [ngModel]="newEmail()" (ngModelChange)="newEmail.set($event)">
   </div>
   <div class="flex flex-col gap-1.5 px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
     <label class="text-[12px] font-medium text-text-secondary">Current password (to confirm)</label>
-    <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-[#534AB7]" type="password" placeholder="Enter your current password" [ngModel]="currentPwdForEmail()" (ngModelChange)="currentPwdForEmail.set($event)">
+    <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-accent" type="password" placeholder="Enter your current password" [ngModel]="currentPwdForEmail()" (ngModelChange)="currentPwdForEmail.set($event)">
   </div>
   <div class="flex justify-end px-[14px] py-3">
     <button
@@ -31,8 +31,8 @@
           (savedEmail()
             ? 'bg-[#16a34a] text-white scale-105 shadow-[0_0_0_3px_rgba(22,163,74,0.2)] cursor-default'
             : savingEmail()
-              ? 'bg-[#534AB7] text-white opacity-75 cursor-not-allowed'
-              : 'bg-[#534AB7] text-white cursor-pointer hover:bg-[#3C3489] hover:shadow-md active:scale-95')">
+              ? 'bg-accent text-white opacity-75 cursor-not-allowed'
+              : 'bg-accent text-white cursor-pointer hover:bg-accent-dark hover:shadow-md active:scale-95')">
         @if (savingEmail()) {
           <span class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin inline-block shrink-0"></span>
           <span>Updating...</span>
@@ -56,15 +56,15 @@
   }
   <div class="flex flex-col gap-1.5 px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
     <label class="text-[12px] font-medium text-text-secondary">Current password</label>
-    <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-[#534AB7]" type="password" placeholder="Enter current password" [ngModel]="currentPwd()" (ngModelChange)="currentPwd.set($event)">
+    <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-accent" type="password" placeholder="Enter current password" [ngModel]="currentPwd()" (ngModelChange)="currentPwd.set($event)">
   </div>
   <div class="flex flex-col gap-1.5 px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
     <label class="text-[12px] font-medium text-text-secondary">New password</label>
-    <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-[#534AB7]" type="password" placeholder="Min 8 characters" [ngModel]="newPwd()" (ngModelChange)="newPwd.set($event)">
+    <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-accent" type="password" placeholder="Min 8 characters" [ngModel]="newPwd()" (ngModelChange)="newPwd.set($event)">
   </div>
   <div class="flex flex-col gap-1.5 px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
     <label class="text-[12px] font-medium text-text-secondary">Confirm new password</label>
-    <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-[#534AB7]" type="password" placeholder="Repeat new password" [ngModel]="confirmPwd()" (ngModelChange)="confirmPwd.set($event)">
+    <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-accent" type="password" placeholder="Repeat new password" [ngModel]="confirmPwd()" (ngModelChange)="confirmPwd.set($event)">
   </div>
   <div class="flex justify-end px-[14px] py-3">
     <button
@@ -75,8 +75,8 @@
           (savedPwd()
             ? 'bg-[#16a34a] text-white scale-105 shadow-[0_0_0_3px_rgba(22,163,74,0.2)] cursor-default'
             : savingPwd()
-              ? 'bg-[#534AB7] text-white opacity-75 cursor-not-allowed'
-              : 'bg-[#534AB7] text-white cursor-pointer hover:bg-[#3C3489] hover:shadow-md active:scale-95')">
+              ? 'bg-accent text-white opacity-75 cursor-not-allowed'
+              : 'bg-accent text-white cursor-pointer hover:bg-accent-dark hover:shadow-md active:scale-95')">
         @if (savingPwd()) {
           <span class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin inline-block shrink-0"></span>
           <span>Changing...</span>

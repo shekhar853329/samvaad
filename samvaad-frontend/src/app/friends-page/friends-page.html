@@ -1,4 +1,4 @@
-<div class="max-w-[680px] mx-auto font-sans">
+﻿<div class="max-w-[680px] mx-auto font-sans">
 
   <!-- Header -->
   <div class="flex items-center gap-3 px-4 py-3 bg-background-primary border-b-[0.5px] border-border-tertiary sticky top-0 z-10">
@@ -42,7 +42,7 @@
             <img [src]="friend.senderAvatarUrl" [alt]="friend.senderDisplayName"
                  class="w-10 h-10 rounded-full object-cover flex-shrink-0" />
           } @else {
-            <div class="w-10 h-10 rounded-full bg-[#534AB7] flex items-center justify-center text-[15px] font-medium text-white flex-shrink-0">
+            <div class="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-[15px] font-medium text-white flex-shrink-0">
               {{ getInitials(friend.senderDisplayName) }}
             </div>
           }
@@ -52,7 +52,7 @@
             <div class="flex items-center gap-1">
               <span class="text-[14px] font-medium text-text-primary truncate">{{ friend.senderDisplayName }}</span>
               @if (friend.senderIsVerified) {
-                <span class="text-[#534AB7] text-[12px] flex-shrink-0">✓</span>
+                <span class="text-accent text-[12px] flex-shrink-0">✓</span>
               }
             </div>
             <div class="text-[12px] text-text-secondary">@{{ friend.senderUsername }}</div>
@@ -65,7 +65,7 @@
     @if (hasMore()) {
       <div class="py-4 text-center">
         <button (click)="loadMore()" [disabled]="loading()"
-                class="text-[13px] text-[#534AB7] cursor-pointer hover:underline disabled:opacity-50">
+                class="text-[13px] text-accent cursor-pointer hover:underline disabled:opacity-50">
           {{ loading() ? 'Loading…' : 'Load more' }}
         </button>
       </div>

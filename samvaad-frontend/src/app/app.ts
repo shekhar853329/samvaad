@@ -8,6 +8,7 @@ import { AuthService } from './core/services/auth.service';
 import { ChatHubService } from './core/services/chat-hub.service';
 import { ThemeService } from './core/services/theme.service';
 import { FontService } from './core/services/font.service';
+import { AccentService } from './core/services/accent.service';
 
 @Component({
   selector: 'app-root',
@@ -19,8 +20,9 @@ export class App {
   protected auth = inject(AuthService);
   private chatHub = inject(ChatHubService);
   // Injecting ThemeService and FontService ensures they initialize (applying stored prefs) at app startup.
-  private theme = inject(ThemeService);
-  private font = inject(FontService);
+  private theme  = inject(ThemeService);
+  private font   = inject(FontService);
+  private accent = inject(AccentService);
 
   constructor() {
     effect(() => {

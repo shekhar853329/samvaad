@@ -1,17 +1,17 @@
-<div class="max-w-[520px] mx-auto font-sans bg-background-primary md:border-[0.5px] md:border-border-tertiary md:rounded-lg overflow-hidden min-h-screen md:min-h-0">
+﻿<div class="max-w-[520px] mx-auto font-sans bg-background-primary md:border-[0.5px] md:border-border-tertiary md:rounded-lg overflow-hidden min-h-screen md:min-h-0">
 
   <!-- Header -->
   <div class="px-4 py-3.5 border-b-[0.5px] border-border-tertiary flex items-center justify-between">
     <span class="text-[16px] font-medium text-text-primary">Notifications</span>
-    <span class="text-[12px] text-[#534AB7] cursor-pointer hover:underline" (click)="markAllRead()">Mark all as read</span>
+    <span class="text-[12px] text-accent cursor-pointer hover:underline" (click)="markAllRead()">Mark all as read</span>
   </div>
 
   <!-- Tabs -->
   <div class="flex border-b-[0.5px] border-border-tertiary overflow-x-auto hide-scrollbar whitespace-nowrap">
     @for (tab of tabs; track tab) {
       <div class="px-5 py-2 text-[12px] cursor-pointer border-b-2 transition-colors md:flex-1 text-center shrink-0"
-           [class.text-\[#534AB7\]]="activeTab() === tab"
-           [class.border-\[#534AB7\]]="activeTab() === tab"
+           [class.text-accent]="activeTab() === tab"
+           [class.border-accent]="activeTab() === tab"
            [class.font-medium]="activeTab() === tab"
            [class.text-text-secondary]="activeTab() !== tab"
            [class.border-transparent]="activeTab() !== tab"
@@ -29,8 +29,7 @@
   } @else {
     @for (n of items(); track n.id) {
       <div class="flex items-start gap-2.5 px-4 py-[11px] border-b-[0.5px] border-border-tertiary cursor-pointer transition-colors w-full"
-           [class.bg-\[#F4F3FE\]]="!n.isRead"
-           [class.hover\:bg-\[#EEEDFE\]]="!n.isRead"
+           [class.notif-unread]="!n.isRead"
            [class.hover\:bg-background-secondary]="n.isRead"
            (click)="handleClick(n)">
 
@@ -58,7 +57,7 @@
         <div class="flex flex-col items-end gap-1.5 shrink-0">
           <div class="text-[11px] text-text-tertiary">{{ timeAgo(n.createdAt) }}</div>
           @if (!n.isRead) {
-            <div class="w-[7px] h-[7px] bg-[#534AB7] rounded-full"></div>
+            <div class="w-[7px] h-[7px] bg-accent rounded-full"></div>
           }
           @if (n.type === 'Follow' && n.actor) {
             <button (click)="toggleFollowBack(n, $event)"
@@ -66,7 +65,7 @@
                     class="text-[11px] font-medium px-3 py-[3px] rounded-full border transition-colors disabled:opacity-50"
                     [ngClass]="n.actor.isFollowing
                       ? 'border-border-secondary text-text-secondary hover:border-red-400 hover:text-red-400'
-                      : 'bg-[#534AB7] text-white border-[#534AB7] hover:bg-[#4039a0]'">
+                      : 'bg-accent text-white border-accent hover:bg-accent-dark'">
               {{ followInProgress().has(n.actor.id) ? '…' : (n.actor.isFollowing ? 'Following' : 'Follow back') }}
             </button>
           }
@@ -76,7 +75,7 @@
 
     @if (hasMore()) {
       <div class="py-4 text-center">
-        <button class="text-[12px] text-[#534AB7] hover:underline cursor-pointer bg-transparent border-none"
+        <button class="text-[12px] text-accent hover:underline cursor-pointer bg-transparent border-none"
                 [disabled]="loading()"
                 (click)="loadMore()">
           {{ loading() ? 'Loading…' : 'Load more' }}

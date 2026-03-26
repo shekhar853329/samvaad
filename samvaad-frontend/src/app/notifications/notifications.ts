@@ -104,7 +104,7 @@ export class Notifications implements OnInit {
   }
 
   bgFor(type: string): string {
-    return ({ Like: '#FAECE7', Comment: '#E6F1FB', Follow: '#EEEDFE', Repost: '#E1F5EE', Mention: '#EAF3DE' } as Record<string, string>)[type] ?? 'transparent';
+    return ({ Like: '#FAECE7', Comment: '#E6F1FB', Follow: 'rgb(var(--color-accent-rgb) / 0.09)', Repost: '#E1F5EE', Mention: '#EAF3DE' } as Record<string, string>)[type] ?? 'transparent';
   }
 
   textFor(n: Notification): string {

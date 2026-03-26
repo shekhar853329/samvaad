@@ -1,4 +1,4 @@
-<div class="max-w-[860px] mx-auto">
+﻿<div class="max-w-[860px] mx-auto">
 
   <!-- Header: Search + Filters -->
   <div class="pb-4">
@@ -16,7 +16,7 @@
         <button (click)="setFilter($any(chip))"
                 class="px-[14px] py-[5px] rounded-[20px] text-[12px] border-[0.5px] cursor-pointer transition-all whitespace-nowrap capitalize"
                 [class]="activeFilter() === chip
-                  ? 'bg-[#534AB7] text-white border-[#534AB7]'
+                  ? 'bg-accent text-white border-accent'
                   : 'bg-background-primary text-text-secondary border-border-secondary hover:bg-background-secondary'">
           {{ chip }}
         </button>
@@ -63,7 +63,7 @@
                         <img [src]="user.avatarUrl" [alt]="user.displayName"
                              class="w-[32px] h-[32px] rounded-full object-cover shrink-0" />
                       } @else {
-                        <div class="w-[32px] h-[32px] rounded-full bg-[#534AB7] flex items-center justify-center text-white text-[12px] font-medium shrink-0">
+                        <div class="w-[32px] h-[32px] rounded-full bg-accent flex items-center justify-center text-white text-[12px] font-medium shrink-0">
                           {{ getInitials(user.displayName) }}
                         </div>
                       }
@@ -75,7 +75,7 @@
                     <button (click)="toggleFollow(user)" [disabled]="followInProgress.has(user.id)"
                             class="border-[0.5px] rounded-[20px] px-[14px] py-[5px] text-[12px] cursor-pointer shrink-0 transition-colors disabled:opacity-50"
                             [class]="user.isFollowing
-                              ? 'bg-[#534AB7] text-white border-[#534AB7]'
+                              ? 'bg-accent text-white border-accent'
                               : 'bg-transparent border-border-secondary text-text-primary hover:bg-background-secondary'">
                       {{ user.isFollowing ? 'Following' : 'Follow' }}
                     </button>
@@ -122,7 +122,7 @@
                     <img [src]="user.avatarUrl" [alt]="user.displayName"
                          class="w-[32px] h-[32px] rounded-full object-cover shrink-0" />
                   } @else {
-                    <div class="w-[32px] h-[32px] rounded-full bg-[#534AB7] flex items-center justify-center text-white text-[12px] font-medium shrink-0">
+                    <div class="w-[32px] h-[32px] rounded-full bg-accent flex items-center justify-center text-white text-[12px] font-medium shrink-0">
                       {{ getInitials(user.displayName) }}
                     </div>
                   }
@@ -134,7 +134,7 @@
                 <button (click)="toggleFollow(user)" [disabled]="followInProgress.has(user.id)"
                         class="border-[0.5px] rounded-[20px] px-[14px] py-[5px] text-[12px] cursor-pointer shrink-0 transition-colors disabled:opacity-50"
                         [class]="user.isFollowing
-                          ? 'bg-[#534AB7] text-white border-[#534AB7]'
+                          ? 'bg-accent text-white border-accent'
                           : 'bg-transparent border-border-secondary text-text-primary hover:bg-background-secondary'">
                   {{ user.isFollowing ? 'Following' : 'Follow' }}
                 </button>
@@ -223,7 +223,7 @@
           <div class="text-[12px] text-text-secondary mt-[2px]">Apr 5 · Online</div>
           <div class="flex items-center justify-between mt-[6px]">
             <span class="text-[11px] text-text-secondary">318 attending</span>
-            <button class="border-[0.5px] rounded-[20px] px-[10px] py-[3px] text-[11px] cursor-pointer bg-[#534AB7] text-white border-[#534AB7] transition-colors">Registered</button>
+            <button class="border-[0.5px] rounded-[20px] px-[10px] py-[3px] text-[11px] cursor-pointer bg-accent text-white border-accent transition-colors">Registered</button>
           </div>
         </div>
       </div>

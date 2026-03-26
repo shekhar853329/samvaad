@@ -1,4 +1,4 @@
-@if (svc.activeChat(); as chat) {
+﻿@if (svc.activeChat(); as chat) {
   <div
     class="fixed bottom-0 right-5 w-[308px] z-50 flex flex-col rounded-t-xl overflow-hidden transition-all duration-200"
     [style.height]="svc.isMinimized() ? '52px' : '420px'"
@@ -6,7 +6,7 @@
 
     <!-- ── Header ──────────────────────────────────────────────── -->
     <div
-      class="flex items-center gap-2 px-3 bg-[#534AB7] cursor-pointer select-none shrink-0"
+      class="flex items-center gap-2 px-3 bg-accent cursor-pointer select-none shrink-0"
       style="height:52px;"
       (click)="svc.toggleMinimize()">
 
@@ -22,7 +22,7 @@
           </div>
         }
         <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-[1.5px]"
-              style="background:#22c55e; border-color:#534AB7;"></span>
+              style="background:#22c55e; border-color:var(--color-accent);"></span>
       </div>
 
       <div class="flex-1 min-w-0">
@@ -70,8 +70,8 @@
 
         } @else if (svc.messages().length === 0) {
           <div class="flex flex-col items-center justify-center h-full gap-2">
-            <div class="w-10 h-10 rounded-full bg-[#534AB7]/10 flex items-center justify-center">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#534AB7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <div class="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="text-accent" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
               </svg>
             </div>
@@ -110,7 +110,7 @@
 
         <button
           class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors"
-          style="background:#534AB7; color:#fff;"
+          style="background:var(--color-accent); color:#fff;"
           [style.opacity]="inputText().trim() ? '1' : '0.4'"
           [disabled]="!inputText().trim()"
           (click)="send()">

@@ -1,4 +1,4 @@
-import {
+﻿import {
   Component, inject, signal, ViewChild, ElementRef,
   effect, ChangeDetectionStrategy
 } from '@angular/core';
@@ -12,7 +12,7 @@ import { FloatingChatService } from '../core/services/floating-chat.service';
   templateUrl: './floating-chat.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [`
-    .fc-mine   { background: #534AB7; color: #fff; }
+    .fc-mine   { background: var(--color-accent); color: #fff; }
     .fc-theirs { background: #F0EFF8; color: #18162e; }
   `]
 })

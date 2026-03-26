@@ -1,4 +1,4 @@
-<div class="sticky top-0 z-10 bg-background-primary px-4 md:px-6 py-3 border-b-[0.5px] border-border-tertiary flex items-center justify-between gap-2">
+﻿<div class="sticky top-0 z-10 bg-background-primary px-4 md:px-6 py-3 border-b-[0.5px] border-border-tertiary flex items-center justify-between gap-2">
   <div class="text-[16px] font-medium text-text-primary">Language &amp; region</div>
   <div class="flex items-center gap-2">
     <button
@@ -8,7 +8,7 @@
         [class]="'w-[150px] justify-center border-none rounded-md py-1.5 text-[13px] font-medium flex items-center gap-1.5 transition-all duration-300 ' +
           (saved()
             ? 'bg-[#16a34a] text-white scale-105 shadow-[0_0_0_3px_rgba(22,163,74,0.2)] cursor-default'
-            : 'bg-[#534AB7] text-white cursor-pointer hover:bg-[#3C3489] hover:shadow-md active:scale-95')">
+            : 'bg-accent text-white cursor-pointer hover:bg-accent-dark hover:shadow-md active:scale-95')">
         @if (saved()) {
           <svg class="w-3.5 h-3.5 shrink-0 [stroke-dasharray:20] [stroke-dashoffset:20] animate-draw-check" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M2 7L5.5 10.5L12 3.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

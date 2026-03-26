@@ -1,4 +1,4 @@
-<!-- Loading skeleton -->
+﻿<!-- Loading skeleton -->
 @if (loading()) {
   <div class="animate-pulse space-y-4">
     <div class="h-4 bg-background-secondary rounded w-1/4"></div>
@@ -20,8 +20,8 @@
           (saved()
             ? 'bg-[#16a34a] text-white scale-105 shadow-[0_0_0_3px_rgba(22,163,74,0.2)] cursor-default'
             : saving()
-              ? 'bg-[#534AB7] text-white opacity-75 cursor-not-allowed'
-              : 'bg-[#534AB7] text-white cursor-pointer hover:bg-[#3C3489] hover:shadow-md active:scale-95')">
+              ? 'bg-accent text-white opacity-75 cursor-not-allowed'
+              : 'bg-accent text-white cursor-pointer hover:bg-accent-dark hover:shadow-md active:scale-95')">
         @if (saving()) {
           <span class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin inline-block shrink-0"></span>
           <span>Saving...</span>
@@ -55,7 +55,7 @@
         @if (avatarUrl()) {
           <img [src]="avatarUrl()" class="w-[56px] h-[56px] rounded-full object-cover" alt="Avatar">
         } @else {
-          <div class="w-[56px] h-[56px] rounded-full bg-[#534AB7] flex items-center justify-center text-[20px] font-medium text-white select-none">
+          <div class="w-[56px] h-[56px] rounded-full bg-accent flex items-center justify-center text-[20px] font-medium text-white select-none">
             {{ getInitials() }}
           </div>
         }
@@ -83,27 +83,27 @@
     <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Basic info</div>
     <div class="flex flex-col gap-1.5 px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
       <label class="text-[12px] font-medium text-text-secondary">Display name</label>
-      <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-[#534AB7]" type="text" placeholder="Your name" [ngModel]="displayName()" (ngModelChange)="displayName.set($event)">
+      <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-accent" type="text" placeholder="Your name" [ngModel]="displayName()" (ngModelChange)="displayName.set($event)">
     </div>
     <div class="flex flex-col gap-1.5 px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
       <label class="text-[12px] font-medium text-text-secondary">Username</label>
       <div class="flex items-center gap-1.5">
         <span class="text-[13px] text-text-secondary">&#64;</span>
-        <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-[#534AB7]" type="text" placeholder="username" [ngModel]="username()" (ngModelChange)="username.set($event)">
+        <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-accent" type="text" placeholder="username" [ngModel]="username()" (ngModelChange)="username.set($event)">
       </div>
     </div>
     <div class="flex flex-col gap-1.5 px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
       <label class="text-[12px] font-medium text-text-secondary">Bio</label>
-      <textarea class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] resize-y min-h-[60px] focus:outline-none focus:border-[#534AB7]" placeholder="Tell people about yourself..." maxlength="300" [ngModel]="bio()" (ngModelChange)="bio.set($event)"></textarea>
+      <textarea class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] resize-y min-h-[60px] focus:outline-none focus:border-accent" placeholder="Tell people about yourself..." maxlength="300" [ngModel]="bio()" (ngModelChange)="bio.set($event)"></textarea>
       <div class="text-[11px] text-text-secondary text-right">{{ bio().length }}/300</div>
     </div>
     <div class="flex flex-col gap-1.5 px-[14px] py-3 border-b-[0.5px] border-border-tertiary">
       <label class="text-[12px] font-medium text-text-secondary">Website</label>
-      <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-[#534AB7]" type="url" placeholder="https://yoursite.com" [ngModel]="website()" (ngModelChange)="website.set($event)">
+      <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-accent" type="url" placeholder="https://yoursite.com" [ngModel]="website()" (ngModelChange)="website.set($event)">
     </div>
     <div class="flex flex-col gap-1.5 px-[14px] py-3">
       <label class="text-[12px] font-medium text-text-secondary">Location</label>
-      <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-[#534AB7]" type="text" placeholder="City, Country" [ngModel]="location()" (ngModelChange)="location.set($event)">
+      <input class="w-full border-[0.5px] border-border-secondary rounded-md px-2.5 py-[7px] text-[13px] text-text-primary bg-background-secondary font-[inherit] focus:outline-none focus:border-accent" type="text" placeholder="City, Country" [ngModel]="location()" (ngModelChange)="location.set($event)">
     </div>
   </div>
 
@@ -112,30 +112,20 @@
     <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Interests &amp; tags</div>
     <div class="flex flex-wrap gap-1.5 p-[14px]">
       @for (tag of tags(); track tag) {
-        <span class="bg-[#EEEDFE] text-[#3C3489] text-[12px] px-2.5 py-[3px] rounded-[20px] flex items-center gap-1.5">
+        <span class="bg-accent/10 text-accent-dark text-[12px] px-2.5 py-[3px] rounded-[20px] flex items-center gap-1.5">
           #{{ tag }}
-          <button type="button" (click)="removeTag(tag)" class="cursor-pointer text-[#534AB7] text-[14px] leading-none hover:text-[#3C3489]">x</button>
+          <button type="button" (click)="removeTag(tag)" class="cursor-pointer text-accent text-[14px] leading-none hover:text-accent-dark">x</button>
         </span>
       }
       @if (tags().length < 10) {
         <div class="flex items-center gap-1 border-dashed border-[0.5px] border-border-secondary rounded-[20px] px-1.5 py-[3px]">
           <span class="text-[12px] text-text-secondary">+</span>
           <input class="text-[12px] text-text-primary bg-transparent outline-none w-[80px] placeholder:text-text-secondary" placeholder="add tag..." maxlength="50" [ngModel]="newTag()" (ngModelChange)="newTag.set($event)" (keydown)="onTagKeydown($event)">
-          <button type="button" (click)="addTag()" class="text-[11px] text-[#534AB7] cursor-pointer font-medium">Add</button>
+          <button type="button" (click)="addTag()" class="text-[11px] text-accent cursor-pointer font-medium">Add</button>
         </div>
       }
     </div>
     <div class="px-[14px] pb-2 text-[11px] text-text-secondary">Up to 10 tags - press Enter or click Add</div>
-  </div>
-
-  <!-- Accent color -->
-  <div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
-    <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Accent color</div>
-    <div class="flex gap-2 p-[14px]">
-      @for (c of accentColors; track c.hex) {
-        <button type="button" (click)="selectAccent(c.hex)" [title]="c.label" [style.background]="c.hex" [class]="'w-[26px] h-[26px] rounded-full cursor-pointer border-2 shrink-0 transition-all ' + (selectedAccent() === c.hex ? 'border-text-primary scale-110' : 'border-transparent')"></button>
-      }
-    </div>
   </div>
 
   </div><!-- end px-4 md:px-6 py-4 wrapper -->

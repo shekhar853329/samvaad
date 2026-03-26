@@ -1,4 +1,4 @@
-<div class="bg-background-primary border border-[rgba(83,74,183,0.12)] rounded-lg overflow-hidden">
+﻿<div class="bg-background-primary border border-[rgba(83,74,183,0.12)] rounded-lg overflow-hidden">
   <div class="px-[14px] py-3 text-[13px] font-medium text-text-primary border-b border-[rgba(83,74,183,0.12)]">Who to follow</div>
 
   @if (suggestions().length === 0) {
@@ -12,14 +12,14 @@
           <img [src]="user.avatarUrl" [alt]="user.displayName"
                class="w-[28px] h-[28px] rounded-full object-cover shrink-0" />
         } @else {
-          <div class="w-[28px] h-[28px] bg-[#534AB7] flex items-center justify-center text-white text-[11px] font-medium rounded-full shrink-0">
+          <div class="w-[28px] h-[28px] bg-accent flex items-center justify-center text-white text-[11px] font-medium rounded-full shrink-0">
             {{ getInitials(user.displayName) }}
           </div>
         }
         <div class="flex-1 min-w-0">
           <div class="text-[12px] font-medium text-text-primary truncate flex items-center gap-1">
             {{ user.displayName }}
-            @if (user.isVerified) { <span class="text-[#534AB7] text-[10px]">✓</span> }
+            @if (user.isVerified) { <span class="text-accent text-[10px]">✓</span> }
           </div>
           <div class="text-[11px] text-text-secondary">@{{ user.username }}</div>
         </div>
@@ -28,7 +28,7 @@
         (click)="toggleFollow(user)"
         [disabled]="followingInProgress().has(user.id)"
         [class]="user.isFollowing
-          ? 'text-[11px] font-medium bg-[#534AB7] text-white border-none rounded-[20px] px-[10px] py-[3px] cursor-pointer hover:bg-[#463D99] transition-colors shrink-0 disabled:opacity-60'
+          ? 'text-[11px] font-medium bg-accent text-white border-none rounded-[20px] px-[10px] py-[3px] cursor-pointer hover:bg-accent-dark transition-colors shrink-0 disabled:opacity-60'
           : 'text-[11px] font-medium bg-transparent border border-[rgba(83,74,183,0.24)] rounded-[20px] px-[10px] py-[3px] text-text-primary cursor-pointer hover:bg-background-secondary transition-colors shrink-0 disabled:opacity-60'">
         {{ followingInProgress().has(user.id) ? '…' : (user.isFollowing ? 'Following' : 'Follow') }}
       </button>

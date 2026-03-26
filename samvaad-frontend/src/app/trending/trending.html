@@ -1,10 +1,10 @@
-<div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-lg overflow-hidden">
+﻿<div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-lg overflow-hidden">
   <div class="px-[14px] py-3 text-[13px] font-medium text-text-primary border-b-[0.5px] border-border-tertiary">Trending</div>
   @for (tag of hashtags(); track tag.id) {
     <div class="px-[14px] py-2 border-b-[0.5px] border-border-tertiary cursor-pointer hover:bg-background-secondary transition-colors"
          (click)="navigateToHashtag(tag.name)">
       @if (tag.category) { <div class="text-[11px] text-text-tertiary">{{ tag.category }}</div> }
-      <div class="text-[13px] font-medium text-text-primary hover:text-[#534AB7] transition-colors">#{{ tag.name }}</div>
+      <div class="text-[13px] font-medium text-text-primary hover:text-accent transition-colors">#{{ tag.name }}</div>
       <div class="text-[11px] text-text-secondary">{{ formatCount(tag.postCount) }} posts</div>
     </div>
   }

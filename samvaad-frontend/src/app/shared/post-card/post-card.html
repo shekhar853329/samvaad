@@ -1,4 +1,4 @@
-<div class="p-[14px] border-b-[0.5px] border-border-tertiary">
+﻿<div class="p-[14px] border-b-[0.5px] border-border-tertiary">
   <!-- Header -->
   <div class="flex items-start gap-2.5 mb-2">
     <a [routerLink]="['/users', post().author.username]" class="shrink-0">
@@ -6,7 +6,7 @@
         <img [src]="post().author.avatarUrl" [alt]="post().author.displayName"
              class="w-[38px] h-[38px] rounded-full object-cover" />
       } @else {
-        <div class="w-[38px] h-[38px] rounded-full bg-[#534AB7] flex items-center justify-center text-white text-[14px] font-medium">
+        <div class="w-[38px] h-[38px] rounded-full bg-accent flex items-center justify-center text-white text-[14px] font-medium">
           {{ getInitials(post().author.displayName) }}
         </div>
       }
@@ -16,7 +16,7 @@
         <a [routerLink]="['/users', post().author.username]" class="hover:underline text-text-primary no-underline">
           {{ post().author.displayName }}
         </a>
-        @if (post().author.isVerified) { <span class="text-[#534AB7] text-[11px]">✓</span> }
+        @if (post().author.isVerified) { <span class="text-accent text-[11px]">✓</span> }
         <span class="font-normal text-text-secondary">@{{ post().author.username }}</span>
       </div>
       <div class="text-[11px] text-text-tertiary">{{ timeAgo(post().createdAt) }}</div>
@@ -31,7 +31,7 @@
               class="shrink-0 text-[11px] font-medium px-2.5 py-[3px] rounded-full border transition-colors disabled:opacity-50"
               [ngClass]="isFollowingAuthor()
                 ? 'border-border-secondary text-text-secondary hover:border-red-400 hover:text-red-400'
-                : 'border-[#534AB7] text-[#534AB7] hover:bg-[#534AB7] hover:text-white'">
+                : 'border-accent text-accent hover:bg-accent hover:text-white'">
         {{ followInProgress() ? '…' : (isFollowingAuthor() ? 'Following' : '+ Follow') }}
       </button>
     }
@@ -48,7 +48,7 @@
   @if (post().hashtags.length > 0) {
     <div class="pl-0 md:pl-[50px] mb-2 flex flex-wrap gap-1">
       @for (tag of post().hashtags; track tag) {
-        <span class="inline-block bg-background-secondary text-[#534AB7] text-[11px] px-2 py-0.5 rounded-[20px] cursor-pointer hover:bg-[#e0e5f5]">
+        <span class="inline-block bg-background-secondary text-accent text-[11px] px-2 py-0.5 rounded-[20px] cursor-pointer hover:bg-[#e0e5f5]">
           #{{ tag }}
         </span>
       }
@@ -81,7 +81,7 @@
     </button>
 
     <!-- Comment count (read-only for now) -->
-    <div class="flex items-center gap-1 text-[12px] text-text-secondary cursor-pointer hover:text-[#534AB7] transition-colors">
+    <div class="flex items-center gap-1 text-[12px] text-text-secondary cursor-pointer hover:text-accent transition-colors">
       💬 {{ formatCount(post().commentsCount) }}
     </div>
 
@@ -96,8 +96,8 @@
     <!-- Bookmark -->
     <button (click)="toggleBookmark()" [disabled]="actionInProgress === 'bookmark'"
             [class]="post().isBookmarked
-              ? 'flex items-center gap-1 text-[12px] cursor-pointer text-[#534AB7] font-medium transition-colors ml-auto disabled:opacity-50'
-              : 'flex items-center gap-1 text-[12px] cursor-pointer text-text-secondary hover:text-[#534AB7] transition-colors ml-auto disabled:opacity-50'">
+              ? 'flex items-center gap-1 text-[12px] cursor-pointer text-accent font-medium transition-colors ml-auto disabled:opacity-50'
+              : 'flex items-center gap-1 text-[12px] cursor-pointer text-text-secondary hover:text-accent transition-colors ml-auto disabled:opacity-50'">
       {{ post().isBookmarked ? '🔖' : '🔖' }}
     </button>
   </div>
