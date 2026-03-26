@@ -3,6 +3,7 @@ import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../core/services/auth.service';
 import { NotificationService } from '../core/services/notification.service';
+import { MessageService } from '../core/services/message.service';
 
 @Component({
   selector: 'app-navbar',
@@ -14,12 +15,17 @@ export class Navbar implements OnInit, OnDestroy {
   navSearchQuery = '';
   protected auth = inject(AuthService);
   protected notifService = inject(NotificationService);
+  protected msgService = inject(MessageService);
   private router = inject(Router);
   private pollTimer: ReturnType<typeof setInterval> | null = null;
 
   ngOnInit(): void {
     this.notifService.refreshUnreadCount();
-    this.pollTimer = setInterval(() => this.notifService.refreshUnreadCount(), 60_000);
+    this.msgService.refreshUnreadCount();
+    this.pollTimer = setInterval(() => {
+      this.notifService.refreshUnreadCount();
+      this.msgService.refreshUnreadCount();
+    }, 60_000);
   }
 
   ngOnDestroy(): void {
@@ -41,5 +47,10 @@ export class Navbar implements OnInit, OnDestroy {
   logout(): void {
     this.dropdownOpen.set(false);
     this.auth.logout();
+  }
+
+  get userInitials(): string {
+    const name = this.auth.user()?.displayName ?? '';
+    return name.split(' ').filter(w => w).map(w => w[0]).join('').toUpperCase().slice(0, 2);
   }
 }

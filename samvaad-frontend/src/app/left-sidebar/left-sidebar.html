@@ -33,7 +33,11 @@
       <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
     </svg>
     Messages
-    <span class="ml-auto min-w-[20px] h-[20px] bg-[#e74c3c] text-white text-[10px] font-medium rounded-full flex items-center justify-center px-[4px]">2</span>
+    @if (msgService.unreadCount() > 0) {
+      <span class="ml-auto min-w-[20px] h-[20px] bg-[#e74c3c] text-white text-[10px] font-medium rounded-full flex items-center justify-center px-[4px]">
+        {{ msgService.unreadCount() > 99 ? '99+' : msgService.unreadCount() }}
+      </span>
+    }
   </a>
   <a [routerLink]="['/users', auth.user()?.username]" routerLinkActive="bg-[#EEEDFE] !text-[#534AB7]"
      class="flex items-center gap-3 px-4 py-[10px] rounded-[12px] text-[14px] font-medium text-[#6b6880] transition-all hover:bg-[#EEEDFE] hover:text-[#534AB7] no-underline">

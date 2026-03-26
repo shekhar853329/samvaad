@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit, inject } from '@angular/core';
 import { NgClass } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { SettingsProfile } from './profile/profile';
 import { SettingsAccount } from './account/account';
 import { SettingsSecurity } from './security/security';
@@ -31,8 +32,15 @@ import { SettingsDanger } from './danger/danger';
   templateUrl: './settings.html',
   styleUrl: './settings.css'
 })
-export class Settings {
+export class Settings implements OnInit {
+  private route = inject(ActivatedRoute);
+
   activeSection = signal('profile');
+
+  ngOnInit(): void {
+    const section = this.route.snapshot.queryParamMap.get('section');
+    if (section) this.activeSection.set(section);
+  }
 
   showSection(id: string) {
     this.activeSection.set(id);

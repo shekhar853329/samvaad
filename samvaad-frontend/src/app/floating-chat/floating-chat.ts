@@ -21,6 +21,7 @@ export class FloatingChat {
   readonly inputText = signal('');
 
   @ViewChild('messagesEnd') private messagesEnd!: ElementRef;
+  @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
 
   constructor() {
     // Scroll to bottom whenever the message list grows or the chat opens
@@ -30,7 +31,8 @@ export class FloatingChat {
       if (count > 0 && !minimized) {
         // Defer until after the DOM has rendered the new message
         setTimeout(() => {
-          this.messagesEnd?.nativeElement?.scrollIntoView({ behavior: 'smooth' });
+          const el = this.messagesContainer?.nativeElement as HTMLElement | undefined;
+          if (el) el.scrollTop = el.scrollHeight;
         }, 0);
       }
     });

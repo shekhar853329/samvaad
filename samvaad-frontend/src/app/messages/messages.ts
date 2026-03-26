@@ -17,6 +17,7 @@ export class Messages implements OnInit, OnDestroy, AfterViewChecked {
   readonly hub = inject(ChatHubService);
 
   @ViewChild('messagesEnd') private messagesEnd!: ElementRef;
+  @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
 
   activeTab = signal<'all' | 'groups'>('all');
   conversations = signal<Conversation[]>([]);
@@ -25,7 +26,7 @@ export class Messages implements OnInit, OnDestroy, AfterViewChecked {
   hasMoreMessages = signal(false);
   loadingMessages = signal(false);
   private messagePage = 1;
-  private shouldScrollToBottom = false;
+  private shouldScrollToBottom: false | 'instant' | 'smooth' = false;
 
   composeText = signal('');
 
@@ -59,7 +60,7 @@ export class Messages implements OnInit, OnDestroy, AfterViewChecked {
           if (list.some(m => m.id === msg.id)) return list;
           return [...list, msg];
         });
-        this.shouldScrollToBottom = true;
+        this.shouldScrollToBottom = 'smooth';
         // Mark as read since window is open
         this.msgService.markRead(convId).subscribe();
       }
@@ -99,7 +100,7 @@ export class Messages implements OnInit, OnDestroy, AfterViewChecked {
 
   ngAfterViewChecked(): void {
     if (this.shouldScrollToBottom) {
-      this.scrollToBottom();
+      this.scrollToBottom(this.shouldScrollToBottom);
       this.shouldScrollToBottom = false;
     }
   }
@@ -175,7 +176,7 @@ export class Messages implements OnInit, OnDestroy, AfterViewChecked {
             ? list.map(m => m.id === msg.id ? msg : m)
             : [...list, msg]
         );
-        this.shouldScrollToBottom = true;
+        this.shouldScrollToBottom = 'smooth';
         this.conversations.update(list =>
           list.map(c => c.id === conv.id
             ? { ...c, lastMessageContent: msg.content, lastMessageAt: msg.createdAt }
@@ -250,7 +251,7 @@ export class Messages implements OnInit, OnDestroy, AfterViewChecked {
         if (prepend) this.messages.update(list => [...result.messages, ...list]);
         else {
           this.messages.set(result.messages);
-          this.shouldScrollToBottom = true;
+          this.shouldScrollToBottom = 'instant';
         }
         this.hasMoreMessages.set(result.hasMore);
         this.loadingMessages.set(false);
@@ -259,9 +260,14 @@ export class Messages implements OnInit, OnDestroy, AfterViewChecked {
     });
   }
 
-  private scrollToBottom(): void {
-    try { this.messagesEnd?.nativeElement?.scrollIntoView({ behavior: 'smooth' }); }
-    catch { /* ignore */ }
+  private scrollToBottom(behavior: ScrollBehavior = 'smooth'): void {
+    const el = this.messagesContainer?.nativeElement as HTMLElement | undefined;
+    if (!el) return;
+    if (behavior === 'instant' || behavior === 'auto') {
+      el.scrollTop = el.scrollHeight;
+    } else {
+      el.scrollTo({ top: el.scrollHeight, behavior });
+    }
   }
 }
 

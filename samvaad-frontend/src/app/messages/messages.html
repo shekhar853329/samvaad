@@ -1,261 +1,277 @@
-<div class="flex flex-col h-[calc(100dvh-62px)] md:h-auto md:grid md:grid-cols-[280px_1fr] md:border-[0.5px] md:border-border-tertiary md:rounded-lg md:overflow-hidden md:min-h-[580px]">
+<div
+  class="flex flex-col h-[calc(100dvh-62px)] overflow-hidden md:grid md:grid-cols-[280px_1fr] md:h-[calc(100vh-94px)] md:sticky md:top-[78px] md:border-[0.5px] md:border-border-tertiary md:rounded-lg">
 
   <!-- ── Thread Panel ──────────────────────────────────────────────── -->
   <div class="flex flex-col h-full bg-background-secondary border-r-[0.5px] border-border-tertiary md:flex"
-       [ngClass]="{'hidden': activeConversation() !== null}">
+    [ngClass]="{'hidden': activeConversation() !== null}">
 
     <div class="flex items-center justify-between px-4 pt-4 pb-2 shrink-0">
       <span class="text-[15px] font-semibold text-text-primary">Messages</span>
-      <button class="w-[28px] h-[28px] border-[0.5px] border-border-secondary rounded-md flex items-center justify-center text-text-secondary text-[16px] hover:bg-background-primary transition-colors">✏</button>
+      <button
+        class="w-[28px] h-[28px] border-[0.5px] border-border-secondary rounded-md flex items-center justify-center text-text-secondary text-[16px] hover:bg-background-primary transition-colors">✏</button>
     </div>
 
     <div class="px-4 pb-3 shrink-0">
       <input type="text" placeholder="Search messages…"
-             class="w-full bg-background-primary border-[0.5px] border-border-secondary rounded-[20px] px-4 py-[7px] text-[13px] text-text-primary placeholder:text-text-tertiary outline-none focus:border-[#534AB7]">
+        class="w-full bg-background-primary border-[0.5px] border-border-secondary rounded-[20px] px-4 py-[7px] text-[13px] text-text-primary placeholder:text-text-tertiary outline-none focus:border-[#534AB7]">
     </div>
 
     <!-- Online Now Panel -->
     @if (onlineFollowingProfiles().length > 0) {
-      <div class="px-4 pb-3 shrink-0">
-        <div class="text-[11px] font-medium text-text-tertiary uppercase tracking-wide mb-2">Online now</div>
-        <div class="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
-          @for (u of onlineFollowingProfiles(); track u.id) {
-            <a [routerLink]="['/users', u.username]" class="flex flex-col items-center gap-1 shrink-0 cursor-pointer no-underline">
-              <div class="relative">
-                @if (u.avatarUrl) {
-                  <img [src]="u.avatarUrl" [alt]="u.displayName"
-                       class="w-[38px] h-[38px] rounded-full object-cover border-2 border-background-secondary" />
-                } @else {
-                  <div class="w-[38px] h-[38px] rounded-full bg-[#534AB7] flex items-center justify-center text-white text-[12px] font-medium">
-                    {{ initials(u.displayName) }}
-                  </div>
-                }
-                <span class="absolute bottom-[1px] right-[1px] w-[10px] h-[10px] bg-[#22c55e] rounded-full border-2 border-background-secondary"></span>
-              </div>
-              <span class="text-[10px] text-text-secondary truncate max-w-[42px]">{{ u.displayName.split(' ')[0] }}</span>
-            </a>
-          }
-        </div>
+    <div class="px-4 pb-3 shrink-0">
+      <div class="text-[11px] font-medium text-text-tertiary uppercase tracking-wide mb-2">Online now</div>
+      <div class="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
+        @for (u of onlineFollowingProfiles(); track u.id) {
+        <a [routerLink]="['/users', u.username]"
+          class="flex flex-col items-center gap-1 shrink-0 cursor-pointer no-underline">
+          <div class="relative">
+            @if (u.avatarUrl) {
+            <img [src]="u.avatarUrl" [alt]="u.displayName"
+              class="w-[38px] h-[38px] rounded-full object-cover border-2 border-background-secondary" />
+            } @else {
+            <div
+              class="w-[38px] h-[38px] rounded-full bg-[#534AB7] flex items-center justify-center text-white text-[12px] font-medium">
+              {{ initials(u.displayName) }}
+            </div>
+            }
+            <span
+              class="absolute bottom-[1px] right-[1px] w-[10px] h-[10px] bg-[#22c55e] rounded-full border-2 border-background-secondary"></span>
+          </div>
+          <span class="text-[10px] text-text-secondary truncate max-w-[42px]">{{ u.displayName.split(' ')[0] }}</span>
+        </a>
+        }
       </div>
+    </div>
     }
 
     <div class="flex border-b-[0.5px] border-border-tertiary px-2 shrink-0">
       <button (click)="activeTab.set('all')" class="flex-1 py-2 text-[13px] font-medium transition-colors"
-              [ngClass]="activeTab() === 'all' ? 'text-[#534AB7] border-b-2 border-[#534AB7]' : 'text-text-secondary'">All</button>
+        [ngClass]="activeTab() === 'all' ? 'text-[#534AB7] border-b-2 border-[#534AB7] font-medium' : 'text-text-secondary border-b-2 border-transparent'">All</button>
       <button (click)="activeTab.set('groups')" class="flex-1 py-2 text-[13px] font-medium transition-colors"
-              [ngClass]="activeTab() === 'groups' ? 'text-[#534AB7] border-b-2 border-[#534AB7]' : 'text-text-secondary'">Groups</button>
+        [ngClass]="activeTab() === 'groups' ? 'text-[#534AB7] border-b-2 border-[#534AB7] font-medium' : 'text-text-secondary border-b-2 border-transparent'">Groups</button>
     </div>
 
     <div class="flex-1 overflow-y-auto hide-scrollbar">
       @if (filteredConversations().length === 0) {
-        <div class="py-12 text-center text-text-tertiary text-[13px]">No conversations yet</div>
+      <div class="py-12 text-center text-text-tertiary text-[13px]">No conversations yet</div>
       }
       @for (conv of filteredConversations(); track conv.id) {
-        <div (click)="selectConversation(conv)"
-             class="flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors border-l-2"
-             [ngClass]="activeConversation()?.id === conv.id
+      <div (click)="selectConversation(conv)"
+        class="flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors border-l-2" [ngClass]="activeConversation()?.id === conv.id
                ? 'bg-background-primary border-[#534AB7]'
                : 'border-transparent hover:bg-background-primary/70'">
 
-          <!-- Avatar with online dot -->
-          <div class="relative shrink-0">
-            @if (conv.isGroup) {
-              <div class="relative w-[38px] h-[38px]">
-                <div class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#534AB7] absolute top-0 left-0">
-                  {{ initials(conv.otherParticipants[0]?.displayName ?? '?') }}
-                </div>
-                @if (conv.otherParticipants[1]) {
-                  <div class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#3B6D11] absolute bottom-0 right-0 border-[2px] border-background-secondary">
-                    {{ initials(conv.otherParticipants[1].displayName) }}
-                  </div>
-                }
-              </div>
-            } @else {
-              @if (conv.otherParticipants[0]?.avatarUrl) {
-                <img [src]="conv.otherParticipants[0].avatarUrl"
-                     class="w-[38px] h-[38px] rounded-full object-cover"
-                     [alt]="conv.otherParticipants[0].displayName">
-              } @else {
-                <div class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-[#534AB7]">
-                  {{ initials(conv.otherParticipants[0]?.displayName ?? '?') }}
-                </div>
-              }
-              @if (isOtherUserOnline(conv)) {
-                <span class="absolute bottom-[1px] right-[1px] w-[10px] h-[10px] bg-[#22c55e] rounded-full border-2 border-background-secondary"></span>
-              }
-            }
-          </div>
-
-          <!-- Info -->
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center justify-between">
-              <span class="text-[13px] font-medium text-text-primary truncate"
-                    [class.font-semibold]="conv.unreadCount > 0">{{ convName(conv) }}</span>
-              <span class="text-[11px] text-text-secondary shrink-0 ml-1">{{ timeAgo(conv.lastMessageAt) }}</span>
+        <!-- Avatar with online dot -->
+        <div class="relative shrink-0">
+          @if (conv.isGroup) {
+          <div class="relative w-[38px] h-[38px]">
+            <div
+              class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#534AB7] absolute top-0 left-0">
+              {{ initials(conv.otherParticipants[0]?.displayName ?? '?') }}
             </div>
-            @if (typingUsers().has(conv.id)) {
-              <div class="text-[12px] text-[#534AB7] italic">typing…</div>
-            } @else {
-              <div class="text-[12px] truncate"
-                   [class.text-text-primary]="conv.unreadCount > 0"
-                   [class.font-medium]="conv.unreadCount > 0"
-                   [class.text-text-secondary]="conv.unreadCount === 0">
-                {{ convLastLine(conv) }}
-              </div>
+            @if (conv.otherParticipants[1]) {
+            <div
+              class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#3B6D11] absolute bottom-0 right-0 border-[2px] border-background-secondary">
+              {{ initials(conv.otherParticipants[1].displayName) }}
+            </div>
             }
           </div>
-
-          @if (conv.unreadCount > 0) {
-            <span class="min-w-[18px] h-[18px] bg-[#534AB7] text-white text-[10px] rounded-full flex items-center justify-center px-1 shrink-0">
-              {{ conv.unreadCount > 99 ? '99+' : conv.unreadCount }}
-            </span>
+          } @else {
+          @if (conv.otherParticipants[0]?.avatarUrl) {
+          <img [src]="conv.otherParticipants[0].avatarUrl" class="w-[38px] h-[38px] rounded-full object-cover"
+            [alt]="conv.otherParticipants[0].displayName">
+          } @else {
+          <div
+            class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-[#534AB7]">
+            {{ initials(conv.otherParticipants[0]?.displayName ?? '?') }}
+          </div>
+          }
+          @if (isOtherUserOnline(conv)) {
+          <span
+            class="absolute bottom-[1px] right-[1px] w-[10px] h-[10px] bg-[#22c55e] rounded-full border-2 border-background-secondary"></span>
+          }
           }
         </div>
+
+        <!-- Info -->
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center justify-between">
+            <span class="text-[13px] font-medium text-text-primary truncate"
+              [class.font-semibold]="conv.unreadCount > 0">{{ convName(conv) }}</span>
+            <span class="text-[11px] text-text-secondary shrink-0 ml-1">{{ timeAgo(conv.lastMessageAt) }}</span>
+          </div>
+          @if (typingUsers().has(conv.id)) {
+          <div class="text-[12px] text-[#534AB7] italic">typing…</div>
+          } @else {
+          <div class="text-[12px] truncate" [class.text-text-primary]="conv.unreadCount > 0"
+            [class.font-medium]="conv.unreadCount > 0" [class.text-text-secondary]="conv.unreadCount === 0">
+            {{ convLastLine(conv) }}
+          </div>
+          }
+        </div>
+
+        @if (conv.unreadCount > 0) {
+        <span
+          class="min-w-[18px] h-[18px] bg-[#534AB7] text-white text-[10px] rounded-full flex items-center justify-center px-1 shrink-0">
+          {{ conv.unreadCount > 99 ? '99+' : conv.unreadCount }}
+        </span>
+        }
+      </div>
       }
     </div>
   </div>
 
   <!-- ── Empty state: no thread selected (desktop) ───────────────── -->
   @if (activeConversation() === null) {
-    <div class="hidden md:flex flex-1 items-center justify-center text-text-tertiary text-[13px]">
-      Select a conversation to start messaging
-    </div>
+  <div class="hidden md:flex flex-1 items-center justify-center text-text-tertiary text-[13px]">
+    Select a conversation to start messaging
+  </div>
   }
 
   <!-- ── Active Chat ──────────────────────────────────────────────── -->
   @if (activeConversation(); as conv) {
-    <div class="flex flex-col h-full">
+  <div class="flex flex-col flex-1 min-h-0 h-full">
 
-      <!-- Chat header -->
-      <div class="flex items-center gap-3 px-4 py-3 border-b-[0.5px] border-border-tertiary bg-background-primary shrink-0">
-        <button (click)="backToList()" class="md:hidden mr-1 text-text-secondary text-[20px] leading-none">←</button>
+    <!-- Chat header -->
+    <div
+      class="flex items-center gap-3 px-4 py-3 border-b-[0.5px] border-border-tertiary bg-background-primary shrink-0">
+      <button (click)="backToList()" class="md:hidden mr-1 text-text-secondary text-[20px] leading-none">←</button>
 
-        <!-- Avatar with online dot -->
-        @if (conv.isGroup) {
-          <div class="relative w-[38px] h-[38px] shrink-0">
-            <div class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#534AB7] absolute top-0 left-0">
-              {{ initials(conv.otherParticipants[0]?.displayName ?? '?') }}
-            </div>
-            @if (conv.otherParticipants[1]) {
-              <div class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#3B6D11] absolute bottom-0 right-0 border-[2px] border-background-primary">
-                {{ initials(conv.otherParticipants[1].displayName) }}
-              </div>
-            }
-          </div>
+      <!-- Avatar with online dot -->
+      @if (conv.isGroup) {
+      <div class="relative w-[38px] h-[38px] shrink-0">
+        <div
+          class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#534AB7] absolute top-0 left-0">
+          {{ initials(conv.otherParticipants[0]?.displayName ?? '?') }}
+        </div>
+        @if (conv.otherParticipants[1]) {
+        <div
+          class="w-[26px] h-[26px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#3B6D11] absolute bottom-0 right-0 border-[2px] border-background-primary">
+          {{ initials(conv.otherParticipants[1].displayName) }}
+        </div>
+        }
+      </div>
+      } @else {
+      <div class="relative shrink-0">
+        @if (conv.otherParticipants[0]?.avatarUrl) {
+        <img [src]="conv.otherParticipants[0].avatarUrl" class="w-[38px] h-[38px] rounded-full object-cover"
+          [alt]="conv.otherParticipants[0].displayName">
         } @else {
-          <div class="relative shrink-0">
-            @if (conv.otherParticipants[0]?.avatarUrl) {
-              <img [src]="conv.otherParticipants[0].avatarUrl"
-                   class="w-[38px] h-[38px] rounded-full object-cover"
-                   [alt]="conv.otherParticipants[0].displayName">
-            } @else {
-              <div class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-[#534AB7]">
-                {{ initials(conv.otherParticipants[0]?.displayName ?? '?') }}
-              </div>
-            }
-            @if (isOtherUserOnline(conv)) {
-              <span class="absolute bottom-[1px] right-[1px] w-[10px] h-[10px] bg-[#22c55e] rounded-full border-2 border-background-primary"></span>
-            }
-          </div>
+        <div
+          class="w-[38px] h-[38px] rounded-full flex items-center justify-center text-white text-[13px] font-medium bg-[#534AB7]">
+          {{ initials(conv.otherParticipants[0]?.displayName ?? '?') }}
+        </div>
         }
+        @if (isOtherUserOnline(conv)) {
+        <span
+          class="absolute bottom-[1px] right-[1px] w-[10px] h-[10px] bg-[#22c55e] rounded-full border-2 border-background-primary"></span>
+        }
+      </div>
+      }
 
-        <div class="flex-1">
-          <div class="text-[14px] font-semibold text-text-primary">{{ convName(conv) }}</div>
-          @if (conv.isGroup) {
-            <div class="text-[12px] text-text-secondary">
-              {{ conv.otherParticipants.map(p => p.displayName).join(', ') }}
-            </div>
-          } @else if (isOtherUserOnline(conv)) {
-            <div class="text-[11px] text-[#22c55e] font-medium">Online</div>
-          } @else if (typingUsers().has(conv.id)) {
-            <div class="text-[11px] text-[#534AB7] italic">typing…</div>
-          }
+      <div class="flex-1">
+        <div class="text-[14px] font-semibold text-text-primary">{{ convName(conv) }}</div>
+        @if (conv.isGroup) {
+        <div class="text-[12px] text-text-secondary">
+          {{ conv.otherParticipants.map(p => p.displayName).join(', ') }}
         </div>
-
-        <div class="flex gap-1">
-          <button class="w-[32px] h-[32px] rounded-full hover:bg-background-secondary flex items-center justify-center text-text-secondary text-[16px]">⋯</button>
-        </div>
+        } @else if (isOtherUserOnline(conv)) {
+        <div class="text-[11px] text-[#22c55e] font-medium">Online</div>
+        } @else if (typingUsers().has(conv.id)) {
+        <div class="text-[11px] text-[#534AB7] italic">typing…</div>
+        }
       </div>
 
-      <!-- Messages area -->
-      <div class="flex-1 overflow-y-auto bg-background-secondary p-4 flex flex-col gap-3 hide-scrollbar">
-
-        @if (hasMoreMessages()) {
-          <div class="text-center">
-            <button class="text-[12px] text-[#534AB7] hover:underline bg-transparent border-none cursor-pointer"
-                    [disabled]="loadingMessages()"
-                    (click)="loadMoreMessages()">
-              {{ loadingMessages() ? 'Loading…' : 'Load older messages' }}
-            </button>
-          </div>
-        }
-
-        @if (messages().length === 0 && !loadingMessages()) {
-          <div class="flex-1 flex items-center justify-center text-text-tertiary text-[13px]">
-            No messages yet — say hello!
-          </div>
-        }
-
-        @for (msg of messages(); track msg.id) {
-          @if (msg.isMine) {
-            <!-- My message (right-aligned) -->
-            <div class="flex gap-2 items-end max-w-[75%] self-end flex-row-reverse">
-              <div>
-                <div class="bg-[#534AB7] text-white rounded-[16px] rounded-br-[4px] px-[12px] py-[8px] text-[13px]">{{ msg.content }}</div>
-                <div class="text-[11px] text-text-tertiary mt-1 text-right">{{ formatTime(msg.createdAt) }}</div>
-              </div>
-            </div>
-          } @else {
-            <!-- Their message (left-aligned) -->
-            <div class="flex gap-2 items-end max-w-[75%]">
-              @if (msg.senderAvatarUrl) {
-                <img [src]="msg.senderAvatarUrl" [alt]="msg.senderDisplayName"
-                     class="w-[24px] h-[24px] rounded-full object-cover shrink-0">
-              } @else {
-                <div class="w-[24px] h-[24px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#534AB7] shrink-0">
-                  {{ initials(msg.senderDisplayName) }}
-                </div>
-              }
-              <div>
-                @if (conv.isGroup) {
-                  <span class="text-[11px] text-[#534AB7] font-medium block mb-[2px]">{{ msg.senderDisplayName }}</span>
-                }
-                <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-[16px] rounded-bl-[4px] px-[12px] py-[8px] text-[13px] text-text-primary">{{ msg.content }}</div>
-                <div class="text-[11px] text-text-tertiary mt-1">{{ formatTime(msg.createdAt) }}</div>
-              </div>
-            </div>
-          }
-        }
-
-        <!-- Typing bubble -->
-        @if (typingUsers().has(conv.id)) {
-          <div class="flex gap-2 items-end max-w-[75%]">
-            <div class="bg-background-primary border-[0.5px] border-border-tertiary rounded-[16px] rounded-bl-[4px] px-[14px] py-[10px] flex gap-[4px] items-center">
-              <span class="w-[6px] h-[6px] rounded-full bg-text-tertiary animate-bounce [animation-delay:0ms]"></span>
-              <span class="w-[6px] h-[6px] rounded-full bg-text-tertiary animate-bounce [animation-delay:150ms]"></span>
-              <span class="w-[6px] h-[6px] rounded-full bg-text-tertiary animate-bounce [animation-delay:300ms]"></span>
-            </div>
-          </div>
-        }
-
-        <div #messagesEnd></div>
-      </div>
-
-      <!-- Compose -->
-      <div class="flex items-end gap-2 px-4 py-3 border-t-[0.5px] border-border-tertiary bg-background-primary shrink-0">
-        <textarea class="flex-1 bg-background-secondary border-[0.5px] border-border-secondary rounded-[20px] px-[14px] py-2 text-[13px] resize-none outline-none focus:border-[#534AB7] text-text-primary placeholder:text-text-tertiary"
-                  [placeholder]="'Message ' + convName(conv) + '…'"
-                  [value]="composeText()"
-                  (input)="onComposeInput($event)"
-                  (keydown)="onComposeKeydown($event)"
-                  rows="1"></textarea>
-        <button (click)="sendMessage()"
-                class="w-[34px] h-[34px] bg-[#534AB7] rounded-full flex items-center justify-center shrink-0 opacity-100 disabled:opacity-40 transition-opacity"
-                [disabled]="!composeText().trim()">
-          <svg viewBox="0 0 16 16" fill="white" width="14" height="14"><path d="M2 8L14 2L10 8L14 14L2 8Z"/></svg>
-        </button>
+      <div class="flex gap-1">
+        <button
+          class="w-[32px] h-[32px] rounded-full hover:bg-background-secondary flex items-center justify-center text-text-secondary text-[16px]">⋯</button>
       </div>
     </div>
+
+    <!-- Messages area -->
+    <div
+      class="flex-1 overflow-y-auto min-h-0 overscroll-contain bg-background-secondary p-4 flex flex-col gap-3 hide-scrollbar">
+
+      @if (hasMoreMessages()) {
+      <div class="text-center">
+        <button class="text-[12px] text-[#534AB7] hover:underline bg-transparent border-none cursor-pointer"
+          [disabled]="loadingMessages()" (click)="loadMoreMessages()">
+          {{ loadingMessages() ? 'Loading…' : 'Load older messages' }}
+        </button>
+      </div>
+      }
+
+      @if (messages().length === 0 && !loadingMessages()) {
+      <div class="flex-1 flex items-center justify-center text-text-tertiary text-[13px]">
+        No messages yet — say hello!
+      </div>
+      }
+
+      @for (msg of messages(); track msg.id) {
+      @if (msg.isMine) {
+      <!-- My message (right-aligned) -->
+      <div class="flex gap-2 items-end max-w-[75%] self-end flex-row-reverse">
+        <div>
+          <div class="bg-[#534AB7] text-white rounded-[16px] rounded-br-[4px] px-[12px] py-[8px] text-[13px]">{{
+            msg.content }}</div>
+          <div class="text-[11px] text-text-tertiary mt-1 text-right">{{ formatTime(msg.createdAt) }}</div>
+        </div>
+      </div>
+      } @else {
+      <!-- Their message (left-aligned) -->
+      <div class="flex gap-2 items-end max-w-[75%]">
+        @if (msg.senderAvatarUrl) {
+        <img [src]="msg.senderAvatarUrl" [alt]="msg.senderDisplayName"
+          class="w-[24px] h-[24px] rounded-full object-cover shrink-0">
+        } @else {
+        <div
+          class="w-[24px] h-[24px] rounded-full flex items-center justify-center text-white text-[10px] font-medium bg-[#534AB7] shrink-0">
+          {{ initials(msg.senderDisplayName) }}
+        </div>
+        }
+        <div>
+          @if (conv.isGroup) {
+          <span class="text-[11px] text-[#534AB7] font-medium block mb-[2px]">{{ msg.senderDisplayName }}</span>
+          }
+          <div
+            class="bg-background-primary border-[0.5px] border-border-tertiary rounded-[16px] rounded-bl-[4px] px-[12px] py-[8px] text-[13px] text-text-primary">
+            {{ msg.content }}</div>
+          <div class="text-[11px] text-text-tertiary mt-1">{{ formatTime(msg.createdAt) }}</div>
+        </div>
+      </div>
+      }
+      }
+
+      <!-- Typing bubble -->
+      @if (typingUsers().has(conv.id)) {
+      <div class="flex gap-2 items-end max-w-[75%]">
+        <div
+          class="bg-background-primary border-[0.5px] border-border-tertiary rounded-[16px] rounded-bl-[4px] px-[14px] py-[10px] flex gap-[4px] items-center">
+          <span class="w-[6px] h-[6px] rounded-full bg-text-tertiary animate-bounce [animation-delay:0ms]"></span>
+          <span class="w-[6px] h-[6px] rounded-full bg-text-tertiary animate-bounce [animation-delay:150ms]"></span>
+          <span class="w-[6px] h-[6px] rounded-full bg-text-tertiary animate-bounce [animation-delay:300ms]"></span>
+        </div>
+      </div>
+      }
+
+      <div #messagesEnd></div>
+    </div>
+
+    <!-- Compose -->
+    <div class="flex items-end gap-2 px-4 py-3 border-t-[0.5px] border-border-tertiary bg-background-primary shrink-0">
+      <textarea
+        class="flex-1 bg-background-secondary border-[0.5px] border-border-secondary rounded-[20px] px-[14px] py-2 text-[13px] resize-none outline-none focus:border-[#534AB7] text-text-primary placeholder:text-text-tertiary"
+        [placeholder]="'Message ' + convName(conv) + '…'" [value]="composeText()" (input)="onComposeInput($event)"
+        (keydown)="onComposeKeydown($event)" rows="1"></textarea>
+      <button (click)="sendMessage()"
+        class="w-[34px] h-[34px] bg-[#534AB7] rounded-full flex items-center justify-center shrink-0 opacity-100 disabled:opacity-40 transition-opacity"
+        [disabled]="!composeText().trim()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
+          <path d="M2 21l21-9L2 3v7l15 2-15 2v7z" />
+        </svg>
+      </button>
+    </div>
+  </div>
   }
 
 </div>
