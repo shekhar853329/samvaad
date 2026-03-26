@@ -13,6 +13,7 @@ export class SettingsProfile implements OnInit {
 
   loading = signal(true);
   saving = signal(false);
+  saved = signal(false);
   avatarUploading = signal(false);
   successMsg = signal('');
   errorMsg = signal('');
@@ -153,8 +154,12 @@ export class SettingsProfile implements OnInit {
         this.avatarUrl.set(updated.avatarUrl);
         this.tags.set([...(updated.tags ?? [])]);
         this.saving.set(false);
+        this.saved.set(true);
         this.successMsg.set('Profile saved successfully.');
-        setTimeout(() => this.successMsg.set(''), 3500);
+        setTimeout(() => {
+          this.saved.set(false);
+          this.successMsg.set('');
+        }, 3000);
       },
       error: err => {
         this.errorMsg.set(err?.error?.message ?? 'Failed to save profile.');

@@ -35,12 +35,16 @@ module.exports = {
           from: { opacity: '0', transform: 'translateY(-6px)' },
           to: { opacity: '1', transform: 'translateY(0)' },
         },
+        'draw-check': {
+          to: { strokeDashoffset: '0' },
+        },
       },
       animation: {
         blink: 'blink 1s ease-in-out infinite',
         slideDown: 'slideDown .38s cubic-bezier(.22,1,.36,1) both',
         pop: 'pop .25s .7s cubic-bezier(.34,1.56,.64,1) both',
         dropIn: 'dropIn .17s ease both',
+        'draw-check': 'draw-check 0.35s ease-out forwards',
       },
     },
   },
