@@ -1,20 +1,21 @@
 import { Component, inject, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { UserService } from '../core/services/user.service';
 import { ChatHubService } from '../core/services/chat-hub.service';
+import { FloatingChatService } from '../core/services/floating-chat.service';
 import { FriendRequestItem } from '../core/models/user.models';
 
 @Component({
   selector: 'app-online-friends',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './online-friends.html'
 })
 export class OnlineFriends implements OnInit, OnDestroy {
   private userService = inject(UserService);
   private chatHub = inject(ChatHubService);
+  readonly floatingChat = inject(FloatingChatService);
   private subs = new Subscription();
 
   private friends = signal<FriendRequestItem[]>([]);
@@ -77,6 +78,16 @@ export class OnlineFriends implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subs.unsubscribe();
+  }
+
+  openChat(friend: FriendRequestItem, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.floatingChat.openChat(
+      friend.senderUsername,
+      friend.senderDisplayName,
+      friend.senderAvatarUrl
+    );
   }
 
   getInitials(name: string): string {

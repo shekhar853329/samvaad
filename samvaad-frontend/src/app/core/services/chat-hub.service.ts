@@ -28,6 +28,10 @@ export class ChatHubService implements OnDestroy {
   /** Emits a userId whenever that user goes offline */
   readonly userOffline$: Observable<string> = this.userOfflineSubject.asObservable();
 
+  // Observable stream of incoming messages — for multi-consumer subscriptions
+  private readonly newMessageSubject = new Subject<{ conversationId: string; message: Message }>();
+  readonly newMessage$ = this.newMessageSubject.asObservable();
+
   // Callbacks registered by consumers
   private onNewMessage?: (conversationId: string, message: Message) => void;
   private onTyping?: (evt: TypingEvent) => void;
@@ -55,6 +59,7 @@ export class ChatHubService implements OnDestroy {
 
     this.hub.on('NewMessage', (payload: { conversationId: string; message: Message }) => {
       this.onNewMessage?.(payload.conversationId, payload.message);
+      this.newMessageSubject.next(payload);
     });
 
     this.hub.on('UserTyping', (evt: TypingEvent) => {
@@ -134,6 +139,7 @@ export class ChatHubService implements OnDestroy {
 
   ngOnDestroy(): void {
     this.disconnect();
+    this.newMessageSubject.complete();
   }
 
   // ── Server methods ───────────────────────────────────────────────────────

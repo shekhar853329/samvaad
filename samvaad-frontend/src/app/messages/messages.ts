@@ -53,11 +53,13 @@ export class Messages implements OnInit, OnDestroy, AfterViewChecked {
     this.hub.onMessage((convId, msg) => {
       const active = this.activeConversation();
       if (active?.id === convId) {
-        // Deduplicate: REST send already adds our own message
-        if (!msg.isMine) {
-          this.messages.update(list => [...list, msg]);
-          this.shouldScrollToBottom = true;
-        }
+        // Deduplicate by ID: backend broadcasts isMine=false to everyone including
+        // the sender, so REST-added messages would otherwise appear twice.
+        this.messages.update(list => {
+          if (list.some(m => m.id === msg.id)) return list;
+          return [...list, msg];
+        });
+        this.shouldScrollToBottom = true;
         // Mark as read since window is open
         this.msgService.markRead(convId).subscribe();
       }
@@ -168,7 +170,11 @@ export class Messages implements OnInit, OnDestroy, AfterViewChecked {
 
     this.msgService.sendMessage(conv.id, text).subscribe({
       next: msg => {
-        this.messages.update(list => [...list, msg]);
+        this.messages.update(list =>
+          list.some(m => m.id === msg.id)
+            ? list.map(m => m.id === msg.id ? msg : m)
+            : [...list, msg]
+        );
         this.shouldScrollToBottom = true;
         this.conversations.update(list =>
           list.map(c => c.id === conv.id

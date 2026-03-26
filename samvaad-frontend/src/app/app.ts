@@ -3,12 +3,13 @@ import { RouterOutlet } from '@angular/router';
 import { Navbar } from './navbar/navbar';
 import { LeftSidebar } from './left-sidebar/left-sidebar';
 import { RightSidebar } from './right-sidebar/right-sidebar';
+import { FloatingChat } from './floating-chat/floating-chat';
 import { AuthService } from './core/services/auth.service';
 import { ChatHubService } from './core/services/chat-hub.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Navbar, LeftSidebar, RightSidebar],
+  imports: [RouterOutlet, Navbar, LeftSidebar, RightSidebar, FloatingChat],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
