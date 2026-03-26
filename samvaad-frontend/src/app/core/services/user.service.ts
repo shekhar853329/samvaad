@@ -75,6 +75,14 @@ export class UserService {
     return this.api.get<FriendRequestItem[]>('/friends/requests');
   }
 
+  getFriends(page = 1, pageSize = 50): Observable<FriendRequestItem[]> {
+    return this.api.get<FriendRequestItem[]>('/friends', { page, pageSize });
+  }
+
+  getOnlineFriendIds(): Observable<string[]> {
+    return this.api.get<string[]>('/friends/online');
+  }
+
   getFriendsByUsername(username: string, page = 1, pageSize = 20): Observable<FriendRequestItem[]> {
     return this.api.get<FriendRequestItem[]>(`/friends/users/${username}`, { page, pageSize });
   }

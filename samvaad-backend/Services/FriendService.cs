@@ -206,4 +206,14 @@ public class FriendService(AppDbContext db, INotificationService notificationSer
     {
         return await db.Friendships.CountAsync(f => f.UserId == userId);
     }
+
+    public async Task<IReadOnlySet<Guid>> GetFriendIdsAsync(Guid userId)
+    {
+        var ids = await db.Friendships
+            .AsNoTracking()
+            .Where(f => f.UserId == userId)
+            .Select(f => f.FriendId)
+            .ToListAsync();
+        return new HashSet<Guid>(ids);
+    }
 }

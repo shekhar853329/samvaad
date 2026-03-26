@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
+import { Injectable, signal, computed, inject, Injector } from '@angular/core';
 import { Router } from '@angular/router';
 import { tap, catchError } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
@@ -13,6 +13,7 @@ const USER_KEY = 'samvaad_user';
 export class AuthService {
   private api = inject(ApiService);
   private router = inject(Router);
+  private injector = inject(Injector);
 
   private _user = signal<UserSummary | null>(this.loadUser());
   private _token = signal<string | null>(localStorage.getItem(ACCESS_TOKEN_KEY));
@@ -48,6 +49,21 @@ export class AuthService {
 
   logout(): void {
     const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+
+    // Disconnect the hub BEFORE clearing the token so the Logout hub-method
+    // invoke still has a valid token (needed for non-WebSocket transports).
+    // Use a dynamic import to avoid a circular DI dependency at module-load time.
+    import('./chat-hub.service').then(({ ChatHubService }) => {
+      const chatHub = this.injector.get(ChatHubService);
+      chatHub.disconnectAsync()
+        .catch(() => {})
+        .finally(() => {
+          console.log('[AuthService] Hub disconnected — clearing credentials');
+        });
+    }).catch(() => {});
+
+    // Clear tokens & navigate — happens synchronously even if the hub
+    // disconnect is still in flight (the WS remains alive until hub.stop()).
     this.clear();
     if (refreshToken) {
       this.api.post<void>('/auth/logout', { refreshToken }).subscribe({ error: () => {} });

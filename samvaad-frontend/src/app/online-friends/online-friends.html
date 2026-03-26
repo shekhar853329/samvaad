@@ -1,78 +1,42 @@
 <div class="bg-white border border-[rgba(83,74,183,0.12)] rounded-lg overflow-hidden">
-  <div class="px-[14px] py-3 text-[13px] font-medium text-[#18162e] border-b border-[rgba(83,74,183,0.12)]">Online now</div>
-  <div class="flex items-center gap-[10px] px-3 py-[9px] cursor-pointer hover:bg-[#F7F7FB] transition-colors">
-    <div class="relative shrink-0">
-      <div class="w-[30px] h-[30px] bg-[#534AB7] flex items-center justify-center text-white text-[11px] font-medium rounded-full">PK</div>
-      <span class="absolute bottom-0 right-0 w-[9px] h-[9px] bg-[#22c55e] rounded-full border-[1.5px] border-white"></span>
-    </div>
-    <div class="flex-1 min-w-0">
-      <div class="text-[12px] font-medium text-[#18162e] truncate">Priya K.</div>
-      <div class="text-[11px] text-[#22c55e]">Active now</div>
-    </div>
-    <button class="text-[#a09db8] hover:text-[#534AB7] transition-colors shrink-0">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-      </svg>
-    </button>
+  <div class="px-[14px] py-3 text-[13px] font-medium text-[#18162e] border-b border-[rgba(83,74,183,0.12)]">
+    Online now
+    @if (onlineFriends().length > 0) {
+      <span class="ml-1 text-[11px] font-normal text-[#a09db8]">({{ onlineFriends().length }})</span>
+    }
   </div>
-  <div class="flex items-center gap-[10px] px-3 py-[9px] cursor-pointer hover:bg-[#F7F7FB] transition-colors">
-    <div class="relative shrink-0">
-      <div class="w-[30px] h-[30px] bg-[#0284c7] flex items-center justify-center text-white text-[11px] font-medium rounded-full">NS</div>
-      <span class="absolute bottom-0 right-0 w-[9px] h-[9px] bg-[#22c55e] rounded-full border-[1.5px] border-white"></span>
+
+  @if (onlineFriends().length === 0) {
+    <div class="px-3 py-4 text-[12px] text-[#a09db8] text-center">
+      None of your friends are online right now.
     </div>
-    <div class="flex-1 min-w-0">
-      <div class="text-[12px] font-medium text-[#18162e] truncate">Nikhil S.</div>
-      <div class="text-[11px] text-[#22c55e]">Active now</div>
-    </div>
-    <button class="text-[#a09db8] hover:text-[#534AB7] transition-colors shrink-0">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-      </svg>
-    </button>
-  </div>
-  <div class="flex items-center gap-[10px] px-3 py-[9px] cursor-pointer hover:bg-[#F7F7FB] transition-colors">
-    <div class="relative shrink-0">
-      <div class="w-[30px] h-[30px] bg-[#BA7517] flex items-center justify-center text-white text-[11px] font-medium rounded-full">KM</div>
-      <span class="absolute bottom-0 right-0 w-[9px] h-[9px] bg-[#f59e0b] rounded-full border-[1.5px] border-white"></span>
-    </div>
-    <div class="flex-1 min-w-0">
-      <div class="text-[12px] font-medium text-[#18162e] truncate">Karan M.</div>
-      <div class="text-[11px] text-[#a09db8]">2 min ago</div>
-    </div>
-    <button class="text-[#a09db8] hover:text-[#534AB7] transition-colors shrink-0">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-      </svg>
-    </button>
-  </div>
-  <div class="flex items-center gap-[10px] px-3 py-[9px] cursor-pointer hover:bg-[#F7F7FB] transition-colors">
-    <div class="relative shrink-0">
-      <div class="w-[30px] h-[30px] bg-[#993556] flex items-center justify-center text-white text-[11px] font-medium rounded-full">AS</div>
-      <span class="absolute bottom-0 right-0 w-[9px] h-[9px] bg-[#22c55e] rounded-full border-[1.5px] border-white"></span>
-    </div>
-    <div class="flex-1 min-w-0">
-      <div class="text-[12px] font-medium text-[#18162e] truncate">Ananya S.</div>
-      <div class="text-[11px] text-[#22c55e]">Active now</div>
-    </div>
-    <button class="text-[#a09db8] hover:text-[#534AB7] transition-colors shrink-0">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-      </svg>
-    </button>
-  </div>
-  <div class="flex items-center gap-[10px] px-3 py-[9px] cursor-pointer hover:bg-[#F7F7FB] transition-colors">
-    <div class="relative shrink-0">
-      <div class="w-[30px] h-[30px] bg-[#3B6D11] flex items-center justify-center text-white text-[11px] font-medium rounded-full">RG</div>
-      <span class="absolute bottom-0 right-0 w-[9px] h-[9px] bg-[#94a3b8] rounded-full border-[1.5px] border-white"></span>
-    </div>
-    <div class="flex-1 min-w-0">
-      <div class="text-[12px] font-medium text-[#18162e] truncate">Rohan G.</div>
-      <div class="text-[11px] text-[#a09db8]">15 min ago</div>
-    </div>
-    <button class="text-[#a09db8] hover:text-[#534AB7] transition-colors shrink-0">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-      </svg>
-    </button>
-  </div>
+  }
+
+  @for (friend of onlineFriends(); track friend.senderId) {
+    <a [routerLink]="['/users', friend.senderUsername]"
+       class="flex items-center gap-[10px] px-3 py-[9px] cursor-pointer hover:bg-[#F7F7FB] transition-colors no-underline">
+      <div class="relative shrink-0">
+        @if (friend.senderAvatarUrl) {
+          <img [src]="friend.senderAvatarUrl" [alt]="friend.senderDisplayName"
+               class="w-[30px] h-[30px] rounded-full object-cover" />
+        } @else {
+          <div class="w-[30px] h-[30px] bg-[#534AB7] flex items-center justify-center text-white text-[11px] font-medium rounded-full">
+            {{ getInitials(friend.senderDisplayName) }}
+          </div>
+        }
+        <span class="absolute bottom-0 right-0 w-[9px] h-[9px] bg-[#22c55e] rounded-full border-[1.5px] border-white"></span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="text-[12px] font-medium text-[#18162e] truncate">{{ friend.senderDisplayName }}</div>
+        <div class="text-[11px] text-[#22c55e]">Active now</div>
+      </div>
+      <button class="text-[#a09db8] hover:text-[#534AB7] transition-colors shrink-0"
+              title="Send message"
+              (click)="$event.preventDefault()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+        </svg>
+      </button>
+    </a>
+  }
 </div>

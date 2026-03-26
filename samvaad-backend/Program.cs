@@ -1,5 +1,6 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
@@ -71,6 +72,7 @@ builder.Services.AddScoped<IFriendService, FriendService>();
 
 // ── SignalR + Online presence ────────────────────────────────────────────────
 builder.Services.AddSignalR();
+builder.Services.AddSingleton<IUserIdProvider, SubClaimUserIdProvider>(); // maps "sub" claim → Clients.User() routing
 builder.Services.AddSingleton<IOnlineTracker, OnlineTracker>();
 
 // ── Controllers + Swagger ────────────────────────────────────────────────────

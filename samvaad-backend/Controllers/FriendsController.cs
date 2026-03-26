@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using samvaad_backend.Extensions;
+using samvaad_backend.Hubs;
 using samvaad_backend.Services.Interfaces;
 
 namespace samvaad_backend.Controllers;
@@ -8,7 +9,7 @@ namespace samvaad_backend.Controllers;
 [ApiController]
 [Route("api/friends")]
 [Authorize]
-public class FriendsController(IFriendService friendService) : ControllerBase
+public class FriendsController(IFriendService friendService, IOnlineTracker onlineTracker) : ControllerBase
 {
     /// <summary>Get all pending friend requests sent to the current user.</summary>
     [HttpGet("requests")]
@@ -79,5 +80,16 @@ public class FriendsController(IFriendService friendService) : ControllerBase
         var userId = User.GetUserId();
         await friendService.UnfriendAsync(userId, username);
         return NoContent();
+    }
+
+    /// <summary>Get the IDs of the current user's friends who are currently online.</summary>
+    [HttpGet("online")]
+    public async Task<IActionResult> GetOnlineFriends()
+    {
+        var userId = User.GetUserId();
+        var friendIds = await friendService.GetFriendIdsAsync(userId);
+        var onlineIds = onlineTracker.GetOnlineUserIds();
+        var onlineFriendIds = friendIds.Intersect(onlineIds).Select(id => id.ToString()).ToList();
+        return Ok(onlineFriendIds);
     }
 }

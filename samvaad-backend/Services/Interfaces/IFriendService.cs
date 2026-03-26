@@ -33,4 +33,7 @@ public interface IFriendService
 
     /// <summary>Get the total number of friends for <paramref name="userId"/>.</summary>
     Task<int> GetFriendsCountAsync(Guid userId);
+
+    /// <summary>Get the set of user IDs that are friends with <paramref name="userId"/>.</summary>
+    Task<IReadOnlySet<Guid>> GetFriendIdsAsync(Guid userId);
 }
