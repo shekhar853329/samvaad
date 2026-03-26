@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 export class SettingsData implements OnInit {
   mediaQuality = signal('High (original)');
   toast = signal('');
+  savedQuality = signal(false);
 
   ngOnInit(): void {
     this.mediaQuality.set(localStorage.getItem('pref:mediaQuality') ?? 'High (original)');
@@ -31,6 +32,7 @@ export class SettingsData implements OnInit {
 
   saveQuality(): void {
     localStorage.setItem('pref:mediaQuality', this.mediaQuality());
-    this.showToast('Media quality preference saved.');
+    this.savedQuality.set(true);
+    setTimeout(() => this.savedQuality.set(false), 3000);
   }
 }

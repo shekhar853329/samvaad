@@ -13,6 +13,7 @@ export class SettingsPrivacy implements OnInit {
   settings = signal<PrivacySettings | null>(null);
   loading = signal(true);
   saving = signal(false);
+  saved = signal(false);
   success = signal('');
   error = signal('');
 
@@ -37,8 +38,8 @@ export class SettingsPrivacy implements OnInit {
       next: updated => {
         this.settings.set(updated);
         this.saving.set(false);
-        this.success.set('Privacy settings saved.');
-        setTimeout(() => this.success.set(''), 3000);
+        this.saved.set(true);
+        setTimeout(() => this.saved.set(false), 3000);
       },
       error: err => {
         this.error.set(err?.error?.message ?? 'Failed to save settings.');

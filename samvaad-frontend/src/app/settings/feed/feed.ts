@@ -13,6 +13,7 @@ export class SettingsFeed implements OnInit {
   prefs = signal<FeedPrefs | null>(null);
   loading = signal(true);
   saving = signal(false);
+  saved = signal(false);
   success = signal('');
   error = signal('');
   newWord = signal('');
@@ -41,8 +42,8 @@ export class SettingsFeed implements OnInit {
       next: updated => {
         this.prefs.set(updated);
         this.saving.set(false);
-        this.success.set('Feed preferences saved.');
-        setTimeout(() => this.success.set(''), 3000);
+        this.saved.set(true);
+        setTimeout(() => this.saved.set(false), 3000);
       },
       error: err => {
         this.error.set(err?.error?.message ?? 'Failed to save preferences.');

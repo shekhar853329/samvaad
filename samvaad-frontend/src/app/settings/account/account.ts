@@ -21,10 +21,12 @@ export class SettingsAccount implements OnInit {
 
   savingEmail = signal(false);
   savingPwd = signal(false);
-  emailSuccess = signal('');
+  savedEmail = signal(false);
+  savedPwd = signal(false);
   emailError = signal('');
-  pwdSuccess = signal('');
   pwdError = signal('');
+  emailSuccess: any;
+  pwdSuccess: any;
 
   ngOnInit(): void {
     // Pre-fill current email from cached user
@@ -46,8 +48,8 @@ export class SettingsAccount implements OnInit {
         this.newEmail.set('');
         this.currentPwdForEmail.set('');
         this.savingEmail.set(false);
-        this.emailSuccess.set('Email updated successfully.');
-        setTimeout(() => this.emailSuccess.set(''), 3500);
+        this.savedEmail.set(true);
+        setTimeout(() => this.savedEmail.set(false), 3000);
       },
       error: err => {
         this.emailError.set(err?.error?.message ?? 'Failed to update email.');
@@ -78,8 +80,8 @@ export class SettingsAccount implements OnInit {
         this.newPwd.set('');
         this.confirmPwd.set('');
         this.savingPwd.set(false);
-        this.pwdSuccess.set('Password changed successfully.');
-        setTimeout(() => this.pwdSuccess.set(''), 3500);
+        this.savedPwd.set(true);
+        setTimeout(() => this.savedPwd.set(false), 3000);
       },
       error: err => {
         this.pwdError.set(err?.error?.message ?? 'Failed to change password.');

@@ -1,18 +1,33 @@
 <div class="sticky top-0 z-10 bg-background-primary px-4 md:px-6 py-3 border-b-[0.5px] border-border-tertiary flex items-center justify-between gap-2">
   <div class="text-[16px] font-medium text-text-primary">Privacy</div>
   <div class="flex items-center gap-2">
-    <button type="button" (click)="save()" [disabled]="saving()" class="bg-[#534AB7] text-white border-none rounded-md px-5 py-1.5 text-[13px] font-medium cursor-pointer hover:bg-[#3C3489] transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2">
-      @if (saving()) { <span class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin inline-block"></span> }
-      {{ saving() ? 'Saving...' : 'Save settings' }}
-    </button>
+    <button
+        type="button"
+        (click)="save()"
+        [disabled]="saving() || saved()"
+        [class]="'w-[130px] justify-center border-none rounded-md py-1.5 text-[13px] font-medium flex items-center gap-1.5 transition-all duration-300 ' +
+          (saved()
+            ? 'bg-[#16a34a] text-white scale-105 shadow-[0_0_0_3px_rgba(22,163,74,0.2)] cursor-default'
+            : saving()
+              ? 'bg-[#534AB7] text-white opacity-75 cursor-not-allowed'
+              : 'bg-[#534AB7] text-white cursor-pointer hover:bg-[#3C3489] hover:shadow-md active:scale-95')">
+        @if (saving()) {
+          <span class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin inline-block shrink-0"></span>
+          <span>Saving...</span>
+        } @else if (saved()) {
+          <svg class="w-3.5 h-3.5 shrink-0 [stroke-dasharray:20] [stroke-dashoffset:20] animate-draw-check" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 7L5.5 10.5L12 3.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Saved!</span>
+        } @else {
+          <span>Save settings</span>
+        }
+      </button>
   </div>
 </div>
 <div class="px-4 md:px-6 py-4">
 <div class="text-[13px] text-text-secondary mb-5">Control who can see your content and interact with you.</div>
 
-@if (success()) {
-  <div class="mb-4 px-3 py-2 rounded-md bg-[#EEFAF4] border-[0.5px] border-[#6FCF97] text-[12px] text-[#1A6B3C]">{{ success() }}</div>
-}
 @if (error()) {
   <div class="mb-4 px-3 py-2 rounded-md bg-[#FFF5F5] border-[0.5px] border-[#f5c6cb] text-[12px] text-[#842029]">{{ error() }}</div>
 }
