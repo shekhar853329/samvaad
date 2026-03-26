@@ -1,19 +1,19 @@
-<div class="bg-white border border-[rgba(83,74,183,0.12)] rounded-lg overflow-hidden">
-  <div class="px-[14px] py-3 text-[13px] font-medium text-[#18162e] border-b border-[rgba(83,74,183,0.12)]">
+<div class="bg-background-primary border border-[rgba(83,74,183,0.12)] rounded-lg overflow-hidden">
+  <div class="px-[14px] py-3 text-[13px] font-medium text-text-primary border-b border-[rgba(83,74,183,0.12)]">
     Online now
     @if (onlineFriends().length > 0) {
-      <span class="ml-1 text-[11px] font-normal text-[#a09db8]">({{ onlineFriends().length }})</span>
+      <span class="ml-1 text-[11px] font-normal text-text-tertiary">({{ onlineFriends().length }})</span>
     }
   </div>
 
   @if (onlineFriends().length === 0) {
-    <div class="px-3 py-4 text-[12px] text-[#a09db8] text-center">
+    <div class="px-3 py-4 text-[12px] text-text-tertiary text-center">
       None of your friends are online right now.
     </div>
   }
 
   @for (friend of onlineFriends(); track friend.senderId) {
-    <div class="flex items-center gap-[10px] px-3 py-[9px] cursor-pointer hover:bg-[#F7F7FB] transition-colors"
+    <div class="flex items-center gap-[10px] px-3 py-[9px] cursor-pointer hover:bg-background-secondary transition-colors"
          (click)="openChat(friend, $event)">
       <div class="relative shrink-0">
         @if (friend.senderAvatarUrl) {
@@ -24,10 +24,10 @@
             {{ getInitials(friend.senderDisplayName) }}
           </div>
         }
-        <span class="absolute bottom-0 right-0 w-[9px] h-[9px] bg-[#22c55e] rounded-full border-[1.5px] border-white"></span>
+        <span class="absolute bottom-0 right-0 w-[9px] h-[9px] bg-[#22c55e] rounded-full border-[1.5px] border-background-primary"></span>
       </div>
       <div class="flex-1 min-w-0">
-        <div class="text-[12px] font-medium text-[#18162e] truncate">{{ friend.senderDisplayName }}</div>
+        <div class="text-[12px] font-medium text-text-primary truncate">{{ friend.senderDisplayName }}</div>
         <div class="text-[11px] text-[#22c55e]">Active now</div>
       </div>
       <button class="text-[#a09db8] hover:text-[#534AB7] transition-colors shrink-0"

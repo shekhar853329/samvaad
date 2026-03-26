@@ -27,15 +27,15 @@
 <div class="border-[0.5px] border-border-tertiary rounded-lg overflow-hidden mb-4">
   <div class="text-[11px] font-medium text-text-secondary px-[14px] py-2 bg-background-secondary border-b-[0.5px] border-border-tertiary uppercase tracking-[0.06em]">Theme</div>
   <div class="grid grid-cols-3 gap-2 p-[14px]">
-    <div (click)="theme.set('light')" [class]="theme() === 'light' ? 'border-2 border-[#534AB7] rounded-md p-2.5 cursor-pointer text-center' : 'border-[0.5px] border-border-tertiary rounded-md p-2.5 cursor-pointer text-center hover:border-[#534AB7] transition-colors'">
+    <div (click)="selectTheme('light')" [class]="theme() === 'light' ? 'border-2 border-[#534AB7] rounded-md p-2.5 cursor-pointer text-center' : 'border-[0.5px] border-border-tertiary rounded-md p-2.5 cursor-pointer text-center hover:border-[#534AB7] transition-colors'">
       <div class="h-9 rounded-[6px] mb-1.5 border-[0.5px] border-border-tertiary bg-white"></div>
       <div class="text-[11px] text-text-secondary">Light</div>
     </div>
-    <div (click)="theme.set('dark')" [class]="theme() === 'dark' ? 'border-2 border-[#534AB7] rounded-md p-2.5 cursor-pointer text-center' : 'border-[0.5px] border-border-tertiary rounded-md p-2.5 cursor-pointer text-center hover:border-[#534AB7] transition-colors'">
+    <div (click)="selectTheme('dark')" [class]="theme() === 'dark' ? 'border-2 border-[#534AB7] rounded-md p-2.5 cursor-pointer text-center' : 'border-[0.5px] border-border-tertiary rounded-md p-2.5 cursor-pointer text-center hover:border-[#534AB7] transition-colors'">
       <div class="h-9 rounded-[6px] mb-1.5 bg-[#1c1c1e]"></div>
       <div class="text-[11px] text-text-secondary">Dark</div>
     </div>
-    <div (click)="theme.set('system')" [class]="theme() === 'system' ? 'border-2 border-[#534AB7] rounded-md p-2.5 cursor-pointer text-center' : 'border-[0.5px] border-border-tertiary rounded-md p-2.5 cursor-pointer text-center hover:border-[#534AB7] transition-colors'">
+    <div (click)="selectTheme('system')" [class]="theme() === 'system' ? 'border-2 border-[#534AB7] rounded-md p-2.5 cursor-pointer text-center' : 'border-[0.5px] border-border-tertiary rounded-md p-2.5 cursor-pointer text-center hover:border-[#534AB7] transition-colors'">
       <div class="h-9 rounded-[6px] mb-1.5" style="background:linear-gradient(to right,#fff 50%,#1c1c1e 50%)"></div>
       <div class="text-[11px] text-text-secondary">System</div>
     </div>

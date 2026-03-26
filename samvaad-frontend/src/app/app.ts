@@ -6,6 +6,7 @@ import { RightSidebar } from './right-sidebar/right-sidebar';
 import { FloatingChat } from './floating-chat/floating-chat';
 import { AuthService } from './core/services/auth.service';
 import { ChatHubService } from './core/services/chat-hub.service';
+import { ThemeService } from './core/services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -16,6 +17,8 @@ import { ChatHubService } from './core/services/chat-hub.service';
 export class App {
   protected auth = inject(AuthService);
   private chatHub = inject(ChatHubService);
+  // Injecting ThemeService here ensures it initializes (and applies the stored theme) at app startup.
+  private theme = inject(ThemeService);
 
   constructor() {
     effect(() => {

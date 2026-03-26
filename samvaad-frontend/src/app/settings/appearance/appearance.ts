@@ -1,7 +1,7 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ThemeService, Theme } from '../../core/services/theme.service';
 
-type Theme = 'light' | 'dark' | 'system';
 type FontSize = 'xs' | 's' | 'm' | 'l' | 'xl';
 
 @Component({
@@ -10,7 +10,9 @@ type FontSize = 'xs' | 's' | 'm' | 'l' | 'xl';
   templateUrl: './appearance.html'
 })
 export class SettingsAppearance implements OnInit {
-  theme = signal<Theme>('system');
+  private themeService = inject(ThemeService);
+
+  theme = this.themeService.theme;
   fontSize = signal<FontSize>('m');
   fontFamily = signal('Inter');
   fontWeight = signal('Regular (400)');
@@ -22,7 +24,6 @@ export class SettingsAppearance implements OnInit {
   saved = signal(false);
 
   ngOnInit(): void {
-    this.theme.set((localStorage.getItem('pref:theme') ?? 'system') as Theme);
     this.fontSize.set((localStorage.getItem('pref:fontSize') ?? 'm') as FontSize);
     this.fontFamily.set(localStorage.getItem('pref:fontFamily') ?? 'Inter');
     this.fontWeight.set(localStorage.getItem('pref:fontWeight') ?? 'Regular (400)');
@@ -33,8 +34,11 @@ export class SettingsAppearance implements OnInit {
     this.highContrast.set(localStorage.getItem('pref:highContrast') === 'true');
   }
 
+  selectTheme(theme: Theme): void {
+    this.themeService.setTheme(theme);
+  }
+
   save(): void {
-    localStorage.setItem('pref:theme', this.theme());
     localStorage.setItem('pref:fontSize', this.fontSize());
     localStorage.setItem('pref:fontFamily', this.fontFamily());
     localStorage.setItem('pref:fontWeight', this.fontWeight());
@@ -48,7 +52,7 @@ export class SettingsAppearance implements OnInit {
   }
 
   reset(): void {
-    this.theme.set('system');
+    this.themeService.setTheme('system');
     this.fontSize.set('m');
     this.fontFamily.set('Inter');
     this.fontWeight.set('Regular (400)');

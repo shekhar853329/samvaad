@@ -1,12 +1,12 @@
-<div class="bg-white border border-[rgba(83,74,183,0.12)] rounded-lg overflow-hidden">
-  <div class="px-[14px] py-3 text-[13px] font-medium text-[#18162e] border-b border-[rgba(83,74,183,0.12)]">Who to follow</div>
+<div class="bg-background-primary border border-[rgba(83,74,183,0.12)] rounded-lg overflow-hidden">
+  <div class="px-[14px] py-3 text-[13px] font-medium text-text-primary border-b border-[rgba(83,74,183,0.12)]">Who to follow</div>
 
   @if (suggestions().length === 0) {
-    <div class="px-3 py-4 text-[12px] text-[#6b6880] text-center">No suggestions right now</div>
+    <div class="px-3 py-4 text-[12px] text-text-secondary text-center">No suggestions right now</div>
   }
 
   @for (user of suggestions(); track user.id) {
-    <div class="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-[#F7F7FB] transition-colors">
+    <div class="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-background-secondary transition-colors">
       <a [routerLink]="['/users', user.username]" class="flex items-center gap-2 flex-1 min-w-0">
         @if (user.avatarUrl) {
           <img [src]="user.avatarUrl" [alt]="user.displayName"
@@ -17,11 +17,11 @@
           </div>
         }
         <div class="flex-1 min-w-0">
-          <div class="text-[12px] font-medium text-[#18162e] truncate flex items-center gap-1">
+          <div class="text-[12px] font-medium text-text-primary truncate flex items-center gap-1">
             {{ user.displayName }}
             @if (user.isVerified) { <span class="text-[#534AB7] text-[10px]">✓</span> }
           </div>
-          <div class="text-[11px] text-[#6b6880]">@{{ user.username }}</div>
+          <div class="text-[11px] text-text-secondary">@{{ user.username }}</div>
         </div>
       </a>
       <button
@@ -29,7 +29,7 @@
         [disabled]="followingInProgress().has(user.id)"
         [class]="user.isFollowing
           ? 'text-[11px] font-medium bg-[#534AB7] text-white border-none rounded-[20px] px-[10px] py-[3px] cursor-pointer hover:bg-[#463D99] transition-colors shrink-0 disabled:opacity-60'
-          : 'text-[11px] font-medium bg-transparent border border-[rgba(83,74,183,0.24)] rounded-[20px] px-[10px] py-[3px] text-[#18162e] cursor-pointer hover:bg-[#F7F7FB] transition-colors shrink-0 disabled:opacity-60'">
+          : 'text-[11px] font-medium bg-transparent border border-[rgba(83,74,183,0.24)] rounded-[20px] px-[10px] py-[3px] text-text-primary cursor-pointer hover:bg-background-secondary transition-colors shrink-0 disabled:opacity-60'">
         {{ followingInProgress().has(user.id) ? '…' : (user.isFollowing ? 'Following' : 'Follow') }}
       </button>
     </div>
