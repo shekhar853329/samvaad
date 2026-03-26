@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ThemeService, Theme } from '../../core/services/theme.service';
+import { FontService, FontFamily } from '../../core/services/font.service';
 
 type FontSize = 'xs' | 's' | 'm' | 'l' | 'xl';
 
@@ -11,10 +12,11 @@ type FontSize = 'xs' | 's' | 'm' | 'l' | 'xl';
 })
 export class SettingsAppearance implements OnInit {
   private themeService = inject(ThemeService);
+  private fontService = inject(FontService);
 
   theme = this.themeService.theme;
+  fontFamily = this.fontService.fontFamily;
   fontSize = signal<FontSize>('m');
-  fontFamily = signal('Inter');
   fontWeight = signal('Regular (400)');
   lineHeight = signal('Normal (1.6)');
   compactMode = signal(false);
@@ -25,7 +27,6 @@ export class SettingsAppearance implements OnInit {
 
   ngOnInit(): void {
     this.fontSize.set((localStorage.getItem('pref:fontSize') ?? 'm') as FontSize);
-    this.fontFamily.set(localStorage.getItem('pref:fontFamily') ?? 'Inter');
     this.fontWeight.set(localStorage.getItem('pref:fontWeight') ?? 'Regular (400)');
     this.lineHeight.set(localStorage.getItem('pref:lineHeight') ?? 'Normal (1.6)');
     this.compactMode.set(localStorage.getItem('pref:compactMode') === 'true');
@@ -38,9 +39,12 @@ export class SettingsAppearance implements OnInit {
     this.themeService.setTheme(theme);
   }
 
+  selectFont(font: string): void {
+    this.fontService.setFont(font as FontFamily);
+  }
+
   save(): void {
     localStorage.setItem('pref:fontSize', this.fontSize());
-    localStorage.setItem('pref:fontFamily', this.fontFamily());
     localStorage.setItem('pref:fontWeight', this.fontWeight());
     localStorage.setItem('pref:lineHeight', this.lineHeight());
     localStorage.setItem('pref:compactMode', String(this.compactMode()));
@@ -53,8 +57,8 @@ export class SettingsAppearance implements OnInit {
 
   reset(): void {
     this.themeService.setTheme('system');
+    this.fontService.setFont('Inter');
     this.fontSize.set('m');
-    this.fontFamily.set('Inter');
     this.fontWeight.set('Regular (400)');
     this.lineHeight.set('Normal (1.6)');
     this.compactMode.set(false);
