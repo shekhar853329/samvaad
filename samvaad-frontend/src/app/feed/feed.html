@@ -1,16 +1,12 @@
-<div class="flex flex-col gap-0 bg-background-primary md:border-[0.5px] md:border-border-tertiary md:rounded-lg overflow-hidden h-fit w-full">
+<div
+  class="flex flex-col gap-0 bg-background-primary md:border-[0.5px] md:border-border-tertiary md:rounded-lg overflow-hidden h-fit w-full">
   <!-- Stories -->
-  <app-stories-bar />
+  <!-- <app-stories-bar /> -->
 
   <!-- Compose -->
   <app-compose-box (postCreated)="onPostCreated($event)" />
 
   <!-- Posts -->
-  <app-posts-list
-    [posts]="posts()"
-    [loading]="loading()"
-    [hasMore]="hasMore()"
-    (postUpdated)="onPostUpdated($event)"
-    (postDeleted)="onPostDeleted($event)"
-    (loadMore)="loadMore()" />
+  <app-posts-list [posts]="posts()" [loading]="loading()" [hasMore]="hasMore()" (postUpdated)="onPostUpdated($event)"
+    (postDeleted)="onPostDeleted($event)" (loadMore)="loadMore()" />
 </div>
