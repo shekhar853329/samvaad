@@ -47,4 +47,5 @@ public class User
     public UserNotificationPreferences? NotificationPreferences { get; set; }
     public UserPrivacySettings? PrivacySettings { get; set; }
     public UserFeedPreferences? FeedPreferences { get; set; }
+    public ICollection<SocietyMember> SocietyMemberships { get; set; } = [];
 }

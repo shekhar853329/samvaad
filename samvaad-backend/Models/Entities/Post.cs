@@ -7,6 +7,7 @@ public class Post
     public string Content { get; set; } = string.Empty;
     public Guid? ParentPostId { get; set; }
     public Guid? RepostOfId { get; set; }
+    public Guid? SocietyId { get; set; }
     public bool IsPinned { get; set; }
     public bool IsLive { get; set; }
     public int LikesCount { get; set; }
@@ -28,4 +29,5 @@ public class Post
     public ICollection<PostMedia> Media { get; set; } = [];
     public ICollection<Mention> Mentions { get; set; } = [];
     public ICollection<Notification> Notifications { get; set; } = [];
+    public Society? Society { get; set; }
 }

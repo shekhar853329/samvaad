@@ -8,6 +8,8 @@ import { Explore } from './explore/explore';
 import { Login } from './auth/login/login';
 import { Register } from './auth/register/register';
 import { FriendsPage } from './friends-page/friends-page';
+import { Societies } from './societies/societies';
+import { SocietyDetail } from './societies/society-detail/society-detail';
 import { authGuard, guestGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -23,6 +25,8 @@ export const routes: Routes = [
   { path: 'settings', component: Settings, canActivate: [authGuard] },
   { path: 'messages', component: Messages, canActivate: [authGuard] },
   { path: 'explore', component: Explore, canActivate: [authGuard] },
+  { path: 'societies', component: Societies, canActivate: [authGuard] },
+  { path: 'societies/:id', component: SocietyDetail, canActivate: [authGuard] },
 
   { path: '**', redirectTo: '' }
 ];

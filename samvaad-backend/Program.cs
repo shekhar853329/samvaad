@@ -69,6 +69,7 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<ISettingsService, SettingsService>();
 builder.Services.AddScoped<IFriendService, FriendService>();
+builder.Services.AddScoped<ISocietyService, SocietyService>();
 
 // ── SignalR + Online presence ────────────────────────────────────────────────
 builder.Services.AddSignalR();

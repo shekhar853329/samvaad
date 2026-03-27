@@ -1,0 +1,170 @@
+<!-- Header -->
+<div class="flex flex-col gap-0 bg-background-primary md:border-[0.5px] md:border-border-tertiary md:rounded-lg overflow-hidden h-fit w-full">
+
+  @if (loading()) {
+    <div class="p-8 text-center text-text-secondary text-[14px]">Loading society...</div>
+  } @else if (society()) {
+
+    <!-- Back + title -->
+    <div class="flex items-center gap-3 px-4 py-3 border-b-[0.5px] border-border-tertiary">
+      <button (click)="goBack()"
+              class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-background-secondary transition-colors text-text-secondary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+      </button>
+      <div class="flex-1 min-w-0">
+        <h1 class="text-[16px] font-semibold text-text-primary truncate">{{ society()!.name }}</h1>
+        <p class="text-[11px] text-text-secondary">
+          {{ society()!.membersCount }} {{ society()!.membersCount === 1 ? 'member' : 'members' }} &bull; {{ society()!.postsCount }} posts
+        </p>
+      </div>
+      <!-- Join / Leave -->
+      @if (!society()!.isMember) {
+        <button (click)="join()" [disabled]="joiningLeaving()"
+                class="px-4 py-1.5 bg-accent text-white text-[13px] font-medium rounded-[20px] hover:bg-accent-dark transition-colors disabled:opacity-50">
+          {{ joiningLeaving() ? 'Joining...' : 'Join' }}
+        </button>
+      } @else if (!society()!.isAdmin) {
+        <button (click)="leave()" [disabled]="joiningLeaving()"
+                class="px-4 py-1.5 border border-border-tertiary text-text-secondary text-[13px] rounded-[20px] hover:border-red-500 hover:text-red-500 transition-colors disabled:opacity-50">
+          {{ joiningLeaving() ? '...' : 'Leave' }}
+        </button>
+      }
+    </div>
+
+    <!-- Description -->
+    @if (society()!.description) {
+      <div class="px-4 py-2.5 border-b-[0.5px] border-border-tertiary">
+        <p class="text-[13px] text-text-secondary">{{ society()!.description }}</p>
+      </div>
+    }
+
+    <!-- Not a member notice -->
+    @if (!society()!.isMember) {
+      <div class="flex flex-col items-center gap-3 py-14 px-6">
+        <div class="w-[56px] h-[56px] rounded-full bg-background-secondary flex items-center justify-center">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+               stroke-linecap="round" stroke-linejoin="round" class="text-text-tertiary">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0110 0v4"/>
+          </svg>
+        </div>
+        <p class="text-[14px] text-text-secondary text-center">Join this society to see posts and members.</p>
+        <button (click)="join()" [disabled]="joiningLeaving()"
+                class="bg-accent text-white text-[13px] font-medium px-5 py-2 rounded-[20px] hover:bg-accent-dark transition-colors disabled:opacity-50">
+          {{ joiningLeaving() ? 'Joining...' : 'Join Society' }}
+        </button>
+      </div>
+    } @else {
+
+      <!-- Tabs: Feed / Members -->
+      <div class="flex border-b-[0.5px] border-border-tertiary">
+        <button (click)="activePanel.set('feed')"
+                [class]="'flex-1 py-3 text-[13px] font-medium transition-colors ' + (activePanel() === 'feed' ? 'text-accent border-b-2 border-accent' : 'text-text-secondary hover:text-text-primary')">
+          Posts
+        </button>
+        <button (click)="activePanel.set('members')"
+                [class]="'flex-1 py-3 text-[13px] font-medium transition-colors ' + (activePanel() === 'members' ? 'text-accent border-b-2 border-accent' : 'text-text-secondary hover:text-text-primary')">
+          Members ({{ society()!.membersCount }})
+        </button>
+      </div>
+
+      <!-- Feed Panel -->
+      @if (activePanel() === 'feed') {
+        <!-- Compose box -->
+        <div class="p-[14px] border-b-[0.5px] border-border-tertiary">
+          <div class="flex items-start gap-2.5">
+            @if (auth.user()?.avatarUrl) {
+              <img [src]="auth.user()!.avatarUrl!" [alt]="auth.user()!.displayName"
+                   class="w-[38px] h-[38px] rounded-full object-cover shrink-0" />
+            } @else {
+              <div class="w-[38px] h-[38px] bg-accent flex items-center justify-center text-white text-[14px] font-medium rounded-full shrink-0">
+                {{ getInitials(auth.user()?.displayName ?? 'U') }}
+              </div>
+            }
+            @if (!composing()) {
+              <div class="flex-1 bg-background-secondary border-[0.5px] border-border-tertiary rounded-lg px-3 py-[9px] text-[14px] text-text-secondary cursor-text"
+                   (click)="composing.set(true)">
+                Share something with {{ society()!.name }}...
+              </div>
+            } @else {
+              <textarea [(ngModel)]="composeContent" [disabled]="posting()"
+                        placeholder="Share something with the society..."
+                        class="flex-1 bg-background-secondary border-[0.5px] border-border-tertiary rounded-lg px-3 py-[9px] text-[14px] text-text-primary resize-none min-h-[80px] outline-none focus:border-accent transition-colors"
+                        maxlength="500" autofocus></textarea>
+            }
+          </div>
+          @if (composing()) {
+            <div class="flex justify-between items-center mt-2.5 pl-0 md:pl-[50px]">
+              <span class="text-[12px] text-text-tertiary">{{ composeContent.length }}/500</span>
+              <div class="flex gap-2">
+                <button (click)="composing.set(false); composeContent = ''"
+                        class="px-3 py-1.5 text-[13px] text-text-secondary cursor-pointer hover:text-text-primary transition-colors">
+                  Cancel
+                </button>
+                <button (click)="submitPost()" [disabled]="!composeContent.trim() || posting()"
+                        class="bg-accent text-white border-none rounded-[20px] px-4 py-1.5 text-[13px] font-medium cursor-pointer hover:bg-accent-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                  {{ posting() ? 'Posting...' : 'Post' }}
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Posts -->
+        @if (loadingFeed() && posts().length === 0) {
+          <div class="p-8 text-center text-text-secondary text-[14px]">Loading posts...</div>
+        } @else if (posts().length === 0) {
+          <div class="flex flex-col items-center gap-2 py-14">
+            <p class="text-[14px] text-text-secondary">No posts yet. Be the first to post!</p>
+          </div>
+        } @else {
+          @for (post of posts(); track post.id) {
+            <app-post-card [post]="post"
+                           (postUpdated)="onPostUpdated($event)"
+                           (postDeleted)="onPostDeleted($event)" />
+          }
+          @if (hasMore()) {
+            <div class="p-4 text-center">
+              <button (click)="loadMore()" [disabled]="loadingFeed()"
+                      class="text-[13px] text-accent cursor-pointer hover:underline disabled:opacity-50">
+                {{ loadingFeed() ? 'Loading...' : 'Load more' }}
+              </button>
+            </div>
+          }
+        }
+      }
+
+      <!-- Members Panel -->
+      @if (activePanel() === 'members') {
+        @for (member of members(); track member.userId) {
+          <div class="flex items-center gap-3 px-4 py-3 border-b-[0.5px] border-border-tertiary">
+            @if (member.avatarUrl) {
+              <img [src]="member.avatarUrl" [alt]="member.displayName"
+                   class="w-[40px] h-[40px] rounded-full object-cover shrink-0" />
+            } @else {
+              <div class="w-[40px] h-[40px] rounded-full bg-accent/20 flex items-center justify-center text-accent text-[14px] font-semibold shrink-0">
+                {{ getInitials(member.displayName) }}
+              </div>
+            }
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-1.5">
+                <a [routerLink]="['/users', member.username]"
+                   class="text-[14px] font-medium text-text-primary hover:underline truncate no-underline">{{ member.displayName }}</a>
+                @if (member.role === 'Admin') {
+                  <span class="text-[10px] bg-accent/15 text-accent px-1.5 py-0.5 rounded-full font-medium shrink-0">Admin</span>
+                }
+              </div>
+              <p class="text-[12px] text-text-secondary">&#64;{{ member.username }}</p>
+            </div>
+          </div>
+        }
+        @if (members().length === 0) {
+          <div class="p-8 text-center text-text-secondary text-[14px]">No members found.</div>
+        }
+      }
+    }
+  }
+</div>

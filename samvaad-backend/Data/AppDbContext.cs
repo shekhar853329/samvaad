@@ -29,6 +29,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<MutedWord> MutedWords => Set<MutedWord>();
     public DbSet<FriendRequest> FriendRequests => Set<FriendRequest>();
     public DbSet<Friendship> Friendships => Set<Friendship>();
+    public DbSet<Society> Societies => Set<Society>();
+    public DbSet<SocietyMember> SocietyMembers => Set<SocietyMember>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -98,6 +100,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
              .WithMany(p => p.Reposts)
              .HasForeignKey(p => p.RepostOfId)
              .OnDelete(DeleteBehavior.Restrict);
+
+            b.HasOne(p => p.Society)
+             .WithMany(s => s.Posts)
+             .HasForeignKey(p => p.SocietyId)
+             .OnDelete(DeleteBehavior.SetNull);
         });
 
         // ── HashTag ─────────────────────────────────────────────────────────────
@@ -424,6 +431,42 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
              .WithMany(u => u.FriendedBy)
              .HasForeignKey(f => f.FriendId)
              .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // ── Society ──────────────────────────────────────────────────────────────
+        modelBuilder.Entity<Society>(b =>
+        {
+            b.HasKey(s => s.Id);
+            b.Property(s => s.Name).HasMaxLength(100).IsRequired();
+            b.Property(s => s.Description).HasMaxLength(500);
+            b.Property(s => s.AvatarUrl).HasMaxLength(500);
+
+            b.HasIndex(s => s.Name).IsUnique();
+            b.HasIndex(s => s.CreatedByUserId);
+            b.HasIndex(s => s.CreatedAt);
+
+            b.HasOne(s => s.CreatedBy)
+             .WithMany()
+             .HasForeignKey(s => s.CreatedByUserId)
+             .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // ── SocietyMember ────────────────────────────────────────────────────────
+        modelBuilder.Entity<SocietyMember>(b =>
+        {
+            b.HasKey(sm => new { sm.SocietyId, sm.UserId });
+            b.Property(sm => sm.Role).HasConversion<string>().IsRequired();
+            b.HasIndex(sm => sm.UserId);
+
+            b.HasOne(sm => sm.Society)
+             .WithMany(s => s.Members)
+             .HasForeignKey(sm => sm.SocietyId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(sm => sm.User)
+             .WithMany(u => u.SocietyMemberships)
+             .HasForeignKey(sm => sm.UserId)
+             .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

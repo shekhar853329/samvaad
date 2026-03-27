@@ -1,0 +1,164 @@
+<!-- Header -->
+<div class="flex flex-col gap-0 bg-background-primary md:border-[0.5px] md:border-border-tertiary md:rounded-lg overflow-hidden h-fit w-full">
+
+  <!-- Title bar -->
+  <div class="flex items-center justify-between px-4 py-3 border-b-[0.5px] border-border-tertiary">
+    <div class="flex flex-col gap-0.5">
+      <h1 class="text-[17px] font-semibold text-text-primary leading-tight">Societies</h1>
+      <p class="text-[12px] text-text-secondary">Private groups for your communities</p>
+    </div>
+    <button (click)="openCreateModal()"
+            class="flex items-center gap-1.5 bg-accent text-white text-[13px] font-medium px-3 py-1.5 rounded-[20px] hover:bg-accent-dark transition-colors">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 5v14M5 12h14"/>
+      </svg>
+      New Society
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="flex border-b-[0.5px] border-border-tertiary">
+    <button (click)="switchTab('all')"
+            [class]="'flex-1 py-3 text-[13px] font-medium transition-colors ' + (activeTab() === 'all' ? 'text-accent border-b-2 border-accent' : 'text-text-secondary hover:text-text-primary')">
+      All Societies
+    </button>
+    <button (click)="switchTab('mine')"
+            [class]="'flex-1 py-3 text-[13px] font-medium transition-colors ' + (activeTab() === 'mine' ? 'text-accent border-b-2 border-accent' : 'text-text-secondary hover:text-text-primary')">
+      My Societies
+    </button>
+  </div>
+
+  <!-- List -->
+  @if (loading() && societies().length === 0) {
+    <div class="p-8 text-center text-text-secondary text-[14px]">Loading societies...</div>
+  } @else if (societies().length === 0) {
+    <div class="flex flex-col items-center gap-3 py-16 px-6">
+      <div class="w-[60px] h-[60px] rounded-full bg-background-secondary flex items-center justify-center">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+             stroke-linecap="round" stroke-linejoin="round" class="text-text-tertiary">
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+        </svg>
+      </div>
+      <p class="text-[14px] text-text-secondary text-center">
+        @if (activeTab() === 'mine') {
+          You haven't joined any societies yet.
+        } @else {
+          No societies yet. Be the first to create one!
+        }
+      </p>
+      @if (activeTab() === 'mine') {
+        <button (click)="switchTab('all')" class="text-[13px] text-accent hover:underline">Browse all societies</button>
+      } @else {
+        <button (click)="openCreateModal()" class="text-[13px] text-accent hover:underline">Create a society</button>
+      }
+    </div>
+  } @else {
+    @for (society of societies(); track society.id) {
+      <div class="flex items-center gap-3 px-4 py-3 border-b-[0.5px] border-border-tertiary hover:bg-background-secondary cursor-pointer transition-colors"
+           (click)="navigateTo(society.id)">
+        <!-- Avatar -->
+        @if (society.avatarUrl) {
+          <img [src]="society.avatarUrl" [alt]="society.name"
+               class="w-[48px] h-[48px] rounded-full object-cover shrink-0" />
+        } @else {
+          <div class="w-[48px] h-[48px] rounded-full bg-accent/20 flex items-center justify-center text-accent text-[16px] font-semibold shrink-0">
+            {{ getInitials(society.name) }}
+          </div>
+        }
+
+        <!-- Info -->
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-1.5">
+            <span class="text-[14px] font-semibold text-text-primary truncate">{{ society.name }}</span>
+            @if (society.isAdmin) {
+              <span class="text-[10px] bg-accent/15 text-accent px-1.5 py-0.5 rounded-full font-medium shrink-0">Admin</span>
+            } @else if (society.isMember) {
+              <span class="text-[10px] bg-background-tertiary text-text-secondary px-1.5 py-0.5 rounded-full font-medium shrink-0">Member</span>
+            }
+          </div>
+          @if (society.description) {
+            <p class="text-[12px] text-text-secondary truncate mt-0.5">{{ society.description }}</p>
+          }
+          <p class="text-[11px] text-text-tertiary mt-0.5">
+            {{ society.membersCount }} {{ society.membersCount === 1 ? 'member' : 'members' }} &bull; {{ society.postsCount }} posts
+          </p>
+        </div>
+
+        <!-- Join button -->
+        @if (!society.isMember) {
+          <button (click)="joinSociety(society, $event)"
+                  class="shrink-0 px-3 py-1.5 border border-accent text-accent text-[12px] font-medium rounded-[20px] hover:bg-accent hover:text-white transition-colors">
+            Join
+          </button>
+        }
+      </div>
+    }
+
+    @if (hasMore()) {
+      <div class="p-4 text-center">
+        <button (click)="loadMore()" [disabled]="loading()"
+                class="text-[13px] text-accent cursor-pointer hover:underline disabled:opacity-50">
+          {{ loading() ? 'Loading...' : 'Load more' }}
+        </button>
+      </div>
+    }
+  }
+</div>
+
+<!-- Create Society Modal -->
+@if (showCreateModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+       (click)="closeCreateModal()">
+    <div class="absolute inset-0 bg-black/50"></div>
+    <div class="relative bg-background-primary border border-border-tertiary rounded-xl shadow-xl w-full max-w-[420px] p-6 z-10"
+         (click)="$event.stopPropagation()">
+
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="text-[16px] font-semibold text-text-primary">Create a Society</h2>
+        <button (click)="closeCreateModal()"
+                class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-background-secondary transition-colors text-text-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[12px] font-medium text-text-secondary">Society Name *</label>
+          <input [(ngModel)]="createForm.name"
+                 placeholder="e.g. Photography Enthusiasts"
+                 maxlength="100"
+                 class="bg-background-secondary border border-border-tertiary rounded-lg px-3 py-2.5 text-[14px] text-text-primary outline-none focus:border-accent transition-colors" />
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[12px] font-medium text-text-secondary">Description <span class="text-text-tertiary">(optional)</span></label>
+          <textarea [(ngModel)]="createForm.description"
+                    placeholder="What is this society about?"
+                    maxlength="500"
+                    rows="3"
+                    class="bg-background-secondary border border-border-tertiary rounded-lg px-3 py-2.5 text-[14px] text-text-primary outline-none focus:border-accent transition-colors resize-none"></textarea>
+        </div>
+
+        @if (createError()) {
+          <p class="text-[12px] text-red-500">{{ createError() }}</p>
+        }
+
+        <div class="flex gap-2 mt-1">
+          <button (click)="closeCreateModal()"
+                  class="flex-1 py-2 text-[13px] text-text-secondary rounded-lg hover:bg-background-secondary transition-colors">
+            Cancel
+          </button>
+          <button (click)="submitCreate()" [disabled]="!createForm.name.trim() || creating()"
+                  class="flex-1 py-2 text-[13px] font-medium bg-accent text-white rounded-lg hover:bg-accent-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            {{ creating() ? 'Creating...' : 'Create Society' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
