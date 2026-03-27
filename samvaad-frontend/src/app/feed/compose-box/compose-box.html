@@ -1,40 +1,247 @@
-<div class="p-[14px] border-b-[0.5px] border-border-tertiary">
-  <div class="flex items-start gap-2.5">
-    @if (avatarUrl()) {
-      <img [src]="avatarUrl()!" [alt]="displayName()"
-           class="w-[38px] h-[38px] rounded-full object-cover shrink-0" />
-    } @else {
-      <div class="w-[38px] h-[38px] bg-accent flex items-center justify-center text-white text-[14px] font-medium rounded-full shrink-0">
-        {{ initials() }}
-      </div>
-    }
-    @if (!composing()) {
-      <div class="flex-1 bg-background-secondary border-[0.5px] border-border-tertiary rounded-lg px-3 py-[9px] text-[14px] text-text-secondary cursor-text"
-           (click)="composing.set(true)">
-        What's on your mind, {{ greetingName() }}?
-      </div>
-    } @else {
-      <textarea [(ngModel)]="content" [disabled]="posting()"
-                placeholder="What's on your mind?"
-                class="flex-1 bg-background-secondary border-[0.5px] border-border-tertiary rounded-lg px-3 py-[9px] text-[14px] text-text-primary resize-none min-h-[80px] outline-none focus:border-accent transition-colors"
-                maxlength="500" autofocus></textarea>
-    }
-  </div>
-  @if (composing()) {
-    <div class="flex justify-between items-center mt-2.5 pl-0 md:pl-[50px]">
-      <div class="flex gap-2.5">
-        <span class="text-[12px] text-text-tertiary">{{ content.length }}/500</span>
-      </div>
-      <div class="flex gap-2">
-        <button (click)="cancel()"
-                class="px-3 py-1.5 text-[13px] text-text-secondary cursor-pointer hover:text-text-primary transition-colors">
-          Cancel
-        </button>
-        <button (click)="submit()" [disabled]="!content.trim() || posting()"
-                class="bg-accent text-white border-none rounded-[20px] px-4 py-1.5 text-[13px] font-medium cursor-pointer hover:bg-accent-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-          {{ posting() ? 'Posting...' : 'Post' }}
-        </button>
+<!-- Hidden file inputs -->
+<input #photoInput type="file" accept="image/*" multiple class="hidden"
+       (change)="onFileSelected($event, 'image')" />
+<input #videoInput type="file" accept="video/*" multiple class="hidden"
+       (change)="onFileSelected($event, 'video')" />
+<input #audioInput type="file" accept="audio/*" class="hidden"
+       (change)="onFileSelected($event, 'audio')" />
+
+<div class="px-4 py-3 border-b border-border-tertiary transition-all duration-200">
+
+  <!-- ── Collapsed prompt ── -->
+  @if (!composing()) {
+    <div class="flex items-center gap-3 cursor-pointer group" (click)="openComposer()">
+      <!-- Avatar -->
+      @if (avatarUrl()) {
+        <img [src]="avatarUrl()!" [alt]="displayName()"
+             class="w-10 h-10 rounded-full object-cover shrink-0 ring-2 ring-border-tertiary" />
+      } @else {
+        <div class="w-10 h-10 bg-accent flex items-center justify-center text-white text-sm font-semibold rounded-full shrink-0">
+          {{ initials() }}
+        </div>
+      }
+
+      <!-- Prompt pill -->
+      <div class="flex-1 flex items-center justify-between bg-background-secondary border border-border-tertiary rounded-2xl px-4 py-2.5 group-hover:border-accent/50 group-hover:bg-background-tertiary transition-all duration-200">
+        <span class="text-text-tertiary text-sm">What's on your mind, {{ greetingName() }}?</span>
+        <div class="flex items-center gap-3 text-text-tertiary">
+          <svg class="w-4 h-4 text-accent/70" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <svg class="w-4 h-4 text-green-400/70" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M12 6v12m8.485-9.515a9 9 0 010 12.728M3.515 8.485a9 9 0 0112.728 0"/>
+          </svg>
+        </div>
       </div>
     </div>
   }
+
+  <!-- ── Expanded composer ── -->
+  @if (composing()) {
+    <div class="flex gap-3"
+         [class.ring-2]="dragOver()"
+         [class.ring-accent]="dragOver()"
+         [class.ring-offset-2]="dragOver()"
+         [class.rounded-2xl]="dragOver()"
+         (dragover)="onDragOver($event)"
+         (dragleave)="onDragLeave()"
+         (drop)="onDrop($event)">
+
+      <!-- Avatar column -->
+      <div class="shrink-0 flex flex-col items-center gap-2">
+        @if (avatarUrl()) {
+          <img [src]="avatarUrl()!" [alt]="displayName()"
+               class="w-10 h-10 rounded-full object-cover ring-2 ring-border-tertiary" />
+        } @else {
+          <div class="w-10 h-10 bg-accent flex items-center justify-center text-white text-sm font-semibold rounded-full">
+            {{ initials() }}
+          </div>
+        }
+        <!-- Thread line (visible if there are attachments to give height) -->
+        @if (attachments().length > 0) {
+          <div class="w-0.5 flex-1 bg-border-tertiary/60 rounded-full min-h-4"></div>
+        }
+      </div>
+
+      <!-- Content column -->
+      <div class="flex-1 min-w-0">
+
+        <!-- Error banner -->
+        @if (errorMsg()) {
+          <div class="mb-3 px-3 py-2 bg-red-500/10 border border-red-500/20 text-red-500 text-sm rounded-lg flex items-center justify-between">
+            <span>{{ errorMsg() }}</span>
+            <button (click)="errorMsg.set(null)" class="text-red-500 hover:text-red-600 transition-colors">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+        }
+
+        <!-- Drag overlay hint -->
+        @if (dragOver()) {
+          <div class="mb-2 rounded-xl border-2 border-dashed border-accent/60 bg-accent/5 py-4 text-center text-sm text-accent font-medium animate-pulse">
+            Drop files here
+          </div>
+        }
+
+        <!-- Auto-grow textarea -->
+        <textarea #textArea [(ngModel)]="content"
+                  [disabled]="posting()"
+                  [maxlength]="MAX_CHARS"
+                  placeholder="What's on your mind?"
+                  rows="2"
+                  (input)="autoGrow(textArea)"
+                  class="w-full bg-transparent border-none outline-none text-[15px] text-text-primary placeholder:text-text-tertiary resize-none leading-relaxed overflow-hidden min-h-[60px]">
+        </textarea>
+
+        <!-- Media preview grid -->
+        @if (attachments().length > 0) {
+          <div class="mt-2 mb-3 grid gap-2"
+               [class.grid-cols-1]="attachments().length === 1"
+               [class.grid-cols-2]="attachments().length >= 2">
+            @for (att of attachments(); track att.previewUrl; let i = $index) {
+              <div class="relative rounded-xl overflow-hidden bg-background-secondary group"
+                   [class.col-span-2]="attachments().length === 3 && i === 0"
+                   [class.max-h-64]="att.type !== 'audio'"
+                   [class.max-h-16]="att.type === 'audio'">
+
+                @if (att.type === 'image') {
+                  <img [src]="att.previewUrl" alt="attachment"
+                       class="w-full h-full object-cover" />
+                }
+                @if (att.type === 'video') {
+                  <video [src]="att.previewUrl" controls
+                         class="w-full h-full object-cover max-h-64">
+                  </video>
+                }
+                @if (att.type === 'audio') {
+                  <div class="flex items-center gap-3 px-3 py-2">
+                    <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
+                      <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 3v10.55A4 4 0 1014 17V7h4V3h-6z"/>
+                      </svg>
+                    </div>
+                    <audio [src]="att.previewUrl" controls class="flex-1 h-8">
+                    </audio>
+                  </div>
+                }
+
+                <!-- Remove button -->
+                <button (click)="removeAttachment(i)"
+                        class="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80 backdrop-blur-sm z-10"
+                        title="Remove">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Toolbar -->
+        <div class="flex items-center justify-between mt-2 pt-2 border-t border-border-tertiary/60">
+
+          <!-- Media action buttons -->
+          <div class="flex items-center gap-1">
+
+            <!-- Photo/GIF -->
+            <button (click)="pickPhotos()"
+                    [disabled]="attachments().length >= MAX_FILES || posting()"
+                    title="Add photo"
+                    class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-accent hover:bg-accent/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+              <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              <span class="text-xs font-medium hidden sm:inline">Photo</span>
+            </button>
+
+            <!-- Video -->
+            <button (click)="pickVideos()"
+                    [disabled]="attachments().length >= MAX_FILES || posting()"
+                    title="Add video"
+                    class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-purple-400 hover:bg-purple-400/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+              <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.723v6.554a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/>
+              </svg>
+              <span class="text-xs font-medium hidden sm:inline">Video</span>
+            </button>
+
+            <!-- Audio -->
+            <button (click)="pickAudio()"
+                    [disabled]="attachments().length >= MAX_FILES || posting()"
+                    title="Add audio"
+                    class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-green-400 hover:bg-green-400/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+              <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+              </svg>
+              <span class="text-xs font-medium hidden sm:inline">Audio</span>
+            </button>
+
+            <!-- Emoji (placeholder) -->
+            <button disabled title="Emoji (coming soon)"
+                    class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-yellow-400 hover:bg-yellow-400/10 transition-colors opacity-50 cursor-not-allowed">
+              <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 13s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Right side: char counter + actions -->
+          <div class="flex items-center gap-3">
+
+            <!-- Circular char counter -->
+            <div class="relative w-7 h-7">
+              <svg class="w-full h-full -rotate-90" viewBox="0 0 28 28">
+                <circle cx="14" cy="14" r="11" fill="none" stroke-width="2.5"
+                        class="stroke-border-tertiary"/>
+                <circle cx="14" cy="14" r="11" fill="none" stroke-width="2.5"
+                        stroke-dasharray="69.11"
+                        [attr.stroke-dashoffset]="69.11 * (1 - charPercent() / 100)"
+                        [class.stroke-accent]="!charNearLimit()"
+                        [class.stroke-yellow-400]="charNearLimit() && !charAtLimit()"
+                        [class.stroke-red-500]="charAtLimit()"
+                        class="transition-all duration-200"/>
+              </svg>
+              @if (charNearLimit()) {
+                <span class="absolute inset-0 flex items-center justify-center text-[9px] font-bold"
+                      [class.text-yellow-400]="!charAtLimit()"
+                      [class.text-red-500]="charAtLimit()">
+                  {{ MAX_CHARS - charCount() }}
+                </span>
+              }
+            </div>
+
+            <!-- Divider -->
+            <div class="w-px h-5 bg-border-tertiary/60"></div>
+
+            <!-- Cancel -->
+            <button (click)="cancel()"
+                    class="px-3 py-1.5 text-[13px] text-text-secondary hover:text-text-primary transition-colors rounded-full hover:bg-background-secondary">
+              Cancel
+            </button>
+
+            <!-- Post -->
+            <button (click)="submit()"
+                    [disabled]="(!content.trim() && attachments().length === 0) || posting() || charAtLimit()"
+                    class="flex items-center gap-1.5 bg-accent text-white rounded-full px-5 py-1.5 text-[13px] font-semibold hover:bg-accent-dark transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm hover:shadow-accent/30 hover:shadow-md">
+              @if (posting()) {
+                <svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                </svg>
+                Posting…
+              } @else {
+                Post
+              }
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /content column -->
+    </div><!-- /expanded -->
+  }
+
 </div>

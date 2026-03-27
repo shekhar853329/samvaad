@@ -1,4 +1,4 @@
-﻿<div class="p-[14px] border-b-[0.5px] border-border-tertiary">
+<div class="p-[14px] border-b-[0.5px] border-border-tertiary">
   <!-- Header -->
   <div class="flex items-start gap-2.5 mb-2">
     <a [routerLink]="['/users', post().author.username]" class="shrink-0">
@@ -61,10 +61,10 @@
          [class]="post().media.length > 1 ? 'grid grid-cols-2 gap-1' : ''">
       @for (m of post().media; track m.id) {
         @if (m.mediaType === 'Image' || m.mediaType === 'Gif') {
-          <img [src]="m.url" [alt]="'Media ' + m.displayOrder"
+          <img [src]="getMediaUrl(m.url)" [alt]="'Media ' + m.displayOrder"
                class="w-full object-cover rounded-md max-h-[320px]" />
         } @else if (m.mediaType === 'Video') {
-          <video [src]="m.url" controls class="w-full rounded-md max-h-[320px]"></video>
+          <video [src]="getMediaUrl(m.url)" controls class="w-full rounded-md max-h-[320px]"></video>
         }
       }
     </div>

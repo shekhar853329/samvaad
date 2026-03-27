@@ -70,6 +70,7 @@ builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<ISettingsService, SettingsService>();
 builder.Services.AddScoped<IFriendService, FriendService>();
 builder.Services.AddScoped<ISocietyService, SocietyService>();
+builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
 
 // ── SignalR + Online presence ────────────────────────────────────────────────
 builder.Services.AddSignalR();

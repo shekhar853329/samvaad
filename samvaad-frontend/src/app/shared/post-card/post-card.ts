@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { Post } from '../../core/models/post.models';
 import { PostService } from '../../core/services/post.service';
 import { UserService } from '../../core/services/user.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-post-card',
@@ -106,5 +107,11 @@ export class PostCard {
     if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
     if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
     return n > 0 ? n.toString() : '';
+  }
+
+  getMediaUrl(url: string | null): string {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    return `${environment.serverUrl}${url.startsWith('/') ? '' : '/'}${url}`;
   }
 }

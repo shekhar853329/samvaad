@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace samvaad_backend.Services;
 
-public partial class PostService(AppDbContext db, INotificationService notifications) : IPostService
+public partial class PostService(AppDbContext db, INotificationService notifications, IFileStorageService fileStorage) : IPostService
 {
     [GeneratedRegex(@"#(\w+)", RegexOptions.Compiled)]
     private static partial Regex HashtagRegex();
@@ -87,10 +87,39 @@ public partial class PostService(AppDbContext db, INotificationService notificat
             .ExecuteUpdateAsync(s => s.SetProperty(u => u.PostsCount, u => u.PostsCount + 1));
 
         db.Posts.Add(post);
-        await db.SaveChangesAsync();
+        await db.SaveChangesAsync(); // save post first so we have the Id
+
+        // ── Persist media attachments ────────────────────────────────────────────
+        if (request.MediaFiles is { Count: > 0 })
+        {
+            int order = 0;
+            foreach (var file in request.MediaFiles)
+            {
+                var url = await fileStorage.SaveAsync(file, "uploads");
+                var mediaType = DetectMediaType(file.ContentType);
+                db.PostMedia.Add(new PostMedia
+                {
+                    Id = Guid.NewGuid(),
+                    PostId = post.Id,
+                    Url = url,
+                    MediaType = mediaType,
+                    DisplayOrder = order++,
+                    CreatedAt = DateTime.UtcNow
+                });
+            }
+            await db.SaveChangesAsync();
+        }
 
         return await GetByIdAsync(post.Id, authorId);
     }
+
+    private static MediaType DetectMediaType(string contentType) => contentType switch
+    {
+        var ct when ct.StartsWith("image/gif", StringComparison.OrdinalIgnoreCase) => MediaType.Gif,
+        var ct when ct.StartsWith("image/", StringComparison.OrdinalIgnoreCase) => MediaType.Image,
+        var ct when ct.StartsWith("video/", StringComparison.OrdinalIgnoreCase) => MediaType.Video,
+        _ => MediaType.File
+    };
 
     public async Task<PostDto> GetByIdAsync(Guid postId, Guid? requestingUserId)
     {

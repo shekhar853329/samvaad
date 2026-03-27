@@ -11,11 +11,22 @@ namespace samvaad_backend.Controllers;
 [Route("api/posts")]
 public class PostsController(IPostService postService) : ControllerBase
 {
-    /// <summary>Create a new post.</summary>
+    /// <summary>Create a new post (JSON, no media).</summary>
     [Authorize]
     [HttpPost]
     [Consumes(MediaTypeNames.Application.Json)]
     public async Task<IActionResult> Create([FromBody] CreatePostRequest request)
+    {
+        var userId = User.GetUserId();
+        var post = await postService.CreateAsync(userId, request);
+        return StatusCode(201, post);
+    }
+
+    /// <summary>Create a new post with media attachments (multipart/form-data).</summary>
+    [Authorize]
+    [HttpPost]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> CreateWithMedia([FromForm] CreatePostRequest request)
     {
         var userId = User.GetUserId();
         var post = await postService.CreateAsync(userId, request);

@@ -45,4 +45,6 @@ export interface CreatePostRequest {
   content: string;
   parentPostId?: string;
   repostOfId?: string;
+  /** Frontend-only: files to attach as multipart/form-data */
+  mediaFiles?: File[];
 }

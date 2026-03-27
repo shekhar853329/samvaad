@@ -11,4 +11,8 @@ public class CreatePostRequest
     public Guid? ParentPostId { get; set; }
 
     public Guid? RepostOfId { get; set; }
+
+    /// <summary>Optional uploaded files (only populated via multipart/form-data).</summary>
+    public IFormFileCollection? MediaFiles { get; set; }
 }
+

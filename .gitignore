@@ -1,3 +1,4 @@
 samvaad-backend/obj/*
 samvaad-backend/bin/*
 /.vs/*
+samvaad-backend/wwwroot/uploads/*
