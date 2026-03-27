@@ -1,0 +1,40 @@
+<div class="p-[14px] border-b-[0.5px] border-border-tertiary">
+  <div class="flex items-start gap-2.5">
+    @if (avatarUrl()) {
+      <img [src]="avatarUrl()!" [alt]="displayName()"
+           class="w-[38px] h-[38px] rounded-full object-cover shrink-0" />
+    } @else {
+      <div class="w-[38px] h-[38px] bg-accent flex items-center justify-center text-white text-[14px] font-medium rounded-full shrink-0">
+        {{ initials() }}
+      </div>
+    }
+    @if (!composing()) {
+      <div class="flex-1 bg-background-secondary border-[0.5px] border-border-tertiary rounded-lg px-3 py-[9px] text-[14px] text-text-secondary cursor-text"
+           (click)="composing.set(true)">
+        What's on your mind, {{ greetingName() }}?
+      </div>
+    } @else {
+      <textarea [(ngModel)]="content" [disabled]="posting()"
+                placeholder="What's on your mind?"
+                class="flex-1 bg-background-secondary border-[0.5px] border-border-tertiary rounded-lg px-3 py-[9px] text-[14px] text-text-primary resize-none min-h-[80px] outline-none focus:border-accent transition-colors"
+                maxlength="500" autofocus></textarea>
+    }
+  </div>
+  @if (composing()) {
+    <div class="flex justify-between items-center mt-2.5 pl-0 md:pl-[50px]">
+      <div class="flex gap-2.5">
+        <span class="text-[12px] text-text-tertiary">{{ content.length }}/500</span>
+      </div>
+      <div class="flex gap-2">
+        <button (click)="cancel()"
+                class="px-3 py-1.5 text-[13px] text-text-secondary cursor-pointer hover:text-text-primary transition-colors">
+          Cancel
+        </button>
+        <button (click)="submit()" [disabled]="!content.trim() || posting()"
+                class="bg-accent text-white border-none rounded-[20px] px-4 py-1.5 text-[13px] font-medium cursor-pointer hover:bg-accent-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          {{ posting() ? 'Posting...' : 'Post' }}
+        </button>
+      </div>
+    </div>
+  }
+</div>

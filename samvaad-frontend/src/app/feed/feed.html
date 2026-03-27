@@ -1,107 +1,16 @@
-﻿<div class="flex flex-col gap-0 bg-background-primary md:border-[0.5px] md:border-border-tertiary md:rounded-lg overflow-hidden h-fit w-full">
+<div class="flex flex-col gap-0 bg-background-primary md:border-[0.5px] md:border-border-tertiary md:rounded-lg overflow-hidden h-fit w-full">
   <!-- Stories -->
-  <div class="flex gap-2 p-3 overflow-x-auto hide-scrollbar border-b-[0.5px] border-border-tertiary">
-    <div class="flex flex-col items-center gap-1 shrink-0">
-      <div class="w-[44px] h-[44px] rounded-full border-2 border-accent p-[2px] cursor-pointer">
-        <div class="w-[36px] h-[36px] rounded-full bg-[#AFA9EC] flex items-center justify-center text-[13px] font-medium text-[#26215C]">AS</div>
-      </div>
-      <div class="text-[10px] text-text-secondary">You</div>
-    </div>
-    <div class="flex flex-col items-center gap-1 shrink-0">
-      <div class="w-[44px] h-[44px] rounded-full border-2 border-accent p-[2px] cursor-pointer">
-        <div class="w-[36px] h-[36px] rounded-full bg-[#9FE1CB] flex items-center justify-center text-[13px] font-medium text-[#085041]">PK</div>
-      </div>
-      <div class="text-[10px] text-text-secondary">Priya</div>
-    </div>
-    <div class="flex flex-col items-center gap-1 shrink-0">
-      <div class="w-[44px] h-[44px] rounded-full border-2 border-accent p-[2px] cursor-pointer">
-        <div class="w-[36px] h-[36px] rounded-full bg-[#F5C4B3] flex items-center justify-center text-[13px] font-medium text-[#4A1B0C]">RG</div>
-      </div>
-      <div class="text-[10px] text-text-secondary">Rohan</div>
-    </div>
-    <div class="flex flex-col items-center gap-1 shrink-0">
-      <div class="w-[44px] h-[44px] rounded-full border-2 border-border-secondary p-[2px] cursor-pointer">
-        <div class="w-[36px] h-[36px] rounded-full bg-[#B5D4F4] flex items-center justify-center text-[13px] font-medium text-[#042C53]">NM</div>
-      </div>
-      <div class="text-[10px] text-text-secondary">Neha</div>
-    </div>
-    <div class="flex flex-col items-center gap-1 shrink-0">
-      <div class="w-[44px] h-[44px] rounded-full border-2 border-border-secondary p-[2px] cursor-pointer">
-        <div class="w-[36px] h-[36px] rounded-full bg-[#FAC775] flex items-center justify-center text-[13px] font-medium text-[#412402]">VR</div>
-      </div>
-      <div class="text-[10px] text-text-secondary">Vikram</div>
-    </div>
-    <!-- Add more for scrolling testing -->
-    <div class="flex flex-col items-center gap-1 shrink-0">
-      <div class="w-[44px] h-[44px] rounded-full border-2 border-border-secondary p-[2px] cursor-pointer">
-        <div class="w-[36px] h-[36px] rounded-full bg-[#EAF3DE] flex items-center justify-center text-[13px] font-medium text-[#2B3E14]">SJ</div>
-      </div>
-      <div class="text-[10px] text-text-secondary">Simran</div>
-    </div>
-  </div>
+  <app-stories-bar />
 
   <!-- Compose -->
-  <div class="p-[14px] border-b-[0.5px] border-border-tertiary">
-    <div class="flex items-start gap-2.5">
-      @if (auth.user()?.avatarUrl) {
-        <img [src]="auth.user()!.avatarUrl!" [alt]="auth.user()!.displayName"
-             class="w-[38px] h-[38px] rounded-full object-cover shrink-0" />
-      } @else {
-        <div class="w-[38px] h-[38px] bg-accent flex items-center justify-center text-white text-[14px] font-medium rounded-full shrink-0">
-          {{ getInitials(auth.user()?.displayName ?? 'U') }}
-        </div>
-      }
-      @if (!composing()) {
-        <div class="flex-1 bg-background-secondary border-[0.5px] border-border-tertiary rounded-lg px-3 py-[9px] text-[14px] text-text-secondary cursor-text"
-             (click)="composing.set(true)">
-          What's on your mind, {{ greetingName() }}?
-        </div>
-      } @else {
-        <textarea [(ngModel)]="composeContent" [disabled]="posting()"
-                  placeholder="What's on your mind?"
-                  class="flex-1 bg-background-secondary border-[0.5px] border-border-tertiary rounded-lg px-3 py-[9px] text-[14px] text-text-primary resize-none min-h-[80px] outline-none focus:border-accent transition-colors"
-                  maxlength="500" autofocus></textarea>
-      }
-    </div>
-    @if (composing()) {
-      <div class="flex justify-between items-center mt-2.5 pl-0 md:pl-[50px]">
-        <div class="flex gap-2.5">
-          <span class="text-[12px] text-text-tertiary">{{ composeContent.length }}/500</span>
-        </div>
-        <div class="flex gap-2">
-          <button (click)="composing.set(false); composeContent = ''"
-                  class="px-3 py-1.5 text-[13px] text-text-secondary cursor-pointer hover:text-text-primary transition-colors">
-            Cancel
-          </button>
-          <button (click)="submitPost()" [disabled]="!composeContent.trim() || posting()"
-                  class="bg-accent text-white border-none rounded-[20px] px-4 py-1.5 text-[13px] font-medium cursor-pointer hover:bg-accent-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-            {{ posting() ? 'Posting...' : 'Post' }}
-          </button>
-        </div>
-      </div>
-    }
-  </div>
+  <app-compose-box (postCreated)="onPostCreated($event)" />
 
   <!-- Posts -->
-  @if (loading() && posts().length === 0) {
-    <div class="p-8 text-center text-text-secondary text-[14px]">Loading feed...</div>
-  } @else if (posts().length === 0) {
-    <div class="p-8 text-center text-text-secondary text-[14px]">
-      No posts yet. Follow people to see their posts here.
-    </div>
-  } @else {
-    @for (post of posts(); track post.id) {
-      <app-post-card [post]="post"
-                     (postUpdated)="onPostUpdated($event)"
-                     (postDeleted)="onPostDeleted($event)" />
-    }
-    @if (hasMore()) {
-      <div class="p-4 text-center">
-        <button (click)="loadMore()" [disabled]="loading()"
-                class="text-[13px] text-accent cursor-pointer hover:underline disabled:opacity-50">
-          {{ loading() ? 'Loading...' : 'Load more' }}
-        </button>
-      </div>
-    }
-  }
+  <app-posts-list
+    [posts]="posts()"
+    [loading]="loading()"
+    [hasMore]="hasMore()"
+    (postUpdated)="onPostUpdated($event)"
+    (postDeleted)="onPostDeleted($event)"
+    (loadMore)="loadMore()" />
 </div>
