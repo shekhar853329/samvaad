@@ -33,7 +33,7 @@ public class AuthService(AppDbContext db, IConfiguration config) : IAuthService
             Id = Guid.NewGuid(),
             Username = request.Username,
             DisplayName = request.DisplayName,
-            Email = request.Email,
+            Email = request.Email.ToLowerInvariant(),
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
             JoinedAt = DateTime.UtcNow,
             LastSeenAt = DateTime.UtcNow
@@ -86,7 +86,8 @@ public class AuthService(AppDbContext db, IConfiguration config) : IAuthService
             throw new AppException("Invalid Google credential.", 401);
         }
 
-        var user = await db.Users.FirstOrDefaultAsync(u => u.Email == payload.Email);
+        var googleEmail = payload.Email.ToLowerInvariant();
+        var user = await db.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == googleEmail);
 
         if (user == null)
         {
@@ -96,7 +97,7 @@ public class AuthService(AppDbContext db, IConfiguration config) : IAuthService
                 Id = Guid.NewGuid(),
                 Username = payload.Email.Split('@')[0] + "_" + Guid.NewGuid().ToString().Substring(0, 4),
                 DisplayName = payload.Name ?? payload.Email.Split('@')[0],
-                Email = payload.Email,
+                Email = payload.Email.ToLowerInvariant(),
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(Guid.NewGuid().ToString()), // Impossible password
                 JoinedAt = DateTime.UtcNow,
                 LastSeenAt = DateTime.UtcNow,

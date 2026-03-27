@@ -22,7 +22,7 @@ export class OnlineFriends implements OnInit, OnDestroy {
   private onlineIds = signal<Set<string>>(new Set());
 
   onlineFriends = computed(() =>
-    this.friends().filter(f => this.onlineIds().has(f.senderId))
+    this.friends().filter(f => this.onlineIds().has(f.senderId.toLowerCase()))
   );
 
   ngOnInit(): void {
@@ -43,7 +43,7 @@ export class OnlineFriends implements OnInit, OnDestroy {
       this.userService.getOnlineFriendIds().subscribe({
         next: ids => {
           console.log('[OnlineFriends] Initial online friend IDs:', ids);
-          this.onlineIds.set(new Set(ids));
+          this.onlineIds.set(new Set(ids.map(id => id.toLowerCase())));
         }
       })
     );
@@ -51,12 +51,13 @@ export class OnlineFriends implements OnInit, OnDestroy {
     // Track real-time online events
     this.subs.add(
       this.chatHub.userOnline$.subscribe(userId => {
-        console.log('[OnlineFriends] userOnline$ → userId:', userId,
+        const lowerUserId = userId.toLowerCase();
+        console.log('[OnlineFriends] userOnline$ → userId:', lowerUserId,
           '| friends loaded:', this.friends().length,
-          '| isFriend:', this.friends().some(f => f.senderId === userId));
-        const isFriend = this.friends().some(f => f.senderId === userId);
+          '| isFriend:', this.friends().some(f => f.senderId.toLowerCase() === lowerUserId));
+        const isFriend = this.friends().some(f => f.senderId.toLowerCase() === lowerUserId);
         if (isFriend) {
-          this.onlineIds.update(s => new Set([...s, userId]));
+          this.onlineIds.update(s => new Set([...s, lowerUserId]));
           console.log('[OnlineFriends] Added to onlineIds. Current onlineFriends:', this.onlineFriends().length);
         }
       })
@@ -65,10 +66,11 @@ export class OnlineFriends implements OnInit, OnDestroy {
     // Track real-time offline events
     this.subs.add(
       this.chatHub.userOffline$.subscribe(userId => {
-        console.log('[OnlineFriends] userOffline$ → userId:', userId);
+        const lowerUserId = userId.toLowerCase();
+        console.log('[OnlineFriends] userOffline$ → userId:', lowerUserId);
         this.onlineIds.update(s => {
           const next = new Set(s);
-          next.delete(userId);
+          next.delete(lowerUserId);
           return next;
         });
         console.log('[OnlineFriends] Removed from onlineIds. Current onlineFriends:', this.onlineFriends().length);

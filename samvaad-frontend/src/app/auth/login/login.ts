@@ -1,4 +1,4 @@
-import { Component, inject, signal, AfterViewInit } from '@angular/core';
+import { Component, inject, signal, AfterViewInit, NgZone } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
@@ -15,6 +15,7 @@ export class Login implements AfterViewInit {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
   private router = inject(Router);
+  private ngZone = inject(NgZone);
 
   form = this.fb.nonNullable.group({
     identifier: ['', [Validators.required]],
@@ -51,7 +52,7 @@ export class Login implements AfterViewInit {
 
     google.accounts.id.initialize({
       client_id: environment.googleClientId,
-      callback: (resp: any) => this.handleGoogleLogin(resp)
+      callback: (resp: any) => this.ngZone.run(() => this.handleGoogleLogin(resp))
     });
 
     const googleBtn = document.getElementById('google-btn');

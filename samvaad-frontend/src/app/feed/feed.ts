@@ -1,14 +1,13 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { PostService } from '../core/services/post.service';
 import { Post } from '../core/models/post.models';
-import { StoriesBar } from './stories-bar/stories-bar';
 import { ComposeBox } from './compose-box/compose-box';
 import { PostsList } from './posts-list/posts-list';
 
 @Component({
   selector: 'app-feed',
   standalone: true,
-  imports: [StoriesBar, ComposeBox, PostsList],
+  imports: [ComposeBox, PostsList],
   templateUrl: './feed.html',
   styleUrl: './feed.css',
 })

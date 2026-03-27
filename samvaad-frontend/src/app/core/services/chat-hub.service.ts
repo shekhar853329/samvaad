@@ -74,22 +74,24 @@ export class ChatHubService implements OnDestroy {
       console.log('[ChatHub] ← UserOnline received:', userId);
       // SignalR callbacks run outside Angular's NgZone — wrap to trigger change detection
       this.ngZone.run(() => {
-        this.onlineUserIds.update(s => new Set([...s, userId]));
-        this.userOnlineSubject.next(userId);
-        console.log('[ChatHub] userOnline$ emitted for:', userId);
+        const lowerId = userId.toLowerCase();
+        this.onlineUserIds.update(s => new Set([...s, lowerId]));
+        this.userOnlineSubject.next(lowerId);
+        console.log('[ChatHub] userOnline$ emitted for:', lowerId);
       });
     });
 
     this.hub.on('UserOffline', (userId: string) => {
       console.log('[ChatHub] ← UserOffline received:', userId);
       this.ngZone.run(() => {
+        const lowerId = userId.toLowerCase();
         this.onlineUserIds.update(s => {
           const next = new Set(s);
-          next.delete(userId);
+          next.delete(lowerId);
           return next;
         });
-        this.userOfflineSubject.next(userId);
-        console.log('[ChatHub] userOffline$ emitted for:', userId);
+        this.userOfflineSubject.next(lowerId);
+        console.log('[ChatHub] userOffline$ emitted for:', lowerId);
       });
     });
 
@@ -171,6 +173,6 @@ export class ChatHubService implements OnDestroy {
   }
 
   isUserOnline(userId: string): boolean {
-    return this.onlineUserIds().has(userId);
+    return this.onlineUserIds().has(userId.toLowerCase());
   }
 }
