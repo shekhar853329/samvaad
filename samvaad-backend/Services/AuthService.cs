@@ -9,6 +9,7 @@ using samvaad_backend.Data;
 using samvaad_backend.Models.DTOs.Auth;
 using samvaad_backend.Models.Entities;
 using samvaad_backend.Services.Interfaces;
+using Google.Apis.Auth;
 
 namespace samvaad_backend.Services;
 
@@ -60,6 +61,61 @@ public class AuthService(AppDbContext db, IConfiguration config) : IAuthService
             throw new AppException("Invalid credentials.", 401);
 
         user.LastSeenAt = DateTime.UtcNow;
+        await db.SaveChangesAsync();
+
+        return await IssueTokensAsync(user);
+    }
+
+    public async Task<AuthResponse> LoginWithGoogleAsync(GoogleLoginRequest request)
+    {
+        var clientId = config["Authentication:GoogleClientId"];
+        if (string.IsNullOrEmpty(clientId))
+            throw new AppException("Google authentication is not configured on the server.", 500);
+
+        GoogleJsonWebSignature.Payload payload;
+        try
+        {
+            var settings = new GoogleJsonWebSignature.ValidationSettings
+            {
+                Audience = new[] { clientId }
+            };
+            payload = await GoogleJsonWebSignature.ValidateAsync(request.Credential, settings);
+        }
+        catch (InvalidJwtException)
+        {
+            throw new AppException("Invalid Google credential.", 401);
+        }
+
+        var user = await db.Users.FirstOrDefaultAsync(u => u.Email == payload.Email);
+
+        if (user == null)
+        {
+            // Implicit Registration
+            user = new User
+            {
+                Id = Guid.NewGuid(),
+                Username = payload.Email.Split('@')[0] + "_" + Guid.NewGuid().ToString().Substring(0, 4),
+                DisplayName = payload.Name ?? payload.Email.Split('@')[0],
+                Email = payload.Email,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(Guid.NewGuid().ToString()), // Impossible password
+                JoinedAt = DateTime.UtcNow,
+                LastSeenAt = DateTime.UtcNow,
+                IsVerified = payload.EmailVerified
+            };
+
+            user.NotificationPreferences = new UserNotificationPreferences { UserId = user.Id };
+            user.PrivacySettings = new UserPrivacySettings { UserId = user.Id };
+            user.FeedPreferences = new UserFeedPreferences { UserId = user.Id };
+
+            db.Users.Add(user);
+        }
+        else
+        {
+            user.LastSeenAt = DateTime.UtcNow;
+            if (!user.IsVerified && payload.EmailVerified)
+                user.IsVerified = true;
+        }
+
         await db.SaveChangesAsync();
 
         return await IssueTokensAsync(user);

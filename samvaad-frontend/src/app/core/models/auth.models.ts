@@ -9,6 +9,10 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface GoogleLoginRequest {
+  credential: string;
+}
+
 export interface RegisterRequest {
   username: string;
   displayName: string;

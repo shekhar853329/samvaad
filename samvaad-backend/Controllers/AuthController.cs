@@ -26,6 +26,14 @@ public class AuthController(IAuthService authService) : ControllerBase
         return Ok(result);
     }
 
+    [HttpPost("google-login")]
+    [Consumes(MediaTypeNames.Application.Json)]
+    public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest request)
+    {
+        var result = await authService.LoginWithGoogleAsync(request);
+        return Ok(result);
+    }
+
     [HttpPost("refresh")]
     [Consumes(MediaTypeNames.Application.Json)]
     public async Task<IActionResult> Refresh([FromBody] RefreshRequest request)

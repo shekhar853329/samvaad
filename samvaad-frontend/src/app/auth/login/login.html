@@ -1,4 +1,4 @@
-﻿<div class="min-h-screen bg-[#F7F7FB] flex items-center justify-center px-4">
+<div class="min-h-screen bg-[#F7F7FB] flex items-center justify-center px-4">
   <div class="w-full max-w-[400px]">
 
     <!-- Logo / Brand -->
@@ -20,6 +20,15 @@
           {{ error() }}
         </div>
       }
+
+      <!-- Google Sign-In Button -->
+      <div id="google-btn" class="w-full flex justify-center mb-4"></div>
+
+      <div class="relative flex py-2 items-center mb-4">
+        <div class="flex-grow border-t border-[#ccced2]"></div>
+        <span class="flex-shrink-0 mx-4 text-[#8c939d] text-sm">Or continue with email</span>
+        <div class="flex-grow border-t border-[#ccced2]"></div>
+      </div>
 
       <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="flex flex-col gap-4">
 

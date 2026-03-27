@@ -2,7 +2,7 @@ import { Injectable, signal, computed, inject, Injector } from '@angular/core';
 import { Router } from '@angular/router';
 import { tap, catchError } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
-import { AuthResponse, LoginRequest, MeResponse, RegisterRequest, UserSummary } from '../models/auth.models';
+import { AuthResponse, LoginRequest, GoogleLoginRequest, MeResponse, RegisterRequest, UserSummary } from '../models/auth.models';
 import { ApiService } from './api.service';
 
 const ACCESS_TOKEN_KEY = 'samvaad_access_token';
@@ -23,6 +23,12 @@ export class AuthService {
 
   login(request: LoginRequest): Observable<AuthResponse> {
     return this.api.post<AuthResponse>('/auth/login', request).pipe(
+      tap(res => this.persist(res))
+    );
+  }
+
+  loginWithGoogle(request: GoogleLoginRequest): Observable<AuthResponse> {
+    return this.api.post<AuthResponse>('/auth/google-login', request).pipe(
       tap(res => this.persist(res))
     );
   }
