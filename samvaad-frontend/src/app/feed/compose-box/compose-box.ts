@@ -107,7 +107,7 @@ export class ComposeBox implements OnDestroy {
 
   pickPhotos(): void { this.photoInput.nativeElement.click(); }
   pickVideos(): void { this.videoInput.nativeElement.click(); }
-  pickAudio(): void  { this.audioInput.nativeElement.click(); }
+  pickAudio(): void { this.audioInput.nativeElement.click(); }
 
   onFileSelected(event: Event, type: 'image' | 'video' | 'audio'): void {
     const input = event.target as HTMLInputElement;
